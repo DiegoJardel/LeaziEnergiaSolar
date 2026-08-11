@@ -10,7 +10,8 @@ public static class DbInitializer
         LeaziDbContext dbContext,
         CancellationToken cancellationToken = default)
     {
-        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        await dbContext.Database.MigrateAsync(
+            cancellationToken);
 
         var administrador = await dbContext.Usuarios
             .FirstOrDefaultAsync(
@@ -19,7 +20,7 @@ public static class DbInitializer
 
         if (administrador is null)
         {
-            dbContext.Usuarios.Add(
+            await dbContext.Usuarios.AddAsync(
                 new Usuario
                 {
                     Nome = "Administrador",
@@ -29,19 +30,26 @@ public static class DbInitializer
                         workFactor: 12),
                     Perfil = PerfilUsuario.Administrador,
                     Ativo = true
-                });
+                },
+                cancellationToken);
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(
+                cancellationToken);
+
             return;
         }
 
-        if (!administrador.SenhaHash.StartsWith("$2", StringComparison.Ordinal))
+        if (!administrador.SenhaHash.StartsWith(
+                "$2",
+                StringComparison.Ordinal))
         {
-            administrador.SenhaHash = BCrypt.Net.BCrypt.HashPassword(
-                "admin",
-                workFactor: 12);
+            administrador.SenhaHash =
+                BCrypt.Net.BCrypt.HashPassword(
+                    "admin",
+                    workFactor: 12);
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(
+                cancellationToken);
         }
     }
 }

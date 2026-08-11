@@ -44,6 +44,7 @@
 
                     <TextBox
                         Margin="0,0,0,16"
+                        CharacterCasing="Upper"
                         MaxLength="100"
                         materialDesign:HintAssist.Hint="Nome completo"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -225,7 +226,9 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <DockPanel Grid.Row="3" Margin="0,12,0,0">
+                <DockPanel
+                    Grid.Row="3"
+                    Margin="0,12,0,0">
                     <ProgressBar
                         Width="120"
                         Height="3"

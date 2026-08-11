@@ -89,8 +89,8 @@ public partial class UsuariosViewModel : ObservableObject
                 new SalvarUsuarioDto
                 {
                     Id = UsuarioId,
-                    Nome = Nome,
-                    Login = Login,
+                    Nome = Nome.Trim().ToUpperInvariant(),
+                    Login = Login.Trim(),
                     Senha = senha,
                     Perfil = PerfilSelecionado,
                     Ativo = Ativo

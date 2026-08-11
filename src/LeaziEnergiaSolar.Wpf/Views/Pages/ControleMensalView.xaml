@@ -1,0 +1,275 @@
+<UserControl x:Class="LeaziEnergiaSolar.Wpf.Views.Pages.ControleMensalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="740"
+             d:DesignWidth="1180"
+             Loaded="ControleMensalView_Loaded"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="ControleCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="18" />
+            <Setter Property="Margin" Value="0,0,14,0" />
+            <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp2" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Padding="20"
+            Background="White"
+            CornerRadius="12"
+            materialDesign:ElevationAssist.Elevation="Dp2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="0.8*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="1.35*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="1.05*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="1.7*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ComboBox
+                    Grid.Column="0"
+                    DisplayMemberPath="Nome"
+                    ItemsSource="{Binding MesesDisponiveis}"
+                    materialDesign:HintAssist.Hint="Mês"
+                    SelectedItem="{Binding MesSelecionado}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                <ComboBox
+                    Grid.Column="2"
+                    ItemsSource="{Binding AnosDisponiveis}"
+                    materialDesign:HintAssist.Hint="Ano"
+                    SelectedItem="{Binding AnoSelecionado}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                <ComboBox
+                    Grid.Column="4"
+                    DisplayMemberPath="Nome"
+                    ItemsSource="{Binding Vendedores}"
+                    materialDesign:HintAssist.Hint="Vendedor"
+                    SelectedItem="{Binding VendedorSelecionado}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                <ComboBox
+                    Grid.Column="6"
+                    ItemsSource="{Binding StatusDisponiveis}"
+                    materialDesign:HintAssist.Hint="Status"
+                    SelectedItem="{Binding StatusSelecionado}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                <TextBox
+                    Grid.Column="8"
+                    materialDesign:HintAssist.Hint="Cliente, vendedor ou documento"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding Pesquisa, UpdateSourceTrigger=PropertyChanged}" />
+
+                <StackPanel Grid.Column="10" Orientation="Horizontal">
+                    <Button
+                        Width="92"
+                        Height="42"
+                        Margin="0,0,8,0"
+                        Background="{StaticResource LeaziGreenBrush}"
+                        Command="{Binding FiltrarCommand}"
+                        Content="FILTRAR"
+                        Foreground="White"
+                        IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
+                        Style="{StaticResource MaterialDesignRaisedButton}" />
+
+                    <Button
+                        Width="86"
+                        Height="42"
+                        Command="{Binding LimparFiltrosCommand}"
+                        Content="LIMPAR"
+                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <UniformGrid Grid.Row="2" Columns="5">
+            <Border Style="{StaticResource ControleCardStyle}">
+                <StackPanel>
+                    <TextBlock Foreground="#667085" Text="TOTAL VENDIDO" />
+                    <TextBlock
+                        Margin="0,7,0,0"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource LeaziGreenBrush}"
+                        Text="{Binding TotalVendido, StringFormat={}{0:C2}}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource ControleCardStyle}">
+                <StackPanel>
+                    <TextBlock Foreground="#667085" Text="TOTAL COMISSÃO" />
+                    <TextBlock
+                        Margin="0,7,0,0"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="#B54708"
+                        Text="{Binding TotalComissao, StringFormat={}{0:C2}}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource ControleCardStyle}">
+                <StackPanel>
+                    <TextBlock Foreground="#667085" Text="REGISTROS" />
+                    <TextBlock
+                        Margin="0,7,0,0"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource LeaziBlueBrush}"
+                        Text="{Binding QuantidadeRegistros}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource ControleCardStyle}">
+                <StackPanel>
+                    <TextBlock Foreground="#667085" Text="PAGOS" />
+                    <TextBlock
+                        Margin="0,7,0,0"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="#027A48"
+                        Text="{Binding QuantidadePagos}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource ControleCardStyle}">
+                <StackPanel>
+                    <TextBlock Foreground="#667085" Text="PENDENTES" />
+                    <TextBlock
+                        Margin="0,7,0,0"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="#D92D20"
+                        Text="{Binding QuantidadePendentes}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border
+            Grid.Row="4"
+            Padding="20"
+            Background="White"
+            CornerRadius="12"
+            materialDesign:ElevationAssist.Elevation="Dp2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DockPanel>
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Text="Lançamentos do mês" />
+
+                    <TextBlock
+                        HorizontalAlignment="Right"
+                        Foreground="#667085"
+                        Text="{Binding PeriodoDescricao}" />
+                </DockPanel>
+
+                <DataGrid
+                    Grid.Row="2"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Lancamentos}"
+                    RowHeaderWidth="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="0.85*"
+                            Binding="{Binding DataVenda, StringFormat={}{0:dd/MM/yyyy}}"
+                            Header="DATA" />
+
+                        <DataGridTextColumn
+                            Width="1.8*"
+                            Binding="{Binding Cliente}"
+                            Header="CLIENTE" />
+
+                        <DataGridTextColumn
+                            Width="1.35*"
+                            Binding="{Binding VendedorNome}"
+                            Header="VENDEDOR" />
+
+                        <DataGridTextColumn
+                            Width="1*"
+                            Binding="{Binding ValorVenda, StringFormat={}{0:C2}}"
+                            Header="VENDA" />
+
+                        <DataGridTextColumn
+                            Width="0.7*"
+                            Binding="{Binding PercentualComissao, StringFormat={}{0:N2}%}"
+                            Header="%" />
+
+                        <DataGridTextColumn
+                            Width="1*"
+                            Binding="{Binding ValorComissao, StringFormat={}{0:C2}}"
+                            Header="COMISSÃO" />
+
+                        <DataGridTemplateColumn
+                            Width="0.85*"
+                            Header="STATUS">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        FontWeight="SemiBold"
+                                        Foreground="{Binding Status, Converter={StaticResource StatusLancamentoToBrushConverter}}"
+                                        Text="{Binding StatusDescricao}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn
+                            Width="1.7*"
+                            Binding="{Binding Observacao}"
+                            Header="OBSERVAÇÃO" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <DockPanel Grid.Row="3" Margin="0,10,0,0">
+                    <ProgressBar
+                        Width="120"
+                        Height="3"
+                        DockPanel.Dock="Right"
+                        IsIndeterminate="True"
+                        Visibility="{Binding EstaCarregando, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <TextBlock
+                        Foreground="#D92D20"
+                        Text="{Binding MensagemErro}" />
+
+                    <TextBlock
+                        Margin="20,0,0,0"
+                        Foreground="#667085"
+                        Text="{Binding Lancamentos.Count, StringFormat={}Registros exibidos: {0}}" />
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

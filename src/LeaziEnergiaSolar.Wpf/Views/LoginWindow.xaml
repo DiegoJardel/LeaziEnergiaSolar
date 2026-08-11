@@ -32,8 +32,7 @@
                 <TextBlock
                     HorizontalAlignment="Center"
                     FontSize="16"
-                    Foreground="#DFFFF0"
-                    Text="Gestão simples para a equipe Leazi" />
+                    Foreground="#DFFFF0"/>
             </StackPanel>
         </Border>
 
@@ -93,8 +92,7 @@
                 <TextBlock
                     Margin="0,18,0,0"
                     HorizontalAlignment="Center"
-                    Foreground="#98A2B3"
-                    Text="Acesso inicial de desenvolvimento: admin / admin" />
+                    Foreground="#98A2B3"/>
             </StackPanel>
         </Border>
     </Grid>

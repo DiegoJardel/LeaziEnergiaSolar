@@ -33,7 +33,7 @@ public partial class LancamentosViewModel : ObservableObject
     private VendedorDto? vendedorSelecionado;
 
     [ObservableProperty]
-    private string valorVenda = string.Empty;
+    private string valorVenda = "R$ 0,00";
 
     [ObservableProperty]
     private string percentualComissao = "5,00";
@@ -119,7 +119,8 @@ public partial class LancamentosViewModel : ObservableObject
         AtualizarCalculoComissao();
     }
 
-    partial void OnVendedorSelecionadoChanged(VendedorDto? value)
+    partial void OnVendedorSelecionadoChanged(
+        VendedorDto? value)
     {
         if (!EstaEditando && value is not null)
         {
@@ -253,7 +254,8 @@ public partial class LancamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Editar(LancamentoDto? lancamento)
+    private void Editar(
+        LancamentoDto? lancamento)
     {
         if (lancamento is null)
         {
@@ -263,6 +265,7 @@ public partial class LancamentosViewModel : ObservableObject
         LancamentoId = lancamento.Id;
         DataVenda = lancamento.DataVenda;
         Cliente = NormalizarNome(lancamento.Cliente);
+
         CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
             lancamento.CpfCnpjCliente);
 
@@ -270,7 +273,7 @@ public partial class LancamentosViewModel : ObservableObject
             vendedor => vendedor.Id == lancamento.VendedorId);
 
         ValorVenda = lancamento.ValorVenda.ToString(
-            "N2",
+            "C2",
             CulturaBrasileira);
 
         PercentualComissao = lancamento.PercentualComissao.ToString(
@@ -435,12 +438,14 @@ public partial class LancamentosViewModel : ObservableObject
             ? string.Empty
             : MaskHelper.FormatCpfCnpj(CpfCnpjCliente);
 
-        ValorVenda = ValorVenda?.Trim() ?? string.Empty;
+        ValorVenda = ValorVenda?.Trim()
+            ?? "R$ 0,00";
 
-        PercentualComissao =
-            PercentualComissao?.Trim() ?? string.Empty;
+        PercentualComissao = PercentualComissao?.Trim()
+            ?? string.Empty;
 
-        Observacao = Observacao?.Trim() ?? string.Empty;
+        Observacao = Observacao?.Trim()
+            ?? string.Empty;
     }
 
     private bool ValidarCamposObrigatorios()
@@ -544,9 +549,15 @@ public partial class LancamentosViewModel : ObservableObject
         string? valor,
         out decimal resultado)
     {
+        if (string.IsNullOrWhiteSpace(valor))
+        {
+            resultado = 0m;
+            return false;
+        }
+
         return decimal.TryParse(
             valor,
-            NumberStyles.Number,
+            NumberStyles.Currency,
             CulturaBrasileira,
             out resultado);
     }
@@ -585,7 +596,7 @@ public partial class LancamentosViewModel : ObservableObject
         Cliente = string.Empty;
         CpfCnpjCliente = string.Empty;
         VendedorSelecionado = null;
-        ValorVenda = string.Empty;
+        ValorVenda = "R$ 0,00";
         PercentualComissao = "5,00";
         ValorComissao = "R$ 0,00";
         StatusSelecionado = StatusLancamento.Pendente;

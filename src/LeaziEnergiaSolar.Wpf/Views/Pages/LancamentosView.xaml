@@ -114,7 +114,7 @@
                         materialDesign:HintAssist.Hint="Valor da venda"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding ValorVenda, UpdateSourceTrigger=PropertyChanged}"
-                        utils:InputBehavior.Type="Decimal" />
+                        utils:CurrencyInputBehavior.IsEnabled="True" />
 
                     <TextBox
                         Grid.Column="2"

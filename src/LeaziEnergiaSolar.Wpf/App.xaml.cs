@@ -17,38 +17,47 @@ public partial class App : System.Windows.Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
 
-    protected override async void OnStartup(StartupEventArgs eventArgs)
+    protected override async void OnStartup(
+        StartupEventArgs eventArgs)
     {
         base.OnStartup(eventArgs);
 
         AppPaths.PrepararPastas();
+
         Services = ConfigureServices();
+
         RegistrarTratamentoGlobalDeErros();
 
         try
         {
+            await Services
+                .GetRequiredService<IBackupService>()
+                .CriarBackupAutomaticoAsync();
+
             using (var scope = Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider
                     .GetRequiredService<LeaziDbContext>();
 
-                await DbInitializer.InitializeAsync(dbContext);
+                await DbInitializer.InitializeAsync(
+                    dbContext);
             }
 
-            await Services
-                .GetRequiredService<IBackupService>()
-                .CriarBackupAutomaticoAsync();
-
-            Services.GetRequiredService<LoginWindow>().Show();
+            Services
+                .GetRequiredService<LoginWindow>()
+                .Show();
         }
         catch (Exception exception)
         {
             Services
                 .GetRequiredService<ILogService>()
-                .RegistrarErro(exception, "Inicialização do sistema");
+                .RegistrarErro(
+                    exception,
+                    "Inicialização do sistema");
 
             MessageBox.Show(
-                "Não foi possível iniciar o sistema. Consulte a pasta de logs.",
+                "Não foi possível iniciar o sistema. " +
+                "Consulte a pasta de logs.",
                 "Leazi Energia Solar",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -62,24 +71,71 @@ public partial class App : System.Windows.Application
         var services = new ServiceCollection();
 
         services.AddDbContext<LeaziDbContext>(options =>
-            options.UseSqlite($"Data Source={AppPaths.BancoDados}"));
+            options.UseSqlite(
+                $"Data Source={AppPaths.BancoDados}",
+                sqliteOptions =>
+                {
+                    sqliteOptions.MigrationsAssembly(
+                        typeof(LeaziDbContext)
+                            .Assembly
+                            .FullName);
+                }));
 
-        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-        services.AddScoped<IVendedorRepository, VendedorRepository>();
-        services.AddScoped<ILancamentoRepository, LancamentoRepository>();
-        services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<
+            IUsuarioRepository,
+            UsuarioRepository>();
 
-        services.AddScoped<IAutenticacaoService, AutenticacaoService>();
-        services.AddScoped<IVendedorService, VendedorService>();
-        services.AddScoped<ILancamentoService, LancamentoService>();
-        services.AddScoped<IDashboardService, DashboardService>();
-        services.AddScoped<IControleMensalService, ControleMensalService>();
-        services.AddScoped<IControleAnualService, ControleAnualService>();
-        services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<
+            IVendedorRepository,
+            VendedorRepository>();
 
-        services.AddSingleton<IUsuarioSessaoService, UsuarioSessaoService>();
-        services.AddSingleton<ILogService, LogService>();
-        services.AddSingleton<IBackupService, BackupService>();
+        services.AddScoped<
+            ILancamentoRepository,
+            LancamentoRepository>();
+
+        services.AddScoped<
+            IDashboardRepository,
+            DashboardRepository>();
+
+        services.AddScoped<
+            IAutenticacaoService,
+            AutenticacaoService>();
+
+        services.AddScoped<
+            IVendedorService,
+            VendedorService>();
+
+        services.AddScoped<
+            ILancamentoService,
+            LancamentoService>();
+
+        services.AddScoped<
+            IDashboardService,
+            DashboardService>();
+
+        services.AddScoped<
+            IControleMensalService,
+            ControleMensalService>();
+
+        services.AddScoped<
+            IControleAnualService,
+            ControleAnualService>();
+
+        services.AddScoped<
+            IUsuarioService,
+            UsuarioService>();
+
+        services.AddSingleton<
+            IUsuarioSessaoService,
+            UsuarioSessaoService>();
+
+        services.AddSingleton<
+            ILogService,
+            LogService>();
+
+        services.AddSingleton<
+            IBackupService,
+            BackupService>();
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<VendedoresViewModel>();
@@ -103,19 +159,27 @@ public partial class App : System.Windows.Application
 
     private void RegistrarTratamentoGlobalDeErros()
     {
-        DispatcherUnhandledException += OnDispatcherUnhandledException;
-        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+        DispatcherUnhandledException +=
+            OnDispatcherUnhandledException;
+
+        AppDomain.CurrentDomain.UnhandledException +=
+            OnUnhandledException;
+
+        TaskScheduler.UnobservedTaskException +=
+            OnUnobservedTaskException;
     }
 
     private static void OnDispatcherUnhandledException(
         object sender,
         DispatcherUnhandledExceptionEventArgs eventArgs)
     {
-        RegistrarErroGlobal(eventArgs.Exception, "Interface WPF");
+        RegistrarErroGlobal(
+            eventArgs.Exception,
+            "Interface WPF");
 
         MessageBox.Show(
-            "Ocorreu um erro inesperado. O detalhe foi registrado no log.",
+            "Ocorreu um erro inesperado. " +
+            "O detalhe foi registrado no log.",
             "Leazi Energia Solar",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
@@ -129,7 +193,9 @@ public partial class App : System.Windows.Application
     {
         if (eventArgs.ExceptionObject is Exception exception)
         {
-            RegistrarErroGlobal(exception, "Aplicação");
+            RegistrarErroGlobal(
+                exception,
+                "Aplicação");
         }
     }
 
@@ -137,7 +203,10 @@ public partial class App : System.Windows.Application
         object? sender,
         UnobservedTaskExceptionEventArgs eventArgs)
     {
-        RegistrarErroGlobal(eventArgs.Exception, "Tarefa assíncrona");
+        RegistrarErroGlobal(
+            eventArgs.Exception,
+            "Tarefa assíncrona");
+
         eventArgs.SetObserved();
     }
 
@@ -149,11 +218,12 @@ public partial class App : System.Windows.Application
         {
             Services
                 .GetRequiredService<ILogService>()
-                .RegistrarErro(exception, contexto);
+                .RegistrarErro(
+                    exception,
+                    contexto);
         }
         catch
         {
-            // Evita uma nova falha durante o tratamento do erro original.
         }
     }
 }

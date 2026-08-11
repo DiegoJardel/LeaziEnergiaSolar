@@ -23,7 +23,12 @@ public sealed class LeaziDbContextFactory :
             new DbContextOptionsBuilder<LeaziDbContext>();
 
         optionsBuilder.UseSqlite(
-            $"Data Source={caminhoBanco}");
+            $"Data Source={caminhoBanco}",
+            sqliteOptions =>
+            {
+                sqliteOptions.MigrationsAssembly(
+                    typeof(LeaziDbContext).Assembly.FullName);
+            });
 
         return new LeaziDbContext(
             optionsBuilder.Options);

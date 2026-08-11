@@ -13,43 +13,30 @@ public static class DbInitializer
         await dbContext.Database.MigrateAsync(
             cancellationToken);
 
-        var administrador = await dbContext.Usuarios
-            .FirstOrDefaultAsync(
+        var administradorExiste = await dbContext.Usuarios
+            .AnyAsync(
                 usuario => usuario.Login == "admin",
                 cancellationToken);
 
-        if (administrador is null)
+        if (administradorExiste)
         {
-            await dbContext.Usuarios.AddAsync(
-                new Usuario
-                {
-                    Nome = "Administrador",
-                    Login = "admin",
-                    SenhaHash = BCrypt.Net.BCrypt.HashPassword(
-                        "admin",
-                        workFactor: 12),
-                    Perfil = PerfilUsuario.Administrador,
-                    Ativo = true
-                },
-                cancellationToken);
-
-            await dbContext.SaveChangesAsync(
-                cancellationToken);
-
             return;
         }
 
-        if (!administrador.SenhaHash.StartsWith(
-                "$2",
-                StringComparison.Ordinal))
-        {
-            administrador.SenhaHash =
-                BCrypt.Net.BCrypt.HashPassword(
+        await dbContext.Usuarios.AddAsync(
+            new Usuario
+            {
+                Nome = "Administrador",
+                Login = "admin",
+                SenhaHash = BCrypt.Net.BCrypt.HashPassword(
                     "admin",
-                    workFactor: 12);
+                    workFactor: 12),
+                Perfil = PerfilUsuario.Administrador,
+                Ativo = true
+            },
+            cancellationToken);
 
-            await dbContext.SaveChangesAsync(
-                cancellationToken);
-        }
+        await dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 }

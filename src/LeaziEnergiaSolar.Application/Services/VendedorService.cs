@@ -10,7 +10,8 @@ public sealed class VendedorService : IVendedorService
 {
     private readonly IVendedorRepository _vendedorRepository;
 
-    public VendedorService(IVendedorRepository vendedorRepository)
+    public VendedorService(
+        IVendedorRepository vendedorRepository)
     {
         _vendedorRepository = vendedorRepository;
     }
@@ -36,15 +37,20 @@ public sealed class VendedorService : IVendedorService
 
         if (erros.Count > 0)
         {
-            return ResultadoOperacaoDto.Falha(string.Join(Environment.NewLine, erros));
+            return ResultadoOperacaoDto.Falha(
+                string.Join(
+                    Environment.NewLine,
+                    erros));
         }
 
-        var documento = DocumentoValidator.SomenteNumeros(vendedor.CpfCnpj);
+        var documento = DocumentoValidator.SomenteNumeros(
+            vendedor.CpfCnpj);
 
-        var documentoDuplicado = await _vendedorRepository.ExisteDocumentoAsync(
-            documento,
-            vendedor.Id,
-            cancellationToken);
+        var documentoDuplicado =
+            await _vendedorRepository.ExisteDocumentoAsync(
+                documento,
+                vendedor.Id,
+                cancellationToken);
 
         if (documentoDuplicado)
         {
@@ -64,7 +70,10 @@ public sealed class VendedorService : IVendedorService
                     "O vendedor selecionado não foi encontrado.");
             }
 
-            AtualizarEntidade(entidade, vendedor, documento);
+            AtualizarEntidade(
+                entidade,
+                vendedor,
+                documento);
 
             await _vendedorRepository.AtualizarAsync(
                 entidade,
@@ -75,7 +84,11 @@ public sealed class VendedorService : IVendedorService
         }
 
         var novoVendedor = new Vendedor();
-        AtualizarEntidade(novoVendedor, vendedor, documento);
+
+        AtualizarEntidade(
+            novoVendedor,
+            vendedor,
+            documento);
 
         await _vendedorRepository.AdicionarAsync(
             novoVendedor,
@@ -90,6 +103,12 @@ public sealed class VendedorService : IVendedorService
         bool ativo,
         CancellationToken cancellationToken = default)
     {
+        if (id <= 0)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O vendedor informado é inválido.");
+        }
+
         var vendedor = await _vendedorRepository.ObterAsync(
             id,
             cancellationToken);
@@ -112,6 +131,47 @@ public sealed class VendedorService : IVendedorService
                 : "Vendedor inativado com sucesso.");
     }
 
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        if (id <= 0)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O vendedor informado é inválido.");
+        }
+
+        var vendedor = await _vendedorRepository.ObterAsync(
+            id,
+            cancellationToken);
+
+        if (vendedor is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O vendedor selecionado não foi encontrado.");
+        }
+
+        var possuiLancamentos =
+            await _vendedorRepository.PossuiLancamentosAsync(
+                id,
+                cancellationToken);
+
+        if (possuiLancamentos)
+        {
+            return ResultadoOperacaoDto.Falha(
+                $"Não é possível excluir o vendedor " +
+                $"\"{vendedor.Nome}\", pois existem " +
+                "lançamentos vinculados a ele.");
+        }
+
+        await _vendedorRepository.ExcluirAsync(
+            vendedor,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Vendedor excluído com sucesso.");
+    }
+
     private static void AtualizarEntidade(
         Vendedor entidade,
         SalvarVendedorDto vendedor,
@@ -119,13 +179,19 @@ public sealed class VendedorService : IVendedorService
     {
         entidade.Nome = vendedor.Nome.Trim();
         entidade.CpfCnpj = documento;
-        entidade.Telefone = DocumentoValidator.SomenteNumeros(vendedor.Telefone);
-        entidade.Email = vendedor.Email.Trim().ToLowerInvariant();
-        entidade.PercentualComissao = vendedor.PercentualComissao;
+        entidade.Telefone =
+            DocumentoValidator.SomenteNumeros(
+                vendedor.Telefone);
+        entidade.Email = vendedor.Email
+            .Trim()
+            .ToLowerInvariant();
+        entidade.PercentualComissao =
+            vendedor.PercentualComissao;
         entidade.Ativo = vendedor.Ativo;
     }
 
-    private static VendedorDto Mapear(Vendedor vendedor)
+    private static VendedorDto Mapear(
+        Vendedor vendedor)
     {
         return new VendedorDto
         {
@@ -134,7 +200,8 @@ public sealed class VendedorService : IVendedorService
             CpfCnpj = vendedor.CpfCnpj ?? string.Empty,
             Telefone = vendedor.Telefone ?? string.Empty,
             Email = vendedor.Email ?? string.Empty,
-            PercentualComissao = vendedor.PercentualComissao,
+            PercentualComissao =
+                vendedor.PercentualComissao,
             Ativo = vendedor.Ativo
         };
     }

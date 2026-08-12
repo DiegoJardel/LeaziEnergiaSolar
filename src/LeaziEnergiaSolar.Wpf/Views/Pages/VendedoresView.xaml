@@ -211,7 +211,7 @@
                         </DataGridTemplateColumn>
 
                         <DataGridTemplateColumn
-                            Width="1.35*"
+                            Width="2.1*"
                             Header="AÇÕES">
 
                             <DataGridTemplateColumn.CellTemplate>
@@ -223,13 +223,25 @@
                                             Command="{Binding DataContext.EditarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Content="Editar"
+                                            IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                         <Button
+                                            Margin="0,0,6,0"
                                             Padding="10,5"
                                             Command="{Binding DataContext.AlterarStatusCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}"
+                                            IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                        <Button
+                                            Padding="10,5"
+                                            Command="{Binding DataContext.ExcluirCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Content="Excluir"
+                                            Foreground="#C62828"
+                                            IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </StackPanel>
                                 </DataTemplate>

@@ -9,7 +9,8 @@ public partial class VendedoresView : UserControl
     private readonly VendedoresViewModel _viewModel;
     private bool _carregado;
 
-    public VendedoresView(VendedoresViewModel viewModel)
+    public VendedoresView(
+        VendedoresViewModel viewModel)
     {
         InitializeComponent();
 
@@ -27,6 +28,9 @@ public partial class VendedoresView : UserControl
         }
 
         _carregado = true;
-        await _viewModel.CarregarCommand.ExecuteAsync(null);
+
+        await _viewModel
+            .CarregarCommand
+            .ExecuteAsync(null);
     }
 }

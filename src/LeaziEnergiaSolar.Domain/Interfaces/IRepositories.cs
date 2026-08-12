@@ -49,11 +49,19 @@ public interface IVendedorRepository
         int? ignorarId = null,
         CancellationToken cancellationToken = default);
 
+    Task<bool> PossuiLancamentosAsync(
+        int vendedorId,
+        CancellationToken cancellationToken = default);
+
     Task AdicionarAsync(
         Vendedor vendedor,
         CancellationToken cancellationToken = default);
 
     Task AtualizarAsync(
+        Vendedor vendedor,
+        CancellationToken cancellationToken = default);
+
+    Task ExcluirAsync(
         Vendedor vendedor,
         CancellationToken cancellationToken = default);
 }

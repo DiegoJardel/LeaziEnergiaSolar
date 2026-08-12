@@ -1,0 +1,41 @@
+﻿INSTALADOR LEAZI
+================
+
+ESTRUTURA ESPERADA
+
+C:\MANUAL\PESSOAL\SAAS
+├── LeaziEnergiaSolar
+│   ├── LeaziEnergiaSolar.sln
+│   └── src
+└── InstaladorLeazi
+    ├── publish
+    ├── output
+    ├── LeaziEnergiaSolar.iss
+    └── gerar-instalador.ps1
+
+COMO USAR
+
+1. Extraia a pasta InstaladorLeazi ao lado da pasta LeaziEnergiaSolar.
+2. Confirme que o Inno Setup está instalado.
+3. Clique com o botão direito em gerar-instalador.ps1.
+4. Escolha Executar com PowerShell.
+
+Se o Windows bloquear o script, abra o PowerShell dentro da pasta e execute:
+
+powershell -ExecutionPolicy Bypass -File .\gerar-instalador.ps1
+
+RESULTADO
+
+O instalador será criado em:
+
+InstaladorLeazi\output\Setup_ControleComissoes_Leazi_1.0.0.exe
+
+Esse é o único arquivo que deve ser enviado para instalação.
+
+IMPORTANTE
+
+- O executável publicado esperado é LeaziEnergiaSolar.Wpf.exe.
+- O ícone esperado está em:
+  LeaziEnergiaSolar\src\LeaziEnergiaSolar.Wpf\Assets\Icons\leazi-app.ico
+- Para uma nova versão, altere MyAppVersion no arquivo LeaziEnergiaSolar.iss.
+- Não altere o AppId nas próximas versões.

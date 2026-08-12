@@ -67,9 +67,11 @@
                     <TextBox
                         Grid.Column="2"
                         MaxLength="150"
+                        CharacterCasing="Upper"
                         materialDesign:HintAssist.Hint="Cliente"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding Cliente, UpdateSourceTrigger=PropertyChanged}" />
+                        Text="{Binding Cliente, UpdateSourceTrigger=PropertyChanged}"
+                        utils:InputBehavior.Type="SomenteLetras" />
 
                     <TextBox
                         Grid.Column="4"
@@ -112,7 +114,7 @@
                         materialDesign:HintAssist.Hint="Valor da venda"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding ValorVenda, UpdateSourceTrigger=PropertyChanged}"
-                        utils:InputBehavior.Type="Decimal" />
+                        utils:CurrencyInputBehavior.IsEnabled="True" />
 
                     <TextBox
                         Grid.Column="2"

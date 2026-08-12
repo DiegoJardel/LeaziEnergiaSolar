@@ -5,19 +5,26 @@ namespace LeaziEnergiaSolar.Infrastructure.Data;
 
 public class LeaziDbContext : DbContext
 {
-    public LeaziDbContext(DbContextOptions<LeaziDbContext> options)
+    public LeaziDbContext(
+        DbContextOptions<LeaziDbContext> options)
         : base(options)
     {
     }
 
-    public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Usuario> Usuarios =>
+        Set<Usuario>();
 
-    public DbSet<Vendedor> Vendedores => Set<Vendedor>();
+    public DbSet<Vendedor> Vendedores =>
+        Set<Vendedor>();
 
-    public DbSet<Lancamento> Lancamentos => Set<Lancamento>();
+    public DbSet<Lancamento> Lancamentos =>
+        Set<Lancamento>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(
+        ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Usuario>(entity =>
         {
             entity.HasIndex(usuario => usuario.Login)
@@ -57,24 +64,31 @@ public class LeaziDbContext : DbContext
                 .HasMaxLength(150)
                 .IsRequired();
 
-            entity.Property(vendedor => vendedor.PercentualComissao)
+            entity.Property(vendedor =>
+                    vendedor.PercentualComissao)
                 .HasPrecision(5, 2);
         });
 
         modelBuilder.Entity<Lancamento>(entity =>
         {
-            entity.Property(lancamento => lancamento.ValorVenda)
+            entity.Property(lancamento =>
+                    lancamento.ValorVenda)
                 .HasPrecision(18, 2);
 
-            entity.Property(lancamento => lancamento.PercentualComissao)
+            entity.Property(lancamento =>
+                    lancamento.PercentualComissao)
                 .HasPrecision(5, 2);
 
-            entity.Property(lancamento => lancamento.ValorComissao)
+            entity.Property(lancamento =>
+                    lancamento.ValorComissao)
                 .HasPrecision(18, 2);
 
-            entity.HasOne(lancamento => lancamento.Vendedor)
-                .WithMany(vendedor => vendedor.Lancamentos)
-                .HasForeignKey(lancamento => lancamento.VendedorId)
+            entity.HasOne(lancamento =>
+                    lancamento.Vendedor)
+                .WithMany(vendedor =>
+                    vendedor.Lancamentos)
+                .HasForeignKey(lancamento =>
+                    lancamento.VendedorId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }

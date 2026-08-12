@@ -10,6 +10,9 @@ namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
 public partial class VendedoresViewModel : ObservableObject
 {
+    private static readonly CultureInfo CulturaBrasileira =
+        CultureInfo.GetCultureInfo("pt-BR");
+
     private readonly IVendedorService _vendedorService;
 
     [ObservableProperty]
@@ -56,7 +59,8 @@ public partial class VendedoresViewModel : ObservableObject
         ? "Editar vendedor"
         : "Novo vendedor";
 
-    public VendedoresViewModel(IVendedorService vendedorService)
+    public VendedoresViewModel(
+        IVendedorService vendedorService)
     {
         _vendedorService = vendedorService;
     }
@@ -92,7 +96,8 @@ public partial class VendedoresViewModel : ObservableObject
     {
         await ExecutarAsync(async () =>
         {
-            var vendedores = await _vendedorService.ListarAsync(Pesquisa);
+            var vendedores = await _vendedorService.ListarAsync(
+                Pesquisa?.Trim());
 
             Vendedores.Clear();
 
@@ -112,13 +117,41 @@ public partial class VendedoresViewModel : ObservableObject
     [RelayCommand]
     private async Task SalvarAsync()
     {
+        NormalizarFormulario();
+
+        if (!ValidarFormulario())
+        {
+            return;
+        }
+
         if (!decimal.TryParse(
                 PercentualComissao,
                 NumberStyles.Number,
-                CultureInfo.GetCultureInfo("pt-BR"),
+                CulturaBrasileira,
                 out var comissao))
         {
-            ExibirMensagem("Informe um percentual de comissão válido.", true);
+            ExibirMensagem(
+                "Informe um percentual de comissão válido.",
+                true);
+
+            return;
+        }
+
+        if (comissao <= 0)
+        {
+            ExibirMensagem(
+                "O percentual de comissão deve ser maior que zero.",
+                true);
+
+            return;
+        }
+
+        if (comissao > 100)
+        {
+            ExibirMensagem(
+                "O percentual de comissão não pode ser maior que 100%.",
+                true);
+
             return;
         }
 
@@ -136,7 +169,9 @@ public partial class VendedoresViewModel : ObservableObject
                     Ativo = Ativo
                 });
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -144,6 +179,7 @@ public partial class VendedoresViewModel : ObservableObject
             }
 
             LimparFormulario(preservarMensagem: true);
+
             await CarregarListaInternaAsync();
         });
     }
@@ -157,19 +193,21 @@ public partial class VendedoresViewModel : ObservableObject
         }
 
         VendedorId = vendedor.Id;
-        Nome = vendedor.Nome;
+        Nome = NormalizarNome(vendedor.Nome);
         CpfCnpj = MaskHelper.FormatCpfCnpj(vendedor.CpfCnpj);
         Telefone = MaskHelper.FormatPhone(vendedor.Telefone);
-        Email = vendedor.Email;
+        Email = EmailValidator.Normalize(vendedor.Email);
         PercentualComissao = vendedor.PercentualComissao
-            .ToString("N2", CultureInfo.GetCultureInfo("pt-BR"));
+            .ToString("N2", CulturaBrasileira);
         Ativo = vendedor.Ativo;
         VendedorSelecionado = vendedor;
         Mensagem = string.Empty;
+        MensagemEhErro = false;
     }
 
     [RelayCommand]
-    private async Task AlterarStatusAsync(VendedorDto? vendedor)
+    private async Task AlterarStatusAsync(
+        VendedorDto? vendedor)
     {
         if (vendedor is null)
         {
@@ -182,13 +220,18 @@ public partial class VendedoresViewModel : ObservableObject
                 vendedor.Id,
                 !vendedor.Ativo);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
-            if (resultado.Sucesso)
+            if (!resultado.Sucesso)
             {
-                LimparFormulario(preservarMensagem: true);
-                await CarregarListaInternaAsync();
+                return;
             }
+
+            LimparFormulario(preservarMensagem: true);
+
+            await CarregarListaInternaAsync();
         });
     }
 
@@ -206,7 +249,8 @@ public partial class VendedoresViewModel : ObservableObject
 
     private async Task CarregarListaInternaAsync()
     {
-        var vendedores = await _vendedorService.ListarAsync(Pesquisa);
+        var vendedores = await _vendedorService.ListarAsync(
+            Pesquisa?.Trim());
 
         Vendedores.Clear();
 
@@ -216,7 +260,8 @@ public partial class VendedoresViewModel : ObservableObject
         }
     }
 
-    private async Task ExecutarAsync(Func<Task> acao)
+    private async Task ExecutarAsync(
+        Func<Task> acao)
     {
         if (EstaCarregando)
         {
@@ -226,6 +271,7 @@ public partial class VendedoresViewModel : ObservableObject
         try
         {
             EstaCarregando = true;
+
             await acao();
         }
         catch (Exception)
@@ -240,7 +286,131 @@ public partial class VendedoresViewModel : ObservableObject
         }
     }
 
-    private void LimparFormulario(bool preservarMensagem = false)
+    private void NormalizarFormulario()
+    {
+        Nome = NormalizarNome(Nome);
+        CpfCnpj = MaskHelper.FormatCpfCnpj(CpfCnpj);
+        Telefone = MaskHelper.FormatPhone(Telefone);
+        Email = EmailValidator.Normalize(Email);
+        PercentualComissao =
+            PercentualComissao?.Trim() ?? string.Empty;
+    }
+
+    private bool ValidarFormulario()
+    {
+        if (string.IsNullOrWhiteSpace(Nome))
+        {
+            ExibirMensagem(
+                "Informe o nome do vendedor.",
+                true);
+
+            return false;
+        }
+
+        if (Nome.Length < 3)
+        {
+            ExibirMensagem(
+                "O nome do vendedor deve possuir pelo menos 3 caracteres.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(CpfCnpj))
+        {
+            ExibirMensagem(
+                "Informe o CPF ou CNPJ.",
+                true);
+
+            return false;
+        }
+
+        if (!DocumentValidator.IsValidCpfCnpj(CpfCnpj))
+        {
+            ExibirMensagem(
+                "Informe um CPF ou CNPJ válido.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Telefone))
+        {
+            ExibirMensagem(
+                "Informe o telefone.",
+                true);
+
+            return false;
+        }
+
+        if (!TelefoneValido(Telefone))
+        {
+            ExibirMensagem(
+                "Informe um telefone com DDD válido.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ExibirMensagem(
+                "Informe o e-mail.",
+                true);
+
+            return false;
+        }
+
+        if (!EmailValidator.IsValid(Email))
+        {
+            ExibirMensagem(
+                "Informe um e-mail válido.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(PercentualComissao))
+        {
+            ExibirMensagem(
+                "Informe o percentual de comissão.",
+                true);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private static string NormalizarNome(
+        string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var partes = value
+            .Trim()
+            .Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+        return string
+            .Join(' ', partes)
+            .ToUpperInvariant();
+    }
+
+    private static bool TelefoneValido(
+        string? value)
+    {
+        var numbers = MaskHelper.OnlyNumbers(value);
+
+        return numbers.Length is 10 or 11;
+    }
+
+    private void LimparFormulario(
+        bool preservarMensagem = false)
     {
         VendedorId = null;
         Nome = string.Empty;
@@ -258,7 +428,9 @@ public partial class VendedoresViewModel : ObservableObject
         }
     }
 
-    private void ExibirMensagem(string mensagem, bool ehErro)
+    private void ExibirMensagem(
+        string mensagem,
+        bool ehErro)
     {
         Mensagem = mensagem;
         MensagemEhErro = ehErro;

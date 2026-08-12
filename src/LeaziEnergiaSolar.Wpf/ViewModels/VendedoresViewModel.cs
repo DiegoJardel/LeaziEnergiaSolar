@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
@@ -51,13 +52,16 @@ public partial class VendedoresViewModel : ObservableObject
     [ObservableProperty]
     private bool estaCarregando;
 
-    public ObservableCollection<VendedorDto> Vendedores { get; } = new();
+    public ObservableCollection<VendedorDto> Vendedores { get; }
+        = new();
 
-    public bool EstaEditando => VendedorId.HasValue;
+    public bool EstaEditando =>
+        VendedorId.HasValue;
 
-    public string TituloFormulario => EstaEditando
-        ? "Editar vendedor"
-        : "Novo vendedor";
+    public string TituloFormulario =>
+        EstaEditando
+            ? "Editar vendedor"
+            : "Novo vendedor";
 
     public VendedoresViewModel(
         IVendedorService vendedorService)
@@ -65,15 +69,18 @@ public partial class VendedoresViewModel : ObservableObject
         _vendedorService = vendedorService;
     }
 
-    partial void OnVendedorIdChanged(int? value)
+    partial void OnVendedorIdChanged(
+        int? value)
     {
         OnPropertyChanged(nameof(EstaEditando));
         OnPropertyChanged(nameof(TituloFormulario));
     }
 
-    partial void OnCpfCnpjChanged(string value)
+    partial void OnCpfCnpjChanged(
+        string value)
     {
-        var formatado = MaskHelper.FormatCpfCnpj(value);
+        var formatado =
+            MaskHelper.FormatCpfCnpj(value);
 
         if (value != formatado)
         {
@@ -81,9 +88,11 @@ public partial class VendedoresViewModel : ObservableObject
         }
     }
 
-    partial void OnTelefoneChanged(string value)
+    partial void OnTelefoneChanged(
+        string value)
     {
-        var formatado = MaskHelper.FormatPhone(value);
+        var formatado =
+            MaskHelper.FormatPhone(value);
 
         if (value != formatado)
         {
@@ -96,8 +105,9 @@ public partial class VendedoresViewModel : ObservableObject
     {
         await ExecutarAsync(async () =>
         {
-            var vendedores = await _vendedorService.ListarAsync(
-                Pesquisa?.Trim());
+            var vendedores =
+                await _vendedorService.ListarAsync(
+                    Pesquisa?.Trim());
 
             Vendedores.Clear();
 
@@ -157,17 +167,18 @@ public partial class VendedoresViewModel : ObservableObject
 
         await ExecutarAsync(async () =>
         {
-            var resultado = await _vendedorService.SalvarAsync(
-                new SalvarVendedorDto
-                {
-                    Id = VendedorId,
-                    Nome = Nome,
-                    CpfCnpj = CpfCnpj,
-                    Telefone = Telefone,
-                    Email = Email,
-                    PercentualComissao = comissao,
-                    Ativo = Ativo
-                });
+            var resultado =
+                await _vendedorService.SalvarAsync(
+                    new SalvarVendedorDto
+                    {
+                        Id = VendedorId,
+                        Nome = Nome,
+                        CpfCnpj = CpfCnpj,
+                        Telefone = Telefone,
+                        Email = Email,
+                        PercentualComissao = comissao,
+                        Ativo = Ativo
+                    });
 
             ExibirMensagem(
                 resultado.Mensagem,
@@ -178,14 +189,16 @@ public partial class VendedoresViewModel : ObservableObject
                 return;
             }
 
-            LimparFormulario(preservarMensagem: true);
+            LimparFormulario(
+                preservarMensagem: true);
 
             await CarregarListaInternaAsync();
         });
     }
 
     [RelayCommand]
-    private void Editar(VendedorDto? vendedor)
+    private void Editar(
+        VendedorDto? vendedor)
     {
         if (vendedor is null)
         {
@@ -194,11 +207,20 @@ public partial class VendedoresViewModel : ObservableObject
 
         VendedorId = vendedor.Id;
         Nome = NormalizarNome(vendedor.Nome);
-        CpfCnpj = MaskHelper.FormatCpfCnpj(vendedor.CpfCnpj);
-        Telefone = MaskHelper.FormatPhone(vendedor.Telefone);
-        Email = EmailValidator.Normalize(vendedor.Email);
-        PercentualComissao = vendedor.PercentualComissao
-            .ToString("N2", CulturaBrasileira);
+        CpfCnpj =
+            MaskHelper.FormatCpfCnpj(
+                vendedor.CpfCnpj);
+        Telefone =
+            MaskHelper.FormatPhone(
+                vendedor.Telefone);
+        Email =
+            EmailValidator.Normalize(
+                vendedor.Email);
+        PercentualComissao =
+            vendedor.PercentualComissao
+                .ToString(
+                    "N2",
+                    CulturaBrasileira);
         Ativo = vendedor.Ativo;
         VendedorSelecionado = vendedor;
         Mensagem = string.Empty;
@@ -216,9 +238,10 @@ public partial class VendedoresViewModel : ObservableObject
 
         await ExecutarAsync(async () =>
         {
-            var resultado = await _vendedorService.AlterarStatusAsync(
-                vendedor.Id,
-                !vendedor.Ativo);
+            var resultado =
+                await _vendedorService.AlterarStatusAsync(
+                    vendedor.Id,
+                    !vendedor.Ativo);
 
             ExibirMensagem(
                 resultado.Mensagem,
@@ -229,7 +252,55 @@ public partial class VendedoresViewModel : ObservableObject
                 return;
             }
 
-            LimparFormulario(preservarMensagem: true);
+            LimparFormulario(
+                preservarMensagem: true);
+
+            await CarregarListaInternaAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirAsync(
+        VendedorDto? vendedor)
+    {
+        if (vendedor is null)
+        {
+            return;
+        }
+
+        var resposta = MessageBox.Show(
+            $"Deseja realmente excluir o vendedor " +
+            $"\"{vendedor.Nome}\"?" +
+            Environment.NewLine +
+            Environment.NewLine +
+            "Esta operação não poderá ser desfeita.",
+            "Excluir vendedor",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (resposta != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _vendedorService.ExcluirAsync(
+                    vendedor.Id);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            LimparFormulario(
+                preservarMensagem: true);
 
             await CarregarListaInternaAsync();
         });
@@ -249,8 +320,9 @@ public partial class VendedoresViewModel : ObservableObject
 
     private async Task CarregarListaInternaAsync()
     {
-        var vendedores = await _vendedorService.ListarAsync(
-            Pesquisa?.Trim());
+        var vendedores =
+            await _vendedorService.ListarAsync(
+                Pesquisa?.Trim());
 
         Vendedores.Clear();
 
@@ -289,11 +361,15 @@ public partial class VendedoresViewModel : ObservableObject
     private void NormalizarFormulario()
     {
         Nome = NormalizarNome(Nome);
-        CpfCnpj = MaskHelper.FormatCpfCnpj(CpfCnpj);
-        Telefone = MaskHelper.FormatPhone(Telefone);
-        Email = EmailValidator.Normalize(Email);
+        CpfCnpj =
+            MaskHelper.FormatCpfCnpj(CpfCnpj);
+        Telefone =
+            MaskHelper.FormatPhone(Telefone);
+        Email =
+            EmailValidator.Normalize(Email);
         PercentualComissao =
-            PercentualComissao?.Trim() ?? string.Empty;
+            PercentualComissao?.Trim()
+            ?? string.Empty;
     }
 
     private bool ValidarFormulario()
@@ -325,7 +401,8 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (!DocumentValidator.IsValidCpfCnpj(CpfCnpj))
+        if (!DocumentValidator.IsValidCpfCnpj(
+                CpfCnpj))
         {
             ExibirMensagem(
                 "Informe um CPF ou CNPJ válido.",
@@ -370,7 +447,8 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(PercentualComissao))
+        if (string.IsNullOrWhiteSpace(
+                PercentualComissao))
         {
             ExibirMensagem(
                 "Informe o percentual de comissão.",
@@ -397,14 +475,17 @@ public partial class VendedoresViewModel : ObservableObject
                 StringSplitOptions.RemoveEmptyEntries);
 
         return string
-            .Join(' ', partes)
+            .Join(
+                ' ',
+                partes)
             .ToUpperInvariant();
     }
 
     private static bool TelefoneValido(
         string? value)
     {
-        var numbers = MaskHelper.OnlyNumbers(value);
+        var numbers =
+            MaskHelper.OnlyNumbers(value);
 
         return numbers.Length is 10 or 11;
     }

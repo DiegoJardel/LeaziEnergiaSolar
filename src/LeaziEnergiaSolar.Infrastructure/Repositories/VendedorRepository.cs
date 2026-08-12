@@ -9,7 +9,8 @@ public sealed class VendedorRepository : IVendedorRepository
 {
     private readonly LeaziDbContext _dbContext;
 
-    public VendedorRepository(LeaziDbContext dbContext)
+    public VendedorRepository(
+        LeaziDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -28,8 +29,10 @@ public sealed class VendedorRepository : IVendedorRepository
 
             consulta = consulta.Where(vendedor =>
                 vendedor.Nome.Contains(termo) ||
-                (vendedor.CpfCnpj != null && vendedor.CpfCnpj.Contains(termo)) ||
-                (vendedor.Email != null && vendedor.Email.Contains(termo)));
+                (vendedor.CpfCnpj != null &&
+                 vendedor.CpfCnpj.Contains(termo)) ||
+                (vendedor.Email != null &&
+                 vendedor.Email.Contains(termo)));
         }
 
         return await consulta
@@ -54,9 +57,23 @@ public sealed class VendedorRepository : IVendedorRepository
         CancellationToken cancellationToken = default)
     {
         return _dbContext.Vendedores.AnyAsync(
-            vendedor => vendedor.CpfCnpj == cpfCnpj &&
-                         (!ignorarId.HasValue || vendedor.Id != ignorarId.Value),
+            vendedor =>
+                vendedor.CpfCnpj == cpfCnpj &&
+                (!ignorarId.HasValue ||
+                 vendedor.Id != ignorarId.Value),
             cancellationToken);
+    }
+
+    public Task<bool> PossuiLancamentosAsync(
+        int vendedorId,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Lancamentos
+            .AsNoTracking()
+            .AnyAsync(
+                lancamento =>
+                    lancamento.VendedorId == vendedorId,
+                cancellationToken);
     }
 
     public async Task AdicionarAsync(
@@ -67,7 +84,8 @@ public sealed class VendedorRepository : IVendedorRepository
             vendedor,
             cancellationToken);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 
     public async Task AtualizarAsync(
@@ -75,6 +93,18 @@ public sealed class VendedorRepository : IVendedorRepository
         CancellationToken cancellationToken = default)
     {
         _dbContext.Vendedores.Update(vendedor);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    public async Task ExcluirAsync(
+        Vendedor vendedor,
+        CancellationToken cancellationToken = default)
+    {
+        _dbContext.Vendedores.Remove(vendedor);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 }

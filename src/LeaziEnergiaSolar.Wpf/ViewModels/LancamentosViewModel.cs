@@ -11,6 +11,9 @@ namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
 public partial class LancamentosViewModel : ObservableObject
 {
+    private static readonly CultureInfo CulturaBrasileira =
+        CultureInfo.GetCultureInfo("pt-BR");
+
     private readonly ILancamentoService _lancamentoService;
     private readonly IVendedorService _vendedorService;
 
@@ -30,7 +33,7 @@ public partial class LancamentosViewModel : ObservableObject
     private VendedorDto? vendedorSelecionado;
 
     [ObservableProperty]
-    private string valorVenda = string.Empty;
+    private string valorVenda = "R$ 0,00";
 
     [ObservableProperty]
     private string percentualComissao = "5,00";
@@ -39,7 +42,8 @@ public partial class LancamentosViewModel : ObservableObject
     private string valorComissao = "R$ 0,00";
 
     [ObservableProperty]
-    private StatusLancamento statusSelecionado = StatusLancamento.Pendente;
+    private StatusLancamento statusSelecionado =
+        StatusLancamento.Pendente;
 
     [ObservableProperty]
     private string observacao = string.Empty;
@@ -115,13 +119,14 @@ public partial class LancamentosViewModel : ObservableObject
         AtualizarCalculoComissao();
     }
 
-    partial void OnVendedorSelecionadoChanged(VendedorDto? value)
+    partial void OnVendedorSelecionadoChanged(
+        VendedorDto? value)
     {
         if (!EstaEditando && value is not null)
         {
             PercentualComissao = value.PercentualComissao.ToString(
                 "N2",
-                CultureInfo.GetCultureInfo("pt-BR"));
+                CulturaBrasileira);
         }
     }
 
@@ -156,9 +161,35 @@ public partial class LancamentosViewModel : ObservableObject
     [RelayCommand]
     private async Task SalvarAsync()
     {
-        if (!TentarObterDecimal(ValorVenda, out var valorVendaDecimal))
+        NormalizarFormulario();
+
+        if (!ValidarCamposObrigatorios())
         {
-            ExibirMensagem("Informe um valor de venda válido.", true);
+            return;
+        }
+
+        if (!ValidarDocumentoCliente())
+        {
+            return;
+        }
+
+        if (!TentarObterDecimal(
+                ValorVenda,
+                out var valorVendaDecimal))
+        {
+            ExibirMensagem(
+                "Informe um valor de venda válido.",
+                true);
+
+            return;
+        }
+
+        if (valorVendaDecimal <= 0)
+        {
+            ExibirMensagem(
+                "O valor da venda deve ser maior que zero.",
+                true);
+
             return;
         }
 
@@ -166,7 +197,28 @@ public partial class LancamentosViewModel : ObservableObject
                 PercentualComissao,
                 out var percentualComissaoDecimal))
         {
-            ExibirMensagem("Informe um percentual de comissão válido.", true);
+            ExibirMensagem(
+                "Informe um percentual de comissão válido.",
+                true);
+
+            return;
+        }
+
+        if (percentualComissaoDecimal <= 0)
+        {
+            ExibirMensagem(
+                "O percentual de comissão deve ser maior que zero.",
+                true);
+
+            return;
+        }
+
+        if (percentualComissaoDecimal > 100)
+        {
+            ExibirMensagem(
+                "O percentual de comissão não pode ser maior que 100%.",
+                true);
+
             return;
         }
 
@@ -176,17 +228,19 @@ public partial class LancamentosViewModel : ObservableObject
                 new SalvarLancamentoDto
                 {
                     Id = LancamentoId,
-                    DataVenda = DataVenda ?? default,
+                    DataVenda = DataVenda!.Value,
                     Cliente = Cliente,
                     CpfCnpjCliente = CpfCnpjCliente,
-                    VendedorId = VendedorSelecionado?.Id ?? 0,
+                    VendedorId = VendedorSelecionado!.Id,
                     ValorVenda = valorVendaDecimal,
                     PercentualComissao = percentualComissaoDecimal,
                     Status = StatusSelecionado,
                     Observacao = Observacao
                 });
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -194,12 +248,14 @@ public partial class LancamentosViewModel : ObservableObject
             }
 
             LimparFormulario(preservarMensagem: true);
+
             await CarregarLancamentosAsync();
         });
     }
 
     [RelayCommand]
-    private void Editar(LancamentoDto? lancamento)
+    private void Editar(
+        LancamentoDto? lancamento)
     {
         if (lancamento is null)
         {
@@ -208,24 +264,36 @@ public partial class LancamentosViewModel : ObservableObject
 
         LancamentoId = lancamento.Id;
         DataVenda = lancamento.DataVenda;
-        Cliente = lancamento.Cliente;
-        CpfCnpjCliente = MaskHelper.FormatCpfCnpj(lancamento.CpfCnpjCliente);
+        Cliente = NormalizarNome(lancamento.Cliente);
+
+        CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
+            lancamento.CpfCnpjCliente);
+
         VendedorSelecionado = Vendedores.FirstOrDefault(
             vendedor => vendedor.Id == lancamento.VendedorId);
+
         ValorVenda = lancamento.ValorVenda.ToString(
-            "N2",
-            CultureInfo.GetCultureInfo("pt-BR"));
+            "C2",
+            CulturaBrasileira);
+
         PercentualComissao = lancamento.PercentualComissao.ToString(
             "N2",
-            CultureInfo.GetCultureInfo("pt-BR"));
+            CulturaBrasileira);
+
         StatusSelecionado = lancamento.Status;
-        Observacao = lancamento.Observacao;
+
+        Observacao = lancamento.Observacao?.Trim()
+            ?? string.Empty;
+
         AtualizarCalculoComissao();
+
         Mensagem = string.Empty;
+        MensagemEhErro = false;
     }
 
     [RelayCommand]
-    private async Task AlternarStatusAsync(LancamentoDto? lancamento)
+    private async Task AlternarStatusAsync(
+        LancamentoDto? lancamento)
     {
         if (lancamento is null)
         {
@@ -242,17 +310,22 @@ public partial class LancamentosViewModel : ObservableObject
                 lancamento.Id,
                 novoStatus);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
-            if (resultado.Sucesso)
+            if (!resultado.Sucesso)
             {
-                await CarregarLancamentosAsync();
+                return;
             }
+
+            await CarregarLancamentosAsync();
         });
     }
 
     [RelayCommand]
-    private async Task ExcluirAsync(LancamentoDto? lancamento)
+    private async Task ExcluirAsync(
+        LancamentoDto? lancamento)
     {
         if (lancamento is null)
         {
@@ -261,19 +334,24 @@ public partial class LancamentosViewModel : ObservableObject
 
         await ExecutarAsync(async () =>
         {
-            var resultado = await _lancamentoService.ExcluirAsync(lancamento.Id);
+            var resultado = await _lancamentoService.ExcluirAsync(
+                lancamento.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
-            if (resultado.Sucesso)
+            if (!resultado.Sucesso)
             {
-                if (LancamentoId == lancamento.Id)
-                {
-                    LimparFormulario(preservarMensagem: true);
-                }
-
-                await CarregarLancamentosAsync();
+                return;
             }
+
+            if (LancamentoId == lancamento.Id)
+            {
+                LimparFormulario(preservarMensagem: true);
+            }
+
+            await CarregarLancamentosAsync();
         });
     }
 
@@ -292,11 +370,13 @@ public partial class LancamentosViewModel : ObservableObject
     private async Task CarregarVendedoresAsync()
     {
         var vendedorAtualId = VendedorSelecionado?.Id;
+
         var vendedores = await _vendedorService.ListarAsync();
 
         Vendedores.Clear();
 
-        foreach (var vendedor in vendedores.Where(vendedor => vendedor.Ativo))
+        foreach (var vendedor in vendedores.Where(
+                     vendedor => vendedor.Ativo))
         {
             Vendedores.Add(vendedor);
         }
@@ -313,7 +393,7 @@ public partial class LancamentosViewModel : ObservableObject
         var lancamentos = await _lancamentoService.ListarAsync(
             new FiltroLancamentoDto
             {
-                Pesquisa = Pesquisa,
+                Pesquisa = Pesquisa?.Trim() ?? string.Empty,
                 DataInicial = FiltroDataInicial,
                 DataFinal = FiltroDataFinal,
                 VendedorId = FiltroVendedor?.Id,
@@ -330,31 +410,160 @@ public partial class LancamentosViewModel : ObservableObject
 
     private void AtualizarCalculoComissao()
     {
-        if (!TentarObterDecimal(ValorVenda, out var venda) ||
-            !TentarObterDecimal(PercentualComissao, out var percentual))
+        if (!TentarObterDecimal(
+                ValorVenda,
+                out var venda) ||
+            !TentarObterDecimal(
+                PercentualComissao,
+                out var percentual))
         {
             ValorComissao = "R$ 0,00";
             return;
         }
 
-        var comissao = _lancamentoService.CalcularComissao(venda, percentual);
+        var comissao = _lancamentoService.CalcularComissao(
+            venda,
+            percentual);
+
         ValorComissao = comissao.ToString(
             "C2",
-            CultureInfo.GetCultureInfo("pt-BR"));
+            CulturaBrasileira);
+    }
+
+    private void NormalizarFormulario()
+    {
+        Cliente = NormalizarNome(Cliente);
+
+        CpfCnpjCliente = string.IsNullOrWhiteSpace(CpfCnpjCliente)
+            ? string.Empty
+            : MaskHelper.FormatCpfCnpj(CpfCnpjCliente);
+
+        ValorVenda = ValorVenda?.Trim()
+            ?? "R$ 0,00";
+
+        PercentualComissao = PercentualComissao?.Trim()
+            ?? string.Empty;
+
+        Observacao = Observacao?.Trim()
+            ?? string.Empty;
+    }
+
+    private bool ValidarCamposObrigatorios()
+    {
+        if (!DataVenda.HasValue)
+        {
+            ExibirMensagem(
+                "Informe a data da venda.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Cliente))
+        {
+            ExibirMensagem(
+                "Informe o nome do cliente.",
+                true);
+
+            return false;
+        }
+
+        if (Cliente.Length < 3)
+        {
+            ExibirMensagem(
+                "O nome do cliente deve possuir pelo menos 3 caracteres.",
+                true);
+
+            return false;
+        }
+
+        if (VendedorSelecionado is null)
+        {
+            ExibirMensagem(
+                "Selecione o vendedor.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(ValorVenda))
+        {
+            ExibirMensagem(
+                "Informe o valor da venda.",
+                true);
+
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(PercentualComissao))
+        {
+            ExibirMensagem(
+                "Informe o percentual de comissão.",
+                true);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidarDocumentoCliente()
+    {
+        if (string.IsNullOrWhiteSpace(CpfCnpjCliente))
+        {
+            return true;
+        }
+
+        if (DocumentValidator.IsValidCpfCnpj(CpfCnpjCliente))
+        {
+            return true;
+        }
+
+        ExibirMensagem(
+            "Informe um CPF ou CNPJ válido para o cliente.",
+            true);
+
+        return false;
+    }
+
+    private static string NormalizarNome(
+        string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var partes = value
+            .Trim()
+            .Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+        return string
+            .Join(' ', partes)
+            .ToUpperInvariant();
     }
 
     private static bool TentarObterDecimal(
-        string valor,
+        string? valor,
         out decimal resultado)
     {
+        if (string.IsNullOrWhiteSpace(valor))
+        {
+            resultado = 0m;
+            return false;
+        }
+
         return decimal.TryParse(
             valor,
-            NumberStyles.Number,
-            CultureInfo.GetCultureInfo("pt-BR"),
+            NumberStyles.Currency,
+            CulturaBrasileira,
             out resultado);
     }
 
-    private async Task ExecutarAsync(Func<Task> acao)
+    private async Task ExecutarAsync(
+        Func<Task> acao)
     {
         if (EstaCarregando)
         {
@@ -364,6 +573,7 @@ public partial class LancamentosViewModel : ObservableObject
         try
         {
             EstaCarregando = true;
+
             await acao();
         }
         catch (Exception)
@@ -378,14 +588,15 @@ public partial class LancamentosViewModel : ObservableObject
         }
     }
 
-    private void LimparFormulario(bool preservarMensagem = false)
+    private void LimparFormulario(
+        bool preservarMensagem = false)
     {
         LancamentoId = null;
         DataVenda = DateTime.Today;
         Cliente = string.Empty;
         CpfCnpjCliente = string.Empty;
         VendedorSelecionado = null;
-        ValorVenda = string.Empty;
+        ValorVenda = "R$ 0,00";
         PercentualComissao = "5,00";
         ValorComissao = "R$ 0,00";
         StatusSelecionado = StatusLancamento.Pendente;
@@ -398,7 +609,9 @@ public partial class LancamentosViewModel : ObservableObject
         }
     }
 
-    private void ExibirMensagem(string mensagem, bool ehErro)
+    private void ExibirMensagem(
+        string mensagem,
+        bool ehErro)
     {
         Mensagem = mensagem;
         MensagemEhErro = ehErro;

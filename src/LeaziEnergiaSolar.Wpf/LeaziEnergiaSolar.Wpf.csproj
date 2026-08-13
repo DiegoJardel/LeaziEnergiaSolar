@@ -16,25 +16,28 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference
-			Include="CommunityToolkit.Mvvm"
-			Version="8.3.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 
-		<PackageReference
-			Include="MaterialDesignThemes"
-			Version="5.1.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
 
-		<PackageReference
-			Include="Microsoft.Extensions.DependencyInjection"
-			Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.26" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.26">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.26" />
+
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\LeaziEnergiaSolar.Application\LeaziEnergiaSolar.Application.csproj" />
+		<ProjectReference Include="..\LeaziEnergiaSolar.Application\LeaziEnergiaSolar.Application.csproj" />
 
-		<ProjectReference
-			Include="..\LeaziEnergiaSolar.Infrastructure\LeaziEnergiaSolar.Infrastructure.csproj" />
+		<ProjectReference Include="..\LeaziEnergiaSolar.Infrastructure\LeaziEnergiaSolar.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

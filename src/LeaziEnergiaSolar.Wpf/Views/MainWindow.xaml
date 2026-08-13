@@ -50,6 +50,11 @@
 
                     <Button
                         Click="Navigate_Click"
+                        Content="👤  Clientes"
+                        Tag="Clientes" />
+
+                    <Button
+                        Click="Navigate_Click"
                         Content="$  Lançamentos"
                         Tag="Lancamentos" />
 

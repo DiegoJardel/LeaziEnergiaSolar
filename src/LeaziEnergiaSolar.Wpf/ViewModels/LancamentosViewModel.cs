@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,6 +8,8 @@ using LeaziEnergiaSolar.Application.Interfaces;
 using LeaziEnergiaSolar.Domain.Enums;
 using LeaziEnergiaSolar.Wpf.Services;
 using LeaziEnergiaSolar.Wpf.Utils;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -102,10 +105,17 @@ public partial class LancamentosViewModel : ObservableObject
         IClienteService clienteService,
         IUsuarioSessaoService sessaoService)
     {
-        _lancamentoService = lancamentoService;
-        _vendedorService = vendedorService;
-        _clienteService = clienteService;
-        _sessaoService = sessaoService;
+        _lancamentoService = lancamentoService
+            ?? throw new ArgumentNullException(nameof(lancamentoService));
+
+        _vendedorService = vendedorService
+            ?? throw new ArgumentNullException(nameof(vendedorService));
+
+        _clienteService = clienteService
+            ?? throw new ArgumentNullException(nameof(clienteService));
+
+        _sessaoService = sessaoService
+            ?? throw new ArgumentNullException(nameof(sessaoService));
     }
 
     partial void OnLancamentoIdChanged(int? value)
@@ -123,6 +133,7 @@ public partial class LancamentosViewModel : ObservableObject
         }
 
         Cliente = value.NomeRazaoSocial;
+
         CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
             value.CpfCnpj);
     }
@@ -150,7 +161,8 @@ public partial class LancamentosViewModel : ObservableObject
     partial void OnVendedorSelecionadoChanged(
         VendedorDto? value)
     {
-        if (!EstaEditando && value is not null)
+        if (!EstaEditando &&
+            value is not null)
         {
             PercentualComissao = value.PercentualComissao.ToString(
                 "N2",
@@ -161,18 +173,22 @@ public partial class LancamentosViewModel : ObservableObject
     [RelayCommand]
     private async Task CarregarAsync()
     {
-        await ExecutarAsync(async () =>
-        {
-            await CarregarVendedoresAsync();
-            await CarregarClientesAsync();
-            await CarregarLancamentosAsync();
-        });
+        await ExecutarAsync(
+            async () =>
+            {
+                await CarregarVendedoresAsync();
+                await CarregarClientesAsync();
+                await CarregarLancamentosAsync();
+            },
+            "carregar os lançamentos");
     }
 
     [RelayCommand]
     private async Task FiltrarAsync()
     {
-        await ExecutarAsync(CarregarLancamentosAsync);
+        await ExecutarAsync(
+            CarregarLancamentosAsync,
+            "filtrar os lançamentos");
     }
 
     [RelayCommand]
@@ -184,7 +200,9 @@ public partial class LancamentosViewModel : ObservableObject
         FiltroVendedor = null;
         FiltroStatus = null;
 
-        await ExecutarAsync(CarregarLancamentosAsync);
+        await ExecutarAsync(
+            CarregarLancamentosAsync,
+            "limpar os filtros");
     }
 
     [RelayCommand]
@@ -251,37 +269,78 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        await ExecutarAsync(async () =>
+        var usuarioId = UsuarioIdResponsavel
+            ?? _sessaoService.UsuarioAtual?.Id;
+
+        if (!usuarioId.HasValue ||
+            usuarioId.Value <= 0)
         {
-            var resultado = await _lancamentoService.SalvarAsync(
-                new SalvarLancamentoDto
-                {
-                    Id = LancamentoId,
-                    DataVenda = DataVenda!.Value,
-                    Cliente = Cliente,
-                    CpfCnpjCliente = CpfCnpjCliente,
-                    ClienteId = ClienteSelecionado?.Id,
-                    UsuarioId = UsuarioIdResponsavel ?? _sessaoService.UsuarioAtual?.Id,
-                    VendedorId = VendedorSelecionado!.Id,
-                    ValorVenda = valorVendaDecimal,
-                    PercentualComissao = percentualComissaoDecimal,
-                    Status = StatusSelecionado,
-                    Observacao = Observacao
-                });
-
             ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+                "Não foi possível identificar o usuário responsável pelo lançamento. " +
+                "Saia do sistema, entre novamente e tente salvar.",
+                true);
 
-            if (!resultado.Sucesso)
+            return;
+        }
+
+        var vendedorId = VendedorSelecionado?.Id;
+
+        if (!vendedorId.HasValue ||
+            vendedorId.Value <= 0)
+        {
+            ExibirMensagem(
+                "O vendedor selecionado não possui um identificador válido.",
+                true);
+
+            return;
+        }
+
+        var clienteId = ClienteSelecionado?.Id;
+
+        if (clienteId.HasValue &&
+            clienteId.Value <= 0)
+        {
+            ExibirMensagem(
+                "O cliente selecionado não possui um identificador válido.",
+                true);
+
+            return;
+        }
+
+        var dto = new SalvarLancamentoDto
+        {
+            Id = LancamentoId,
+            DataVenda = DataVenda!.Value,
+            Cliente = Cliente,
+            CpfCnpjCliente = CpfCnpjCliente,
+            ClienteId = clienteId,
+            UsuarioId = usuarioId.Value,
+            VendedorId = vendedorId.Value,
+            ValorVenda = valorVendaDecimal,
+            PercentualComissao = percentualComissaoDecimal,
+            Status = StatusSelecionado,
+            Observacao = Observacao
+        };
+
+        await ExecutarAsync(
+            async () =>
             {
-                return;
-            }
+                var resultado = await _lancamentoService.SalvarAsync(dto);
 
-            LimparFormulario(preservarMensagem: true);
+                ExibirMensagem(
+                    resultado.Mensagem,
+                    !resultado.Sucesso);
 
-            await CarregarLancamentosAsync();
-        });
+                if (!resultado.Sucesso)
+                {
+                    return;
+                }
+
+                LimparFormulario(preservarMensagem: true);
+
+                await CarregarLancamentosAsync();
+            },
+            "salvar o lançamento");
     }
 
     [RelayCommand]
@@ -296,6 +355,7 @@ public partial class LancamentosViewModel : ObservableObject
         LancamentoId = lancamento.Id;
         UsuarioIdResponsavel = lancamento.UsuarioId;
         DataVenda = lancamento.DataVenda;
+
         ClienteSelecionado = lancamento.ClienteId.HasValue
             ? Clientes.FirstOrDefault(
                 cliente => cliente.Id == lancamento.ClienteId.Value)
@@ -341,23 +401,25 @@ public partial class LancamentosViewModel : ObservableObject
             ? StatusLancamento.Pendente
             : StatusLancamento.Pago;
 
-        await ExecutarAsync(async () =>
-        {
-            var resultado = await _lancamentoService.AlterarStatusAsync(
-                lancamento.Id,
-                novoStatus);
-
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
-
-            if (!resultado.Sucesso)
+        await ExecutarAsync(
+            async () =>
             {
-                return;
-            }
+                var resultado = await _lancamentoService.AlterarStatusAsync(
+                    lancamento.Id,
+                    novoStatus);
 
-            await CarregarLancamentosAsync();
-        });
+                ExibirMensagem(
+                    resultado.Mensagem,
+                    !resultado.Sucesso);
+
+                if (!resultado.Sucesso)
+                {
+                    return;
+                }
+
+                await CarregarLancamentosAsync();
+            },
+            "alterar o status do lançamento");
     }
 
     [RelayCommand]
@@ -369,27 +431,29 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        await ExecutarAsync(async () =>
-        {
-            var resultado = await _lancamentoService.ExcluirAsync(
-                lancamento.Id);
-
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
-
-            if (!resultado.Sucesso)
+        await ExecutarAsync(
+            async () =>
             {
-                return;
-            }
+                var resultado = await _lancamentoService.ExcluirAsync(
+                    lancamento.Id);
 
-            if (LancamentoId == lancamento.Id)
-            {
-                LimparFormulario(preservarMensagem: true);
-            }
+                ExibirMensagem(
+                    resultado.Mensagem,
+                    !resultado.Sucesso);
 
-            await CarregarLancamentosAsync();
-        });
+                if (!resultado.Sucesso)
+                {
+                    return;
+                }
+
+                if (LancamentoId == lancamento.Id)
+                {
+                    LimparFormulario(preservarMensagem: true);
+                }
+
+                await CarregarLancamentosAsync();
+            },
+            "excluir o lançamento");
     }
 
     [RelayCommand]
@@ -476,6 +540,15 @@ public partial class LancamentosViewModel : ObservableObject
                 out var percentual))
         {
             ValorComissao = "R$ 0,00";
+
+            return;
+        }
+
+        if (venda <= 0 ||
+            percentual <= 0)
+        {
+            ValorComissao = "R$ 0,00";
+
             return;
         }
 
@@ -610,6 +683,7 @@ public partial class LancamentosViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(valor))
         {
             resultado = 0m;
+
             return false;
         }
 
@@ -621,7 +695,8 @@ public partial class LancamentosViewModel : ObservableObject
     }
 
     private async Task ExecutarAsync(
-        Func<Task> acao)
+        Func<Task> acao,
+        string descricaoOperacao)
     {
         if (EstaCarregando)
         {
@@ -634,16 +709,178 @@ public partial class LancamentosViewModel : ObservableObject
 
             await acao();
         }
-        catch (Exception)
+        catch (DbUpdateException ex)
         {
+            RegistrarExcecao(
+                descricaoOperacao,
+                ex);
+
             ExibirMensagem(
-                "Não foi possível concluir a operação. Tente novamente.",
+                ObterMensagemBancoDados(ex),
+                true);
+        }
+        catch (SqliteException ex)
+        {
+            RegistrarExcecao(
+                descricaoOperacao,
+                ex);
+
+            ExibirMensagem(
+                ObterMensagemSqlite(ex),
+                true);
+        }
+        catch (InvalidOperationException ex)
+        {
+            RegistrarExcecao(
+                descricaoOperacao,
+                ex);
+
+            ExibirMensagem(
+                $"Não foi possível {descricaoOperacao}: {ex.Message}",
+                true);
+        }
+        catch (Exception ex)
+        {
+            RegistrarExcecao(
+                descricaoOperacao,
+                ex);
+
+            var mensagemRaiz = ex
+                .GetBaseException()
+                .Message;
+
+            ExibirMensagem(
+                $"Não foi possível {descricaoOperacao}. " +
+                $"Detalhes: {mensagemRaiz}",
                 true);
         }
         finally
         {
             EstaCarregando = false;
         }
+    }
+
+    private static string ObterMensagemBancoDados(
+        DbUpdateException exception)
+    {
+        var mensagemRaiz = exception
+            .GetBaseException()
+            .Message;
+
+        if (ContemTexto(
+                mensagemRaiz,
+                "FOREIGN KEY constraint failed"))
+        {
+            return "Não foi possível salvar o lançamento porque um dos vínculos " +
+                   "informados não existe no banco de dados. Verifique o cliente, " +
+                   "o vendedor e o usuário responsável.";
+        }
+
+        if (ContemTexto(
+                mensagemRaiz,
+                "NOT NULL constraint failed"))
+        {
+            return "Não foi possível salvar porque o banco de dados exige um campo " +
+                   $"que não foi informado. Detalhes: {mensagemRaiz}";
+        }
+
+        if (ContemTexto(
+                mensagemRaiz,
+                "UNIQUE constraint failed"))
+        {
+            return "Não foi possível salvar porque já existe um registro com uma " +
+                   $"informação que deve ser única. Detalhes: {mensagemRaiz}";
+        }
+
+        if (ContemTexto(
+                mensagemRaiz,
+                "no column named") ||
+            ContemTexto(
+                mensagemRaiz,
+                "no such column") ||
+            ContemTexto(
+                mensagemRaiz,
+                "has no column named"))
+        {
+            return "A estrutura do banco de dados está desatualizada. " +
+                   "Crie ou aplique a migration mais recente. " +
+                   $"Detalhes: {mensagemRaiz}";
+        }
+
+        if (ContemTexto(
+                mensagemRaiz,
+                "no such table"))
+        {
+            return "A tabela necessária não existe no banco de dados. " +
+                   "Verifique se a migration foi criada e aplicada. " +
+                   $"Detalhes: {mensagemRaiz}";
+        }
+
+        return "Não foi possível gravar o lançamento no banco de dados. " +
+               $"Detalhes: {mensagemRaiz}";
+    }
+
+    private static string ObterMensagemSqlite(
+        SqliteException exception)
+    {
+        var mensagem = exception.Message;
+
+        if (ContemTexto(
+                mensagem,
+                "no such table"))
+        {
+            return "A tabela de lançamentos não existe no banco de dados. " +
+                   "Crie e aplique a migration inicial. " +
+                   $"Detalhes: {mensagem}";
+        }
+
+        if (ContemTexto(
+                mensagem,
+                "no such column") ||
+            ContemTexto(
+                mensagem,
+                "has no column named"))
+        {
+            return "A estrutura do banco de dados está diferente do modelo atual. " +
+                   "Crie ou aplique a migration mais recente. " +
+                   $"Detalhes: {mensagem}";
+        }
+
+        if (ContemTexto(
+                mensagem,
+                "FOREIGN KEY constraint failed"))
+        {
+            return "Um dos registros relacionados não foi encontrado no banco. " +
+                   "Verifique o cliente, o vendedor e o usuário responsável.";
+        }
+
+        return $"Erro no banco de dados SQLite: {mensagem}";
+    }
+
+    private static bool ContemTexto(
+        string texto,
+        string valor)
+    {
+        return texto.Contains(
+            valor,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void RegistrarExcecao(
+        string descricaoOperacao,
+        Exception exception)
+    {
+        Debug.WriteLine(
+            "==================================================");
+
+        Debug.WriteLine(
+            $"Erro ao {descricaoOperacao}");
+
+        Debug.WriteLine(
+            exception.ToString());
+
+        Debug.WriteLine(
+            "==================================================");
     }
 
     private void LimparFormulario(

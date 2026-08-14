@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaziEnergiaSolar.Infrastructure.Migrations
 {
     [DbContext(typeof(LeaziDbContext))]
-    [Migration("20260813164626_InitialCreate")]
+    [Migration("20260814183848_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.26");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.30");
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Cliente", b =>
                 {
@@ -176,6 +176,9 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("CpfCnpjCliente")
                         .HasColumnType("TEXT");
 
@@ -192,6 +195,9 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<decimal>("ValorComissao")
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
@@ -204,6 +210,10 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.HasIndex("VendedorId");
 
@@ -333,11 +343,25 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Lancamento", b =>
                 {
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Cliente", "ClienteCadastro")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LeaziEnergiaSolar.Domain.Entities.Vendedor", "Vendedor")
                         .WithMany("Lancamentos")
                         .HasForeignKey("VendedorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ClienteCadastro");
+
+                    b.Navigation("Usuario");
 
                     b.Navigation("Vendedor");
                 });
@@ -351,6 +375,11 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Estado");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Cliente", b =>
+                {
+                    b.Navigation("Lancamentos");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Estado", b =>

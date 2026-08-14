@@ -66,6 +66,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (name == "Clientes")
+        {
+            PageContent.Content = App.Services
+                .GetRequiredService<ClientesView>();
+
+            return;
+        }
+
         if (name == "Lancamentos")
         {
             PageContent.Content = App.Services

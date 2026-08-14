@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
 using LeaziEnergiaSolar.Domain.Enums;
+using LeaziEnergiaSolar.Wpf.Services;
 using LeaziEnergiaSolar.Wpf.Utils;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
@@ -16,6 +17,8 @@ public partial class LancamentosViewModel : ObservableObject
 
     private readonly ILancamentoService _lancamentoService;
     private readonly IVendedorService _vendedorService;
+    private readonly IClienteService _clienteService;
+    private readonly IUsuarioSessaoService _sessaoService;
 
     [ObservableProperty]
     private int? lancamentoId;
@@ -28,6 +31,12 @@ public partial class LancamentosViewModel : ObservableObject
 
     [ObservableProperty]
     private string cpfCnpjCliente = string.Empty;
+
+    [ObservableProperty]
+    private ClienteDto? clienteSelecionado;
+
+    [ObservableProperty]
+    private int? usuarioIdResponsavel;
 
     [ObservableProperty]
     private VendedorDto? vendedorSelecionado;
@@ -76,6 +85,8 @@ public partial class LancamentosViewModel : ObservableObject
 
     public ObservableCollection<VendedorDto> Vendedores { get; } = new();
 
+    public ObservableCollection<ClienteDto> Clientes { get; } = new();
+
     public IReadOnlyList<StatusLancamento> StatusDisponiveis { get; } =
         Enum.GetValues<StatusLancamento>();
 
@@ -87,16 +98,33 @@ public partial class LancamentosViewModel : ObservableObject
 
     public LancamentosViewModel(
         ILancamentoService lancamentoService,
-        IVendedorService vendedorService)
+        IVendedorService vendedorService,
+        IClienteService clienteService,
+        IUsuarioSessaoService sessaoService)
     {
         _lancamentoService = lancamentoService;
         _vendedorService = vendedorService;
+        _clienteService = clienteService;
+        _sessaoService = sessaoService;
     }
 
     partial void OnLancamentoIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EstaEditando));
         OnPropertyChanged(nameof(TituloFormulario));
+    }
+
+    partial void OnClienteSelecionadoChanged(
+        ClienteDto? value)
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        Cliente = value.NomeRazaoSocial;
+        CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
+            value.CpfCnpj);
     }
 
     partial void OnCpfCnpjClienteChanged(string value)
@@ -136,6 +164,7 @@ public partial class LancamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             await CarregarVendedoresAsync();
+            await CarregarClientesAsync();
             await CarregarLancamentosAsync();
         });
     }
@@ -231,6 +260,8 @@ public partial class LancamentosViewModel : ObservableObject
                     DataVenda = DataVenda!.Value,
                     Cliente = Cliente,
                     CpfCnpjCliente = CpfCnpjCliente,
+                    ClienteId = ClienteSelecionado?.Id,
+                    UsuarioId = UsuarioIdResponsavel ?? _sessaoService.UsuarioAtual?.Id,
                     VendedorId = VendedorSelecionado!.Id,
                     ValorVenda = valorVendaDecimal,
                     PercentualComissao = percentualComissaoDecimal,
@@ -263,7 +294,13 @@ public partial class LancamentosViewModel : ObservableObject
         }
 
         LancamentoId = lancamento.Id;
+        UsuarioIdResponsavel = lancamento.UsuarioId;
         DataVenda = lancamento.DataVenda;
+        ClienteSelecionado = lancamento.ClienteId.HasValue
+            ? Clientes.FirstOrDefault(
+                cliente => cliente.Id == lancamento.ClienteId.Value)
+            : null;
+
         Cliente = NormalizarNome(lancamento.Cliente);
 
         CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
@@ -385,6 +422,27 @@ public partial class LancamentosViewModel : ObservableObject
         {
             VendedorSelecionado = Vendedores.FirstOrDefault(
                 vendedor => vendedor.Id == vendedorAtualId.Value);
+        }
+    }
+
+    private async Task CarregarClientesAsync()
+    {
+        var clienteAtualId = ClienteSelecionado?.Id;
+
+        var clientes = await _clienteService.ListarAsync(
+            ativo: true);
+
+        Clientes.Clear();
+
+        foreach (var cliente in clientes)
+        {
+            Clientes.Add(cliente);
+        }
+
+        if (clienteAtualId.HasValue)
+        {
+            ClienteSelecionado = Clientes.FirstOrDefault(
+                cliente => cliente.Id == clienteAtualId.Value);
         }
     }
 
@@ -592,7 +650,9 @@ public partial class LancamentosViewModel : ObservableObject
         bool preservarMensagem = false)
     {
         LancamentoId = null;
+        UsuarioIdResponsavel = null;
         DataVenda = DateTime.Today;
+        ClienteSelecionado = null;
         Cliente = string.Empty;
         CpfCnpjCliente = string.Empty;
         VendedorSelecionado = null;

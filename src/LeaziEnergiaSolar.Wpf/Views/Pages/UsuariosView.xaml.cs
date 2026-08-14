@@ -39,6 +39,32 @@ public partial class UsuariosView : UserControl
         SenhaPasswordBox.Clear();
     }
 
+    private async void Excluir_Click(
+        object sender,
+        RoutedEventArgs eventArgs)
+    {
+        if (sender is not Button button ||
+            button.DataContext is not UsuarioDto usuario)
+        {
+            return;
+        }
+
+        var resposta = MessageBox.Show(
+            $"Deseja excluir o usuário {usuario.Nome}?\n\n" +
+            "A exclusão será bloqueada se houver lançamentos vinculados a este usuário.",
+            "Confirmar exclusão",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (resposta != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await _viewModel.ExcluirCommand.ExecuteAsync(usuario);
+    }
+
     private async void RedefinirSenha_Click(
         object sender,
         RoutedEventArgs eventArgs)

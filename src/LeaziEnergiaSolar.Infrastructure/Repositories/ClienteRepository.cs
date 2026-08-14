@@ -80,6 +80,26 @@ public sealed class ClienteRepository : IClienteRepository
             cancellationToken);
     }
 
+    public Task<bool> PossuiLancamentosAsync(
+        int clienteId,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Lancamentos
+            .AnyAsync(
+                lancamento => lancamento.ClienteId == clienteId,
+                cancellationToken);
+    }
+
+    public async Task ExcluirAsync(
+        Cliente cliente,
+        CancellationToken cancellationToken = default)
+    {
+        _dbContext.Clientes.Remove(cliente);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
+
     public async Task AdicionarAsync(
         Cliente cliente,
         CancellationToken cancellationToken = default)

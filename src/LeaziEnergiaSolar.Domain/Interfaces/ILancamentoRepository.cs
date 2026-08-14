@@ -1,4 +1,4 @@
-﻿using LeaziEnergiaSolar.Domain.Entities;
+using LeaziEnergiaSolar.Domain.Entities;
 using LeaziEnergiaSolar.Domain.Enums;
 
 namespace LeaziEnergiaSolar.Domain.Interfaces;
@@ -15,6 +15,10 @@ public interface ILancamentoRepository
 
     Task<Lancamento?> ObterAsync(
         int id,
+        CancellationToken cancellationToken = default);
+
+    Task<int> ContarPorClienteAsync(
+        int clienteId,
         CancellationToken cancellationToken = default);
 
     Task AdicionarAsync(

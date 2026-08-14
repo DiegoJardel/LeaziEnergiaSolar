@@ -64,21 +64,20 @@
                         SelectedDate="{Binding DataVenda}"
                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
-                    <TextBox
+                    <ComboBox
                         Grid.Column="2"
-                        MaxLength="150"
-                        CharacterCasing="Upper"
-                        materialDesign:HintAssist.Hint="Cliente"
-                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding Cliente, UpdateSourceTrigger=PropertyChanged}"
-                        utils:InputBehavior.Type="SomenteLetras" />
+                        DisplayMemberPath="NomeRazaoSocial"
+                        ItemsSource="{Binding Clientes}"
+                        materialDesign:HintAssist.Hint="Cliente cadastrado"
+                        SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
                     <TextBox
                         Grid.Column="4"
-                        MaxLength="18"
-                        materialDesign:HintAssist.Hint="CPF/CNPJ do cliente (opcional)"
+                        IsReadOnly="True"
+                        materialDesign:HintAssist.Hint="CPF/CNPJ do cliente"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding CpfCnpjCliente, UpdateSourceTrigger=PropertyChanged}" />
+                        Text="{Binding CpfCnpjCliente}" />
 
                     <ComboBox
                         Grid.Column="6"

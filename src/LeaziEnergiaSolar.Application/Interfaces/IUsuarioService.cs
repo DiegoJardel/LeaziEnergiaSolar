@@ -24,4 +24,9 @@ public interface IUsuarioService
         int usuarioLogadoId,
         RedefinirSenhaDto redefinicao,
         CancellationToken cancellationToken = default);
+
+    Task<ResultadoOperacaoDto> ExcluirAsync(
+        int usuarioLogadoId,
+        int usuarioId,
+        CancellationToken cancellationToken = default);
 }

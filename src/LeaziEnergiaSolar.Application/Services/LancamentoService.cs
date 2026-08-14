@@ -11,13 +11,19 @@ public sealed class LancamentoService : ILancamentoService
 {
     private readonly ILancamentoRepository _lancamentoRepository;
     private readonly IVendedorRepository _vendedorRepository;
+    private readonly IClienteRepository _clienteRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
 
     public LancamentoService(
         ILancamentoRepository lancamentoRepository,
-        IVendedorRepository vendedorRepository)
+        IVendedorRepository vendedorRepository,
+        IClienteRepository clienteRepository,
+        IUsuarioRepository usuarioRepository)
     {
         _lancamentoRepository = lancamentoRepository;
         _vendedorRepository = vendedorRepository;
+        _clienteRepository = clienteRepository;
+        _usuarioRepository = usuarioRepository;
     }
 
     public async Task<IReadOnlyList<LancamentoDto>> ListarAsync(
@@ -63,6 +69,40 @@ public sealed class LancamentoService : ILancamentoService
         {
             return ResultadoOperacaoDto.Falha(
                 "Não é permitido criar lançamento para vendedor inativo.");
+        }
+
+        if (lancamento.UsuarioId.HasValue)
+        {
+            var usuario = await _usuarioRepository.ObterAsync(
+                lancamento.UsuarioId.Value,
+                cancellationToken);
+
+            if (usuario is null || !usuario.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "O usuário responsável pelo lançamento não está disponível.");
+            }
+        }
+
+        Cliente? clienteCadastro = null;
+
+        if (lancamento.ClienteId.HasValue)
+        {
+            clienteCadastro = await _clienteRepository.ObterAsync(
+                lancamento.ClienteId.Value,
+                cancellationToken);
+
+            if (clienteCadastro is null)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "O cliente selecionado não foi encontrado.");
+            }
+
+            if (!clienteCadastro.Ativo && !lancamento.Id.HasValue)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é permitido criar lançamento para cliente inativo.");
+            }
         }
 
         if (lancamento.Id.HasValue)
@@ -170,6 +210,12 @@ public sealed class LancamentoService : ILancamentoService
         entidade.Cliente = lancamento.Cliente.Trim();
         entidade.CpfCnpjCliente = DocumentoValidator.SomenteNumeros(
             lancamento.CpfCnpjCliente);
+        entidade.ClienteId = lancamento.ClienteId;
+        if (lancamento.UsuarioId.HasValue)
+        {
+            entidade.UsuarioId = lancamento.UsuarioId;
+        }
+
         entidade.VendedorId = lancamento.VendedorId;
         entidade.ValorVenda = lancamento.ValorVenda;
         entidade.PercentualComissao = lancamento.PercentualComissao;
@@ -188,6 +234,8 @@ public sealed class LancamentoService : ILancamentoService
             DataVenda = lancamento.DataVenda,
             Cliente = lancamento.Cliente,
             CpfCnpjCliente = lancamento.CpfCnpjCliente ?? string.Empty,
+            ClienteId = lancamento.ClienteId,
+            UsuarioId = lancamento.UsuarioId,
             VendedorId = lancamento.VendedorId,
             VendedorNome = lancamento.Vendedor.Nome,
             ValorVenda = lancamento.ValorVenda,

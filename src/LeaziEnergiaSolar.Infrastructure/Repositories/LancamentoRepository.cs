@@ -79,6 +79,16 @@ public sealed class LancamentoRepository : ILancamentoRepository
                 cancellationToken);
     }
 
+    public Task<int> ContarPorClienteAsync(
+        int clienteId,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Lancamentos
+            .CountAsync(
+                lancamento => lancamento.ClienteId == clienteId,
+                cancellationToken);
+    }
+
     public async Task AdicionarAsync(
         Lancamento lancamento,
         CancellationToken cancellationToken = default)

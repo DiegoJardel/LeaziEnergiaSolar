@@ -214,10 +214,18 @@
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                         <Button
+                                            Margin="0,0,5,0"
                                             Padding="8,4"
                                             Command="{Binding DataContext.AlterarStatusCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                        <Button
+                                            Padding="8,4"
+                                            Click="Excluir_Click"
+                                            Content="Excluir"
+                                            Foreground="#D92D20"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </StackPanel>
                                 </DataTemplate>

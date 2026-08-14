@@ -18,6 +18,14 @@ public interface IClienteRepository
         int? ignorarId = null,
         CancellationToken cancellationToken = default);
 
+    Task<bool> PossuiLancamentosAsync(
+        int clienteId,
+        CancellationToken cancellationToken = default);
+
+    Task ExcluirAsync(
+        Cliente cliente,
+        CancellationToken cancellationToken = default);
+
     Task AdicionarAsync(
         Cliente cliente,
         CancellationToken cancellationToken = default);

@@ -8,12 +8,13 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.26">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LeaziEnergiaSolar.Domain\LeaziEnergiaSolar.Domain.csproj" />
+    <ProjectReference Include="..\LeaziEnergiaSolar.Application\LeaziEnergiaSolar.Application.csproj" />
   </ItemGroup>
 </Project>

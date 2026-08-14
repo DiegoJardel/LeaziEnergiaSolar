@@ -5,6 +5,7 @@ using LeaziEnergiaSolar.Application.Services;
 using LeaziEnergiaSolar.Domain.Interfaces;
 using LeaziEnergiaSolar.Infrastructure.Data;
 using LeaziEnergiaSolar.Infrastructure.Repositories;
+using LeaziEnergiaSolar.Infrastructure.Services;
 using LeaziEnergiaSolar.Wpf.Services;
 using LeaziEnergiaSolar.Wpf.ViewModels;
 using LeaziEnergiaSolar.Wpf.Views.Pages;
@@ -90,6 +91,14 @@ public partial class App : System.Windows.Application
             VendedorRepository>();
 
         services.AddScoped<
+            IClienteRepository,
+            ClienteRepository>();
+
+        services.AddScoped<
+            ILocalidadeRepository,
+            LocalidadeRepository>();
+
+        services.AddScoped<
             ILancamentoRepository,
             LancamentoRepository>();
 
@@ -104,6 +113,14 @@ public partial class App : System.Windows.Application
         services.AddScoped<
             IVendedorService,
             VendedorService>();
+
+        services.AddScoped<
+            IClienteService,
+            ClienteService>();
+
+        services.AddSingleton<ICepService, ViaCepService>();
+
+        services.AddScoped<IIbgeLocalidadeService, IbgeLocalidadeService>();
 
         services.AddScoped<
             ILancamentoService,
@@ -139,6 +156,7 @@ public partial class App : System.Windows.Application
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<VendedoresViewModel>();
+        services.AddTransient<ClientesViewModel>();
         services.AddTransient<LancamentosViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<ControleMensalViewModel>();
@@ -148,6 +166,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<LoginWindow>();
         services.AddTransient<MainWindow>();
         services.AddTransient<VendedoresView>();
+        services.AddTransient<ClientesView>();
         services.AddTransient<LancamentosView>();
         services.AddTransient<DashboardView>();
         services.AddTransient<ControleMensalView>();

@@ -12,7 +12,11 @@ public sealed class SalvarLancamentoDto
 
     public string CpfCnpjCliente { get; init; } = string.Empty;
 
+    public int? ClienteId { get; init; }
+
     public int VendedorId { get; init; }
+
+    public int? UsuarioId { get; init; }
 
     public decimal ValorVenda { get; init; }
 

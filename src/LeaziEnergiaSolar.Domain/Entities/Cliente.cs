@@ -57,4 +57,6 @@ public class Cliente
     public DateTime DataCadastro { get; set; } = DateTime.Now;
 
     public DateTime? DataAlteracao { get; set; }
+
+    public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
 }

@@ -226,6 +226,63 @@ public sealed class UsuarioService : IUsuarioService
             "Senha redefinida com sucesso.");
     }
 
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+        int usuarioLogadoId,
+        int usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var administrador = await ValidarAdministradorAsync(
+            usuarioLogadoId,
+            cancellationToken);
+
+        if (usuarioId <= 0)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O usuário informado é inválido.");
+        }
+
+        if (usuarioId == administrador.Id)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O usuário logado não pode excluir a própria conta.");
+        }
+
+        var usuario = await _usuarioRepository.ObterAsync(
+            usuarioId,
+            cancellationToken);
+
+        if (usuario is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O usuário selecionado não foi encontrado.");
+        }
+
+        if (usuario.Perfil == PerfilUsuario.Administrador &&
+            usuario.Ativo &&
+            await _usuarioRepository.ContarAdministradoresAtivosAsync(
+                cancellationToken) <= 1)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O sistema deve possuir pelo menos um administrador ativo.");
+        }
+
+        if (await _usuarioRepository.PossuiLancamentosAsync(
+                usuarioId,
+                cancellationToken))
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Não é possível excluir este usuário porque existem lançamentos vinculados a ele. " +
+                "Os lançamentos precisam ser preservados ou transferidos para outro usuário.");
+        }
+
+        await _usuarioRepository.ExcluirAsync(
+            usuario,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Usuário excluído com sucesso.");
+    }
+
     private async Task<Usuario> ValidarAdministradorAsync(
         int usuarioLogadoId,
         CancellationToken cancellationToken)

@@ -12,9 +12,17 @@ public class Lancamento
 
     public string? CpfCnpjCliente { get; set; }
 
+    public int? ClienteId { get; set; }
+
+    public Cliente? ClienteCadastro { get; set; }
+
     public int VendedorId { get; set; }
 
     public Vendedor Vendedor { get; set; } = null!;
+
+    public int? UsuarioId { get; set; }
+
+    public Usuario? Usuario { get; set; }
 
     public decimal ValorVenda { get; set; }
 

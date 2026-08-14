@@ -205,6 +205,21 @@ public class LeaziDbContext : DbContext
                 .HasForeignKey(lancamento =>
                     lancamento.VendedorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(lancamento =>
+                    lancamento.ClienteCadastro)
+                .WithMany(cliente =>
+                    cliente.Lancamentos)
+                .HasForeignKey(lancamento =>
+                    lancamento.ClienteId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(lancamento =>
+                    lancamento.Usuario)
+                .WithMany()
+                .HasForeignKey(lancamento =>
+                    lancamento.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

@@ -152,6 +152,43 @@ public sealed class ClienteService : IClienteService
                 : "Cliente inativado com sucesso.");
     }
 
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        if (id <= 0)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O cliente informado é inválido.");
+        }
+
+        var cliente = await _clienteRepository.ObterAsync(
+            id,
+            cancellationToken);
+
+        if (cliente is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O cliente selecionado não foi encontrado.");
+        }
+
+        if (await _clienteRepository.PossuiLancamentosAsync(
+                id,
+                cancellationToken))
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Não é possível excluir este cliente porque existem lançamentos vinculados a ele. " +
+                "Exclua ou desvincule os lançamentos antes de excluir o cadastro.");
+        }
+
+        await _clienteRepository.ExcluirAsync(
+            cliente,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Cliente excluído com sucesso.");
+    }
+
     private static SalvarClienteDto Normalizar(
         SalvarClienteDto cliente)
     {

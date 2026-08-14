@@ -12,6 +12,10 @@ public sealed class LancamentoDto
 
     public string CpfCnpjCliente { get; init; } = string.Empty;
 
+    public int? ClienteId { get; init; }
+
+    public int? UsuarioId { get; init; }
+
     public int VendedorId { get; init; }
 
     public string VendedorNome { get; init; } = string.Empty;

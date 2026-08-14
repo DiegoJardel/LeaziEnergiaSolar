@@ -169,6 +169,39 @@ public partial class UsuariosViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ExcluirAsync(
+        UsuarioDto? usuario)
+    {
+        if (usuario is null)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado = await _usuarioService.ExcluirAsync(
+                ObterUsuarioLogadoId(),
+                usuario.Id);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (UsuarioId == usuario.Id)
+            {
+                LimparFormulario(preservarMensagem: true);
+            }
+
+            await CarregarListaAsync();
+        });
+    }
+
+    [RelayCommand]
     private void Novo()
     {
         LimparFormulario();

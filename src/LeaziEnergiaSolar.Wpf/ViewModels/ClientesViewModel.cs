@@ -595,6 +595,38 @@ public partial class ClientesViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ExcluirAsync(
+        ClienteDto? cliente)
+    {
+        if (cliente is null)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado = await _clienteService.ExcluirAsync(
+                cliente.Id);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (ClienteId == cliente.Id)
+            {
+                LimparFormulario(preservarMensagem: true);
+            }
+
+            await CarregarListaInternaAsync();
+        });
+    }
+
+    [RelayCommand]
     private void Novo()
     {
         LimparFormulario();

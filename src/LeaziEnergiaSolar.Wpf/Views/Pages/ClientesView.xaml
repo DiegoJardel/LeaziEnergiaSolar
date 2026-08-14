@@ -342,9 +342,17 @@
                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                         <Button Padding="10,5"
+                                                Margin="0,0,6,0"
                                                 Command="{Binding DataContext.AlterarStatusCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                 CommandParameter="{Binding}"
                                                 Content="Ativar/Inativar"
+                                                IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                        <Button Padding="10,5"
+                                                Click="Excluir_Click"
+                                                Content="Excluir"
+                                                Foreground="#D92D20"
                                                 IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </StackPanel>

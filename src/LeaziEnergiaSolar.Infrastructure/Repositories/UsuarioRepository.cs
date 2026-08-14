@@ -78,6 +78,26 @@ public sealed class UsuarioRepository : IUsuarioRepository
             cancellationToken);
     }
 
+    public Task<bool> PossuiLancamentosAsync(
+        int usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Lancamentos
+            .AnyAsync(
+                lancamento => lancamento.UsuarioId == usuarioId,
+                cancellationToken);
+    }
+
+    public async Task ExcluirAsync(
+        Usuario usuario,
+        CancellationToken cancellationToken = default)
+    {
+        _dbContext.Usuarios.Remove(usuario);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
+
     public async Task AdicionarAsync(
         Usuario usuario,
         CancellationToken cancellationToken = default)

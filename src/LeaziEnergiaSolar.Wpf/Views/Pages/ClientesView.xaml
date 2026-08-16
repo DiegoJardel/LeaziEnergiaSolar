@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:utils="clr-namespace:LeaziEnergiaSolar.Wpf.Utils"
              d:DesignHeight="720"
              d:DesignWidth="1180"
              Loaded="ClientesView_Loaded"
@@ -32,6 +33,8 @@
                                Foreground="#667085"
                                Text="Cadastro básico, contato e endereço do cliente." />
 
+                    <TextBlock Margin="0,0,0,14" Foreground="#C62828" FontSize="11" Text="Campos marcados com * são obrigatórios." />
+
                     <TextBlock Margin="0,0,0,6"
                                FontWeight="SemiBold"
                                Text="DADOS BÁSICOS" />
@@ -39,12 +42,15 @@
                     <ComboBox Margin="0,0,0,12"
                               ItemsSource="{Binding TiposPessoa}"
                               SelectedItem="{Binding TipoPessoa, Mode=TwoWay}"
+                              materialDesign:HintAssist.Hint="Tipo de pessoa"
+                              utils:RequiredFieldHelper.IsRequired="True"
                               Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
                     <TextBox Margin="0,0,0,12"
                              MaxLength="150"
                              CharacterCasing="Upper"
-                             materialDesign:HintAssist.Hint="Nome ou razão social *"
+                             materialDesign:HintAssist.Hint="Nome ou razão social"
+                             utils:RequiredFieldHelper.IsRequired="True"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Text="{Binding NomeRazaoSocial, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -57,7 +63,8 @@
 
                     <TextBox Margin="0,0,0,12"
                              MaxLength="18"
-                             materialDesign:HintAssist.Hint="CPF ou CNPJ *"
+                             materialDesign:HintAssist.Hint="CPF ou CNPJ"
+                             utils:RequiredFieldHelper.IsRequired="True"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Text="{Binding CpfCnpj, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -67,9 +74,6 @@
                              materialDesign:HintAssist.Hint="RG ou inscrição estadual"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Text="{Binding RgInscricaoEstadual, UpdateSourceTrigger=PropertyChanged}" />
-
-                    <DatePicker Margin="0,0,0,18"
-                                SelectedDate="{Binding DataNascimentoAbertura, Mode=TwoWay}" />
 
                     <TextBlock Margin="0,0,0,6"
                                FontWeight="SemiBold"
@@ -178,6 +182,7 @@
                                   ItemsSource="{Binding Municipios}"
                                   MaxDropDownHeight="300"
                                   materialDesign:HintAssist.Hint="Município"
+                                  utils:RequiredFieldHelper.IsRequired="True"
                                   SelectedItem="{Binding MunicipioSelecionado, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
@@ -187,6 +192,7 @@
                                   ItemsSource="{Binding Estados}"
                                   MaxDropDownHeight="300"
                                   materialDesign:HintAssist.Hint="Estado"
+                                  utils:RequiredFieldHelper.IsRequired="True"
                                   SelectedItem="{Binding EstadoSelecionado, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Style="{StaticResource MaterialDesignOutlinedComboBox}" />
                     </Grid>

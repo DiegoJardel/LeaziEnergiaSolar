@@ -36,11 +36,14 @@
                         Foreground="#667085"
                         Text="Preencha os dados comerciais do vendedor." />
 
+                    <TextBlock Margin="0,0,0,14" Foreground="#C62828" FontSize="11" Text="Campos marcados com * são obrigatórios." />
+
                     <TextBox
                         Margin="0,0,0,16"
                         MaxLength="100"
                         CharacterCasing="Upper"
                         materialDesign:HintAssist.Hint="Nome completo"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}"
                         utils:InputBehavior.Type="SomenteLetras" />
@@ -49,6 +52,7 @@
                         Margin="0,0,0,16"
                         MaxLength="18"
                         materialDesign:HintAssist.Hint="CPF ou CNPJ"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding CpfCnpj, UpdateSourceTrigger=PropertyChanged}"
                         utils:InputBehavior.Type="Livre" />
@@ -57,6 +61,7 @@
                         Margin="0,0,0,16"
                         MaxLength="15"
                         materialDesign:HintAssist.Hint="Telefone com DDD"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding Telefone, UpdateSourceTrigger=PropertyChanged}"
                         utils:InputBehavior.Type="Livre" />
@@ -66,6 +71,7 @@
                         MaxLength="150"
                         CharacterCasing="Lower"
                         materialDesign:HintAssist.Hint="E-mail"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -73,6 +79,7 @@
                         Margin="0,0,0,14"
                         MaxLength="6"
                         materialDesign:HintAssist.Hint="Comissão (%)"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding PercentualComissao, UpdateSourceTrigger=PropertyChanged}"
                         utils:InputBehavior.Type="Decimal" />

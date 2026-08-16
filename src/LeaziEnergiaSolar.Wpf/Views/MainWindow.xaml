@@ -55,6 +55,16 @@
 
                     <Button
                         Click="Navigate_Click"
+                        Content="⚙  Equipamentos"
+                        Tag="Equipamentos" />
+
+                    <Button
+                        Click="Navigate_Click"
+                        Content="🏢  Fornecedores"
+                        Tag="Fornecedores" />
+
+                    <Button
+                        Click="Navigate_Click"
                         Content="$  Lançamentos"
                         Tag="Lancamentos" />
 

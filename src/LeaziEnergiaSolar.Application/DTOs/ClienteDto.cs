@@ -14,8 +14,6 @@ public sealed class ClienteDto
 
     public string RgInscricaoEstadual { get; init; } = string.Empty;
 
-    public DateTime? DataNascimentoAbertura { get; init; }
-
     public string Telefone { get; init; } = string.Empty;
 
     public string WhatsApp { get; init; } = string.Empty;
@@ -51,6 +49,10 @@ public sealed class ClienteDto
     public string CidadeUf { get; init; } = string.Empty;
 
     public bool Ativo { get; init; }
+
+    public DateTime DataCadastro { get; init; }
+
+    public DateTime? DataAtualizacao { get; init; }
 
     public string Status => Ativo ? "Ativo" : "Inativo";
 }

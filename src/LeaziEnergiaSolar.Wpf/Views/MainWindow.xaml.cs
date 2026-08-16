@@ -74,6 +74,22 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (name == "Equipamentos")
+        {
+            PageContent.Content = App.Services
+                .GetRequiredService<EquipamentosView>();
+
+            return;
+        }
+
+        if (name == "Fornecedores")
+        {
+            PageContent.Content = App.Services
+                .GetRequiredService<FornecedoresView>();
+
+            return;
+        }
+
         if (name == "Lancamentos")
         {
             PageContent.Content = App.Services

@@ -29,6 +29,21 @@ public class LeaziDbContext : DbContext
     public DbSet<Lancamento> Lancamentos =>
         Set<Lancamento>();
 
+    public DbSet<CategoriaEquipamento> CategoriasEquipamento =>
+        Set<CategoriaEquipamento>();
+
+    public DbSet<Marca> Marcas =>
+        Set<Marca>();
+
+    public DbSet<UnidadeMedida> UnidadesMedida =>
+        Set<UnidadeMedida>();
+
+    public DbSet<Equipamento> Equipamentos =>
+        Set<Equipamento>();
+
+    public DbSet<Fornecedor> Fornecedores =>
+        Set<Fornecedor>();
+
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
     {
@@ -182,6 +197,75 @@ public class LeaziDbContext : DbContext
             entity.Property(vendedor =>
                     vendedor.PercentualComissao)
                 .HasPrecision(5, 2);
+        });
+
+        modelBuilder.Entity<CategoriaEquipamento>(entity =>
+        {
+            entity.HasIndex(x => x.Descricao).IsUnique();
+            entity.Property(x => x.Descricao).HasMaxLength(100).IsRequired().UseCollation("NOCASE");
+            entity.Property(x => x.Observacao).HasMaxLength(500);
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
+        });
+
+        modelBuilder.Entity<Marca>(entity =>
+        {
+            entity.HasIndex(x => x.Nome).IsUnique();
+            entity.Property(x => x.Nome).HasMaxLength(100).IsRequired().UseCollation("NOCASE");
+            entity.Property(x => x.Observacao).HasMaxLength(500);
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
+        });
+
+        modelBuilder.Entity<UnidadeMedida>(entity =>
+        {
+            entity.HasIndex(x => x.Sigla).IsUnique();
+            entity.Property(x => x.Sigla).HasMaxLength(10).IsRequired().UseCollation("NOCASE");
+            entity.Property(x => x.Descricao).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
+        });
+
+        modelBuilder.Entity<Equipamento>(entity =>
+        {
+            entity.Property(x => x.Descricao).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Modelo).HasMaxLength(100);
+            entity.Property(x => x.ValorCusto).HasPrecision(18, 2);
+            entity.Property(x => x.EstoqueMinimo).HasPrecision(18, 3);
+            entity.Property(x => x.Observacao).HasMaxLength(1000);
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
+
+            entity.HasIndex(x => new { x.Descricao, x.MarcaId, x.Modelo }).IsUnique();
+
+            entity.HasOne(x => x.CategoriaEquipamento)
+                .WithMany(x => x.Equipamentos)
+                .HasForeignKey(x => x.CategoriaEquipamentoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Marca)
+                .WithMany(x => x.Equipamentos)
+                .HasForeignKey(x => x.MarcaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.UnidadeMedida)
+                .WithMany(x => x.Equipamentos)
+                .HasForeignKey(x => x.UnidadeMedidaId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Fornecedor>(entity =>
+        {
+            entity.HasIndex(x => x.CpfCnpj).IsUnique();
+            entity.Property(x => x.NomeRazaoSocial).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.NomeFantasia).HasMaxLength(150);
+            entity.Property(x => x.CpfCnpj).HasMaxLength(14);
+            entity.Property(x => x.Telefone).HasMaxLength(11);
+            entity.Property(x => x.Email).HasMaxLength(150);
+            entity.Property(x => x.ContatoResponsavel).HasMaxLength(150);
+            entity.Property(x => x.Observacao).HasMaxLength(1000);
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
         });
 
         modelBuilder.Entity<Lancamento>(entity =>

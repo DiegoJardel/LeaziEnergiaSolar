@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:utils="clr-namespace:LeaziEnergiaSolar.Wpf.Utils"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DesignHeight="720"
              d:DesignWidth="1180"
@@ -42,11 +43,14 @@
                         Foreground="#667085"
                         Text="Acesso administrativo ao sistema." />
 
+                    <TextBlock Margin="0,0,0,14" Foreground="#C62828" FontSize="11" Text="Campos marcados com * são obrigatórios." />
+
                     <TextBox
                         Margin="0,0,0,16"
                         CharacterCasing="Upper"
                         MaxLength="100"
                         materialDesign:HintAssist.Hint="Nome completo"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -54,6 +58,7 @@
                         Margin="0,0,0,16"
                         MaxLength="50"
                         materialDesign:HintAssist.Hint="Login"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -74,6 +79,7 @@
                         Margin="0,0,0,16"
                         ItemsSource="{Binding PerfisDisponiveis}"
                         materialDesign:HintAssist.Hint="Perfil"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         SelectedItem="{Binding PerfilSelecionado}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 

@@ -16,8 +16,6 @@ public class Cliente
 
     public string? RgInscricaoEstadual { get; set; }
 
-    public DateTime? DataNascimentoAbertura { get; set; }
-
     public string? Telefone { get; set; }
 
     public string? WhatsApp { get; set; }
@@ -56,7 +54,7 @@ public class Cliente
 
     public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-    public DateTime? DataAlteracao { get; set; }
+    public DateTime? DataAtualizacao { get; set; }
 
     public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
 }

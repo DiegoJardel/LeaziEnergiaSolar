@@ -16,8 +16,6 @@ public sealed class SalvarClienteDto
 
     public string RgInscricaoEstadual { get; init; } = string.Empty;
 
-    public DateTime? DataNascimentoAbertura { get; init; }
-
     public string Telefone { get; init; } = string.Empty;
 
     public string WhatsApp { get; init; } = string.Empty;

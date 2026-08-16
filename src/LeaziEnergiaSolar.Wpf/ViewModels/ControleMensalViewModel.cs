@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
+using LeaziEnergiaSolar.Wpf.Utils;
 using LeaziEnergiaSolar.Domain.Enums;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
@@ -56,10 +57,8 @@ public partial class ControleMensalViewModel : ObservableObject
     public IReadOnlyList<MesControleDto> MesesDisponiveis { get; } =
         CriarMesesDisponiveis();
 
-    public IReadOnlyList<int> AnosDisponiveis { get; } = Enumerable
-        .Range(DateTime.Today.Year - 5, 11)
-        .OrderByDescending(ano => ano)
-        .ToList();
+    public IReadOnlyList<int> AnosDisponiveis { get; } =
+        YearFilterHelper.CriarAnosDisponiveis();
 
     public IReadOnlyList<StatusLancamento> StatusDisponiveis { get; } =
         Enum.GetValues<StatusLancamento>();

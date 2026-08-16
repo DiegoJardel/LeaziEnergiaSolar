@@ -38,6 +38,22 @@ public static class MaskHelper
         };
     }
 
+    public static string FormatRg(string? value)
+    {
+        var texto = (value ?? string.Empty).Trim();
+        var numbers = OnlyNumbers(texto);
+
+        // O RG varia por estado e não possui uma máscara nacional única.
+        // Quando o valor é um RG numérico de 9 dígitos, aplicamos o formato
+        // mais comum. Inscrições estaduais e outros formatos permanecem intactos.
+        if (texto.Any(char.IsLetter) || numbers.Length != 9)
+        {
+            return texto;
+        }
+
+        return $"{numbers[..2]}.{numbers[2..5]}.{numbers[5..8]}-{numbers[8]}";
+    }
+
     public static string FormatPhone(string? value)
     {
         var numbers = OnlyNumbers(value);

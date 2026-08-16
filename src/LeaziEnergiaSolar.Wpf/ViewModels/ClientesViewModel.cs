@@ -35,9 +35,6 @@ public partial class ClientesViewModel : ObservableObject
     private string rgInscricaoEstadual = string.Empty;
 
     [ObservableProperty]
-    private DateTime? dataNascimentoAbertura;
-
-    [ObservableProperty]
     private string telefone = string.Empty;
 
     [ObservableProperty]
@@ -221,6 +218,17 @@ public partial class ClientesViewModel : ObservableObject
         if (value != formatado)
         {
             CpfCnpj = formatado;
+        }
+    }
+
+    partial void OnRgInscricaoEstadualChanged(
+        string value)
+    {
+        var formatado = MaskHelper.FormatRg(value);
+
+        if (value != formatado)
+        {
+            RgInscricaoEstadual = formatado;
         }
     }
 
@@ -419,8 +427,6 @@ public partial class ClientesViewModel : ObservableObject
                             CpfCnpj,
                         RgInscricaoEstadual =
                             RgInscricaoEstadual,
-                        DataNascimentoAbertura =
-                            DataNascimentoAbertura,
                         Telefone =
                             Telefone,
                         WhatsApp =
@@ -508,9 +514,6 @@ public partial class ClientesViewModel : ObservableObject
 
             RgInscricaoEstadual =
                 cliente.RgInscricaoEstadual;
-
-            DataNascimentoAbertura =
-                cliente.DataNascimentoAbertura;
 
             Telefone =
                 MaskHelper.FormatPhone(
@@ -978,7 +981,6 @@ public partial class ClientesViewModel : ObservableObject
             NomeFantasia = string.Empty;
             CpfCnpj = string.Empty;
             RgInscricaoEstadual = string.Empty;
-            DataNascimentoAbertura = null;
             Telefone = string.Empty;
             WhatsApp = string.Empty;
             Email = string.Empty;

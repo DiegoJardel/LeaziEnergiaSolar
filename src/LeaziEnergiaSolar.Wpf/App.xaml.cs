@@ -94,6 +94,12 @@ public partial class App : System.Windows.Application
             IClienteRepository,
             ClienteRepository>();
 
+        services.AddScoped<IEquipamentoRepository, EquipamentoRepository>();
+        services.AddScoped<ICategoriaEquipamentoRepository, CategoriaEquipamentoRepository>();
+        services.AddScoped<IMarcaRepository, MarcaRepository>();
+        services.AddScoped<IUnidadeMedidaRepository, UnidadeMedidaRepository>();
+        services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+
         services.AddScoped<
             ILocalidadeRepository,
             LocalidadeRepository>();
@@ -117,6 +123,12 @@ public partial class App : System.Windows.Application
         services.AddScoped<
             IClienteService,
             ClienteService>();
+
+        services.AddScoped<IEquipamentoService, EquipamentoService>();
+        services.AddScoped<ICategoriaEquipamentoService, CategoriaEquipamentoService>();
+        services.AddScoped<IMarcaService, MarcaService>();
+        services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
+        services.AddScoped<IFornecedorService, FornecedorService>();
 
         services.AddSingleton<ICepService, ViaCepService>();
 
@@ -157,6 +169,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<LoginViewModel>();
         services.AddTransient<VendedoresViewModel>();
         services.AddTransient<ClientesViewModel>();
+        services.AddTransient<EquipamentosViewModel>();
+        services.AddTransient<FornecedoresViewModel>();
         services.AddTransient<LancamentosViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<ControleMensalViewModel>();
@@ -167,6 +181,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<MainWindow>();
         services.AddTransient<VendedoresView>();
         services.AddTransient<ClientesView>();
+        services.AddTransient<EquipamentosView>();
+        services.AddTransient<FornecedoresView>();
         services.AddTransient<LancamentosView>();
         services.AddTransient<DashboardView>();
         services.AddTransient<ControleMensalView>();

@@ -52,21 +52,25 @@ public sealed class ClienteService : IClienteService
 
         if (dados.MunicipioId.HasValue)
         {
-            var municipio = await _localidadeRepository.ObterMunicipioPorCodigoIbgeAsync(
-                dados.CodigoIbgeCidade,
-                cancellationToken);
+            var municipio =
+                await _localidadeRepository.ObterMunicipioPorCodigoIbgeAsync(
+                    dados.CodigoIbgeCidade,
+                    cancellationToken);
 
-            if (municipio is null || municipio.Id != dados.MunicipioId.Value)
+            if (municipio is null ||
+                municipio.Id != dados.MunicipioId.Value)
             {
                 return ResultadoOperacaoDto.Falha(
                     "O município selecionado não é válido.");
             }
 
-            var estado = await _localidadeRepository.ObterEstadoPorCodigoIbgeAsync(
-                dados.CodigoIbgeUf,
-                cancellationToken);
+            var estado =
+                await _localidadeRepository.ObterEstadoPorCodigoIbgeAsync(
+                    dados.CodigoIbgeUf,
+                    cancellationToken);
 
-            if (estado is null || estado.Id != municipio.EstadoId)
+            if (estado is null ||
+                estado.Id != municipio.EstadoId)
             {
                 return ResultadoOperacaoDto.Falha(
                     "O município selecionado não pertence à UF informada.");
@@ -97,7 +101,13 @@ public sealed class ClienteService : IClienteService
                     "O cliente selecionado não foi encontrado.");
             }
 
-            AtualizarEntidade(entidade, dados, documento);
+            AtualizarEntidade(
+                entidade,
+                dados,
+                documento);
+
+            entidade.DataAtualizacao = DateTime.Now;
+
             await _clienteRepository.AtualizarAsync(
                 entidade,
                 cancellationToken);
@@ -107,7 +117,12 @@ public sealed class ClienteService : IClienteService
         }
 
         var novoCliente = new Cliente();
-        AtualizarEntidade(novoCliente, dados, documento);
+
+        AtualizarEntidade(
+            novoCliente,
+            dados,
+            documento);
+
         novoCliente.DataCadastro = DateTime.Now;
 
         await _clienteRepository.AdicionarAsync(
@@ -140,7 +155,7 @@ public sealed class ClienteService : IClienteService
         }
 
         cliente.Ativo = ativo;
-        cliente.DataAlteracao = DateTime.Now;
+        cliente.DataAtualizacao = DateTime.Now;
 
         await _clienteRepository.AtualizarAsync(
             cliente,
@@ -172,13 +187,17 @@ public sealed class ClienteService : IClienteService
                 "O cliente selecionado não foi encontrado.");
         }
 
-        if (await _clienteRepository.PossuiLancamentosAsync(
+        var possuiLancamentos =
+            await _clienteRepository.PossuiLancamentosAsync(
                 id,
-                cancellationToken))
+                cancellationToken);
+
+        if (possuiLancamentos)
         {
             return ResultadoOperacaoDto.Falha(
-                "Não é possível excluir este cliente porque existem lançamentos vinculados a ele. " +
-                "Exclua ou desvincule os lançamentos antes de excluir o cadastro.");
+                "Não é possível excluir este cliente porque existem " +
+                "lançamentos vinculados a ele. Exclua ou desvincule " +
+                "os lançamentos antes de excluir o cadastro.");
         }
 
         await _clienteRepository.ExcluirAsync(
@@ -196,29 +215,67 @@ public sealed class ClienteService : IClienteService
         {
             Id = cliente.Id,
             TipoPessoa = cliente.TipoPessoa,
-            NomeRazaoSocial = NormalizarTexto(cliente.NomeRazaoSocial),
-            NomeFantasia = NormalizarTexto(cliente.NomeFantasia),
-            CpfCnpj = DocumentoValidator.SomenteNumeros(cliente.CpfCnpj),
-            RgInscricaoEstadual = NormalizarTexto(cliente.RgInscricaoEstadual),
-            DataNascimentoAbertura = cliente.DataNascimentoAbertura,
-            Telefone = DocumentoValidator.SomenteNumeros(cliente.Telefone),
-            WhatsApp = DocumentoValidator.SomenteNumeros(cliente.WhatsApp),
+
+            NomeRazaoSocial = NormalizarTexto(
+                cliente.NomeRazaoSocial),
+
+            NomeFantasia = NormalizarTexto(
+                cliente.NomeFantasia),
+
+            CpfCnpj = DocumentoValidator.SomenteNumeros(
+                cliente.CpfCnpj),
+
+            RgInscricaoEstadual = NormalizarTexto(
+                cliente.RgInscricaoEstadual),
+
+            Telefone = DocumentoValidator.SomenteNumeros(
+                cliente.Telefone),
+
+            WhatsApp = DocumentoValidator.SomenteNumeros(
+                cliente.WhatsApp),
+
             Email = string.IsNullOrWhiteSpace(cliente.Email)
                 ? string.Empty
                 : cliente.Email.Trim().ToLowerInvariant(),
-            Cep = DocumentoValidator.SomenteNumeros(cliente.Cep),
-            Logradouro = NormalizarTexto(cliente.Logradouro),
-            Numero = NormalizarTexto(cliente.Numero),
-            Complemento = NormalizarTexto(cliente.Complemento),
-            Bairro = NormalizarTexto(cliente.Bairro),
-            Cidade = NormalizarTexto(cliente.Cidade),
-            CodigoIbgeCidade = DocumentoValidator.SomenteNumeros(cliente.CodigoIbgeCidade),
-            Estado = NormalizarTexto(cliente.Estado),
-            SiglaUf = NormalizarTexto(cliente.SiglaUf),
-            CodigoIbgeUf = DocumentoValidator.SomenteNumeros(cliente.CodigoIbgeUf),
+
+            Cep = DocumentoValidator.SomenteNumeros(
+                cliente.Cep),
+
+            Logradouro = NormalizarTexto(
+                cliente.Logradouro),
+
+            Numero = NormalizarTexto(
+                cliente.Numero),
+
+            Complemento = NormalizarTexto(
+                cliente.Complemento),
+
+            Bairro = NormalizarTexto(
+                cliente.Bairro),
+
+            Cidade = NormalizarTexto(
+                cliente.Cidade),
+
+            CodigoIbgeCidade = DocumentoValidator.SomenteNumeros(
+                cliente.CodigoIbgeCidade),
+
+            Estado = NormalizarTexto(
+                cliente.Estado),
+
+            SiglaUf = NormalizarTexto(
+                cliente.SiglaUf),
+
+            CodigoIbgeUf = DocumentoValidator.SomenteNumeros(
+                cliente.CodigoIbgeUf),
+
             MunicipioId = cliente.MunicipioId,
-            PontoReferencia = NormalizarTexto(cliente.PontoReferencia),
-            Observacao = NormalizarTexto(cliente.Observacao),
+
+            PontoReferencia = NormalizarTexto(
+                cliente.PontoReferencia),
+
+            Observacao = NormalizarTexto(
+                cliente.Observacao),
+
             Ativo = cliente.Ativo
         };
     }
@@ -232,8 +289,10 @@ public sealed class ClienteService : IClienteService
         entidade.NomeRazaoSocial = dados.NomeRazaoSocial;
         entidade.NomeFantasia = ValorNulo(dados.NomeFantasia);
         entidade.CpfCnpj = documento;
-        entidade.RgInscricaoEstadual = ValorNulo(dados.RgInscricaoEstadual);
-        entidade.DataNascimentoAbertura = dados.DataNascimentoAbertura;
+
+        entidade.RgInscricaoEstadual =
+            ValorNulo(dados.RgInscricaoEstadual);
+
         entidade.Telefone = ValorNulo(dados.Telefone);
         entidade.WhatsApp = ValorNulo(dados.WhatsApp);
         entidade.Email = ValorNulo(dados.Email);
@@ -243,63 +302,105 @@ public sealed class ClienteService : IClienteService
         entidade.Complemento = ValorNulo(dados.Complemento);
         entidade.Bairro = ValorNulo(dados.Bairro);
         entidade.Cidade = ValorNulo(dados.Cidade);
-        entidade.CodigoIbgeCidade = ValorNulo(dados.CodigoIbgeCidade);
+
+        entidade.CodigoIbgeCidade =
+            ValorNulo(dados.CodigoIbgeCidade);
+
         entidade.Estado = ValorNulo(dados.Estado);
         entidade.SiglaUf = ValorNulo(dados.SiglaUf);
-        entidade.CodigoIbgeUf = ValorNulo(dados.CodigoIbgeUf);
+
+        entidade.CodigoIbgeUf =
+            ValorNulo(dados.CodigoIbgeUf);
+
         entidade.MunicipioId = dados.MunicipioId;
-        entidade.PontoReferencia = ValorNulo(dados.PontoReferencia);
+
+        entidade.PontoReferencia =
+            ValorNulo(dados.PontoReferencia);
+
         entidade.Observacao = ValorNulo(dados.Observacao);
         entidade.Ativo = dados.Ativo;
-        entidade.DataAlteracao = DateTime.Now;
     }
 
-    private static ClienteDto Mapear(Cliente cliente)
+    private static ClienteDto Mapear(
+        Cliente cliente)
     {
-        var endereco = string.Join(", ", new[]
-        {
-            cliente.Logradouro,
-            cliente.Numero,
-            cliente.Bairro
-        }.Where(valor => !string.IsNullOrWhiteSpace(valor)));
+        var endereco = string.Join(
+            ", ",
+            new[]
+            {
+                cliente.Logradouro,
+                cliente.Numero,
+                cliente.Bairro
+            }.Where(valor =>
+                !string.IsNullOrWhiteSpace(valor)));
+
+        var cidadeUf = string.Join(
+            " / ",
+            new[]
+            {
+                cliente.Cidade,
+                cliente.SiglaUf
+            }.Where(valor =>
+                !string.IsNullOrWhiteSpace(valor)));
 
         return new ClienteDto
         {
             Id = cliente.Id,
-            TipoPessoa = cliente.TipoPessoa == Domain.Enums.TipoPessoa.Fisica
-                ? "Pessoa Física"
-                : "Pessoa Jurídica",
+
+            TipoPessoa =
+                cliente.TipoPessoa ==
+                Domain.Enums.TipoPessoa.Fisica
+                    ? "Pessoa Física"
+                    : "Pessoa Jurídica",
+
             NomeRazaoSocial = cliente.NomeRazaoSocial,
             NomeFantasia = cliente.NomeFantasia ?? string.Empty,
             CpfCnpj = cliente.CpfCnpj ?? string.Empty,
-            RgInscricaoEstadual = cliente.RgInscricaoEstadual ?? string.Empty,
-            DataNascimentoAbertura = cliente.DataNascimentoAbertura,
+
+            RgInscricaoEstadual =
+                cliente.RgInscricaoEstadual ?? string.Empty,
+
             Telefone = cliente.Telefone ?? string.Empty,
             WhatsApp = cliente.WhatsApp ?? string.Empty,
             Email = cliente.Email ?? string.Empty,
             Cep = cliente.Cep ?? string.Empty,
-            Logradouro = cliente.Logradouro ?? string.Empty,
+
+            Logradouro =
+                cliente.Logradouro ?? string.Empty,
+
             Numero = cliente.Numero ?? string.Empty,
-            Complemento = cliente.Complemento ?? string.Empty,
+
+            Complemento =
+                cliente.Complemento ?? string.Empty,
+
             Bairro = cliente.Bairro ?? string.Empty,
             Cidade = cliente.Cidade ?? string.Empty,
             SiglaUf = cliente.SiglaUf ?? string.Empty,
-            CodigoIbgeCidade = cliente.CodigoIbgeCidade ?? string.Empty,
-            CodigoIbgeUf = cliente.CodigoIbgeUf ?? string.Empty,
+
+            CodigoIbgeCidade =
+                cliente.CodigoIbgeCidade ?? string.Empty,
+
+            CodigoIbgeUf =
+                cliente.CodigoIbgeUf ?? string.Empty,
+
             MunicipioId = cliente.MunicipioId,
-            PontoReferencia = cliente.PontoReferencia ?? string.Empty,
-            Observacao = cliente.Observacao ?? string.Empty,
+
+            PontoReferencia =
+                cliente.PontoReferencia ?? string.Empty,
+
+            Observacao =
+                cliente.Observacao ?? string.Empty,
+
             EnderecoCompleto = endereco,
-            CidadeUf = string.Join(" / ", new[]
-            {
-                cliente.Cidade,
-                cliente.SiglaUf
-            }.Where(valor => !string.IsNullOrWhiteSpace(valor))),
-            Ativo = cliente.Ativo
+            CidadeUf = cidadeUf,
+            Ativo = cliente.Ativo,
+            DataCadastro = cliente.DataCadastro,
+            DataAtualizacao = cliente.DataAtualizacao
         };
     }
 
-    private static string NormalizarTexto(string? valor)
+    private static string NormalizarTexto(
+        string? valor)
     {
         if (string.IsNullOrWhiteSpace(valor))
         {
@@ -307,13 +408,17 @@ public sealed class ClienteService : IClienteService
         }
 
         return string.Join(
-            " ",
-            valor.Trim()
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                " ",
+                valor
+                    .Trim()
+                    .Split(
+                        ' ',
+                        StringSplitOptions.RemoveEmptyEntries))
             .ToUpperInvariant();
     }
 
-    private static string? ValorNulo(string? valor)
+    private static string? ValorNulo(
+        string? valor)
     {
         return string.IsNullOrWhiteSpace(valor)
             ? null

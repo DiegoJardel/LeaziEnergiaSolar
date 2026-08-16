@@ -87,33 +87,6 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lancamentos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DataVenda = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Cliente = table.Column<string>(type: "TEXT", nullable: false),
-                    CpfCnpjCliente = table.Column<string>(type: "TEXT", nullable: true),
-                    VendedorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ValorVenda = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
-                    PercentualComissao = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
-                    ValorComissao = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    Observacao = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lancamentos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Lancamentos_Vendedores_VendedorId",
-                        column: x => x.VendedorId,
-                        principalTable: "Vendedores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Clientes",
                 columns: table => new
                 {
@@ -156,6 +129,47 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Lancamentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    DataVenda = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Cliente = table.Column<string>(type: "TEXT", nullable: false),
+                    CpfCnpjCliente = table.Column<string>(type: "TEXT", nullable: true),
+                    ClienteId = table.Column<int>(type: "INTEGER", nullable: true),
+                    VendedorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UsuarioId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ValorVenda = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    PercentualComissao = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
+                    ValorComissao = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    Observacao = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lancamentos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Lancamentos_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Lancamentos_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Lancamentos_Vendedores_VendedorId",
+                        column: x => x.VendedorId,
+                        principalTable: "Vendedores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Clientes_CpfCnpj",
                 table: "Clientes",
@@ -172,6 +186,16 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 table: "Estados",
                 column: "CodigoIbge",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lancamentos_ClienteId",
+                table: "Lancamentos",
+                column: "ClienteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lancamentos_UsuarioId",
+                table: "Lancamentos",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lancamentos_VendedorId",
@@ -206,19 +230,19 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Clientes");
+                name: "Lancamentos");
 
             migrationBuilder.DropTable(
-                name: "Lancamentos");
+                name: "Clientes");
 
             migrationBuilder.DropTable(
                 name: "Usuarios");
 
             migrationBuilder.DropTable(
-                name: "Municipios");
+                name: "Vendedores");
 
             migrationBuilder.DropTable(
-                name: "Vendedores");
+                name: "Municipios");
 
             migrationBuilder.DropTable(
                 name: "Estados");

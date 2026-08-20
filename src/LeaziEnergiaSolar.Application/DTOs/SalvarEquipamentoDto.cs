@@ -3,7 +3,6 @@ namespace LeaziEnergiaSolar.Application.DTOs;
 public sealed class SalvarEquipamentoDto
 {
     public int? Id { get; init; }
-    public string Descricao { get; init; } = string.Empty;
     public int CategoriaEquipamentoId { get; init; }
     public int? MarcaId { get; init; }
     public string Modelo { get; init; } = string.Empty;

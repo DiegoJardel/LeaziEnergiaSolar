@@ -3,7 +3,6 @@ namespace LeaziEnergiaSolar.Domain.Entities;
 public class Equipamento
 {
     public int Id { get; set; }
-    public string Descricao { get; set; } = string.Empty;
     public int CategoriaEquipamentoId { get; set; }
     public CategoriaEquipamento CategoriaEquipamento { get; set; } = null!;
     public int? MarcaId { get; set; }

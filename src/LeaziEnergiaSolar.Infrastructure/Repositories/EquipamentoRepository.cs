@@ -29,66 +29,74 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
 
         if (ativo.HasValue)
         {
-            query = query.Where(x => x.Ativo == ativo.Value);
+            query = query.Where(
+                x => x.Ativo == ativo.Value);
         }
 
         if (categoriaId.HasValue)
         {
-            query = query.Where(x =>
-                x.CategoriaEquipamentoId == categoriaId.Value);
+            query = query.Where(
+                x => x.CategoriaEquipamentoId ==
+                     categoriaId.Value);
         }
 
         if (marcaId.HasValue)
         {
-            query = query.Where(x => x.MarcaId == marcaId.Value);
+            query = query.Where(
+                x => x.MarcaId == marcaId.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(pesquisa))
         {
             var termo = pesquisa.Trim();
 
-            query = query.Where(x =>
-                x.Descricao.Contains(termo) ||
-                (x.Marca != null && x.Marca.Nome.Contains(termo)) ||
-                (x.Modelo != null && x.Modelo.Contains(termo)) ||
-                x.Id.ToString().Contains(termo));
+            query = query.Where(
+                x =>
+                    x.CategoriaEquipamento.Descricao.Contains(termo) ||
+                    x.Marca.Nome.Contains(termo) ||
+                    x.Modelo.Contains(termo) ||
+                    x.Id.ToString().Contains(termo));
         }
 
         return await query
             .OrderByDescending(x => x.Ativo)
-            .ThenBy(x => x.Descricao)
+            .ThenBy(x => x.CategoriaEquipamento.Descricao)
+            .ThenBy(x => x.Marca.Nome)
+            .ThenBy(x => x.Modelo)
             .ToListAsync(cancellationToken);
     }
 
     public Task<Equipamento?> ObterAsync(
         int id,
-        CancellationToken cancellationToken = default) =>
-        _db.Equipamentos
+        CancellationToken cancellationToken = default)
+    {
+        return _db.Equipamentos
             .Include(x => x.CategoriaEquipamento)
             .Include(x => x.Marca)
             .Include(x => x.UnidadeMedida)
             .FirstOrDefaultAsync(
                 x => x.Id == id,
                 cancellationToken);
+    }
 
     public Task<bool> ExisteDuplicadoAsync(
-        string descricao,
-        int? marcaId,
-        string? modelo,
+        int categoriaId,
+        int marcaId,
+        string modelo,
         int? ignorarId = null,
         CancellationToken cancellationToken = default)
     {
-        var descricaoNormalizada =
-            descricao.Trim().ToUpperInvariant();
-        var modeloNormalizado = string.IsNullOrWhiteSpace(modelo)
-            ? null
-            : modelo.Trim().ToUpperInvariant();
+        var modeloNormalizado = modelo
+            .Trim()
+            .ToUpperInvariant();
 
         return _db.Equipamentos.AnyAsync(
-            x => x.Descricao == descricaoNormalizada &&
-                 x.MarcaId == marcaId &&
-                 x.Modelo == modeloNormalizado &&
-                 (!ignorarId.HasValue || x.Id != ignorarId.Value),
+            x =>
+                x.CategoriaEquipamentoId == categoriaId &&
+                x.MarcaId == marcaId &&
+                x.Modelo == modeloNormalizado &&
+                (!ignorarId.HasValue ||
+                 x.Id != ignorarId.Value),
             cancellationToken);
     }
 
@@ -99,14 +107,19 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
         await _db.Equipamentos.AddAsync(
             equipamento,
             cancellationToken);
-        await _db.SaveChangesAsync(cancellationToken);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
     }
 
     public async Task AtualizarAsync(
         Equipamento equipamento,
         CancellationToken cancellationToken = default)
     {
-        _db.Equipamentos.Update(equipamento);
-        await _db.SaveChangesAsync(cancellationToken);
+        _db.Equipamentos.Update(
+            equipamento);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
     }
 }

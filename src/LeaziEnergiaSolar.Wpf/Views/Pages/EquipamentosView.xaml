@@ -43,16 +43,6 @@
                                     Foreground="#C62828"
                                     Text="Campos marcados com asterisco são obrigatórios." />
 
-                                <TextBox
-                                    Margin="0,0,0,12"
-                                    CharacterCasing="Upper"
-                                    MaxLength="150"
-                                    materialDesign:HintAssist.Hint="Descrição"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding Descricao,
-                                                   UpdateSourceTrigger=PropertyChanged}"
-                                    utils:RequiredFieldHelper.IsRequired="True" />
-
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Descricao"
@@ -71,19 +61,15 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!--
-                                    Campo temporário.
-                                    Será convertido em ComboBox na próxima etapa,
-                                    depois que o cadastro de modelos estiver validado.
-                                -->
-                                <TextBox
+                                <ComboBox
                                     Margin="0,0,0,12"
-                                    CharacterCasing="Upper"
-                                    MaxLength="100"
+                                    DisplayMemberPath="Nome"
+                                    IsEnabled="{Binding PossuiMarcaSelecionadaNoEquipamento}"
+                                    ItemsSource="{Binding ModelosDisponiveisEquipamento}"
                                     materialDesign:HintAssist.Hint="Modelo"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding Modelo,
-                                                   UpdateSourceTrigger=PropertyChanged}" />
+                                    SelectedItem="{Binding ModeloSelecionado}"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                    utils:RequiredFieldHelper.IsRequired="True" />
 
                                 <ComboBox
                                     Margin="0,0,0,12"

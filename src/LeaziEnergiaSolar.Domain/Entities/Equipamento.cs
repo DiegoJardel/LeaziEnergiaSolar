@@ -11,8 +11,6 @@ public class Equipamento
     public string? Modelo { get; set; }
     public int UnidadeMedidaId { get; set; }
     public UnidadeMedida UnidadeMedida { get; set; } = null!;
-    public decimal ValorCusto { get; set; }
-    public decimal EstoqueMinimo { get; set; }
     public string? Observacao { get; set; }
     public bool Ativo { get; set; } = true;
     public DateTime DataCadastro { get; set; } = DateTime.Now;

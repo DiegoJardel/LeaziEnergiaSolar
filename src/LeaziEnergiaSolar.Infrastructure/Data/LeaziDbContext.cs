@@ -230,8 +230,6 @@ public class LeaziDbContext : DbContext
         {
             entity.Property(x => x.Descricao).HasMaxLength(150).IsRequired();
             entity.Property(x => x.Modelo).HasMaxLength(100);
-            entity.Property(x => x.ValorCusto).HasPrecision(18, 2);
-            entity.Property(x => x.EstoqueMinimo).HasPrecision(18, 3);
             entity.Property(x => x.Observacao).HasMaxLength(1000);
             entity.Property(x => x.DataCadastro).IsRequired();
             entity.Property(x => x.DataAtualizacao);

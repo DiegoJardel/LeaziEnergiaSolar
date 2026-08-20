@@ -28,18 +28,6 @@ public static class EquipamentoValidator
         if (modelo.Length > 100)
             erros.Add("O modelo deve possuir no máximo 100 caracteres.");
 
-        if (dto.ValorCusto < 0)
-            erros.Add("O valor de custo não pode ser negativo.");
-
-        if (dto.EstoqueMinimo < 0)
-            erros.Add("O estoque mínimo não pode ser negativo.");
-
-        if (dto.ValorCusto > 999999999999.99m)
-            erros.Add("O valor de custo informado excede o limite permitido.");
-
-        if (dto.EstoqueMinimo > 999999999999.99m)
-            erros.Add("O estoque mínimo informado excede o limite permitido.");
-
         return erros;
     }
 

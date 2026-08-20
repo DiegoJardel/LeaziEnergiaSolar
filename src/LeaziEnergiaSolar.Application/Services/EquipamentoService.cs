@@ -52,13 +52,6 @@ public sealed class EquipamentoService : IEquipamentoService
         if (unidade is null || (!unidade.Ativo && (existente is null || existente.UnidadeMedidaId != dto.UnidadeMedidaId)))
             return ResultadoOperacaoDto.Falha("Selecione uma unidade de medida ativa válida.");
 
-        if (!unidade.PermiteQuantidadeDecimal &&
-            dto.EstoqueMinimo != decimal.Truncate(dto.EstoqueMinimo))
-        {
-            return ResultadoOperacaoDto.Falha(
-                "O estoque mínimo deve ser um número inteiro para a unidade de medida selecionada.");
-        }
-
         if (dto.MarcaId.HasValue)
         {
             var marca = await _marcaRepository.ObterAsync(dto.MarcaId.Value, cancellationToken);
@@ -77,8 +70,6 @@ public sealed class EquipamentoService : IEquipamentoService
             entidade.MarcaId = dto.MarcaId;
             entidade.Modelo = ValorNulo(dto.Modelo);
             entidade.UnidadeMedidaId = dto.UnidadeMedidaId;
-            entidade.ValorCusto = dto.ValorCusto;
-            entidade.EstoqueMinimo = dto.EstoqueMinimo;
             entidade.Observacao = ValorNulo(dto.Observacao);
             entidade.Ativo = dto.Ativo;
             entidade.DataAtualizacao = DateTime.Now;
@@ -93,8 +84,6 @@ public sealed class EquipamentoService : IEquipamentoService
             MarcaId = dto.MarcaId,
             Modelo = ValorNulo(dto.Modelo),
             UnidadeMedidaId = dto.UnidadeMedidaId,
-            ValorCusto = dto.ValorCusto,
-            EstoqueMinimo = dto.EstoqueMinimo,
             Observacao = ValorNulo(dto.Observacao),
             Ativo = true,
             DataCadastro = DateTime.Now
@@ -126,8 +115,6 @@ public sealed class EquipamentoService : IEquipamentoService
             Modelo = x.Modelo ?? string.Empty,
             UnidadeMedidaId = x.UnidadeMedidaId,
             UnidadeMedida = $"{x.UnidadeMedida.Sigla} - {x.UnidadeMedida.Descricao}",
-            ValorCusto = x.ValorCusto,
-            EstoqueMinimo = x.EstoqueMinimo,
             Observacao = x.Observacao ?? string.Empty,
             Ativo = x.Ativo,
             DataCadastro = x.DataCadastro,
@@ -137,8 +124,8 @@ public sealed class EquipamentoService : IEquipamentoService
     private static SalvarEquipamentoDto Normalizar(SalvarEquipamentoDto x) => new()
     {
         Id = x.Id, Descricao = NormalizarTexto(x.Descricao), CategoriaEquipamentoId = x.CategoriaEquipamentoId, MarcaId = x.MarcaId,
-        Modelo = NormalizarTexto(x.Modelo), UnidadeMedidaId = x.UnidadeMedidaId, ValorCusto = x.ValorCusto,
-        EstoqueMinimo = x.EstoqueMinimo, Observacao = NormalizarTexto(x.Observacao), Ativo = x.Ativo
+        Modelo = NormalizarTexto(x.Modelo), UnidadeMedidaId = x.UnidadeMedidaId,
+        Observacao = NormalizarTexto(x.Observacao), Ativo = x.Ativo
     };
 
     private static string NormalizarTexto(string? value) => string.Join(" ", (value ?? string.Empty).Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToUpperInvariant();

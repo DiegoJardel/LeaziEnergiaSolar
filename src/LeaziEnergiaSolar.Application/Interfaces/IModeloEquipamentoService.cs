@@ -1,20 +1,21 @@
-using LeaziEnergiaSolar.Application.DTOs;
+﻿using LeaziEnergiaSolar.Application.DTOs;
 
 namespace LeaziEnergiaSolar.Application.Interfaces;
 
-public interface IMarcaService
+public interface IModeloEquipamentoService
 {
-    Task<IReadOnlyList<MarcaDto>> ListarAsync(
+    Task<IReadOnlyList<ModeloEquipamentoDto>> ListarAsync(
+        int marcaId,
         string? pesquisa = null,
         bool? ativo = null,
         CancellationToken cancellationToken = default);
 
-    Task<MarcaDto?> ObterAsync(
+    Task<ModeloEquipamentoDto?> ObterAsync(
         int id,
         CancellationToken cancellationToken = default);
 
     Task<ResultadoOperacaoDto> SalvarAsync(
-        SalvarMarcaDto dto,
+        SalvarModeloEquipamentoDto dto,
         CancellationToken cancellationToken = default);
 
     Task<ResultadoOperacaoDto> AlterarStatusAsync(

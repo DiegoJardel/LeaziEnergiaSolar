@@ -34,6 +34,8 @@ public class LeaziDbContext : DbContext
 
     public DbSet<Marca> Marcas =>
         Set<Marca>();
+    public DbSet<ModeloEquipamento> ModelosEquipamentos =>
+    Set<ModeloEquipamento>();
 
     public DbSet<UnidadeMedida> UnidadesMedida =>
         Set<UnidadeMedida>();
@@ -198,7 +200,6 @@ public class LeaziDbContext : DbContext
                     vendedor.PercentualComissao)
                 .HasPrecision(5, 2);
         });
-
         modelBuilder.Entity<CategoriaEquipamento>(entity =>
         {
             entity.HasIndex(x => x.Descricao).IsUnique();
@@ -206,6 +207,21 @@ public class LeaziDbContext : DbContext
             entity.Property(x => x.Observacao).HasMaxLength(500);
             entity.Property(x => x.DataCadastro).IsRequired();
             entity.Property(x => x.DataAtualizacao);
+        });
+
+        modelBuilder.Entity<ModeloEquipamento>(entity =>
+        {
+            entity.HasIndex(x => new { x.MarcaId, x.Nome }).IsUnique();
+            entity.Property(x => x.Nome).HasMaxLength(100).IsRequired().UseCollation("NOCASE");
+            entity.Property(x => x.Observacao).HasMaxLength(500);
+            entity.Property(x => x.DataCadastro).IsRequired();
+            entity.Property(x => x.DataAtualizacao);
+
+            entity
+                .HasOne(x => x.Marca)
+                .WithMany(x => x.Modelos)
+                .HasForeignKey(x => x.MarcaId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Marca>(entity =>

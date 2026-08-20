@@ -48,15 +48,19 @@ public sealed class MarcaService : IMarcaService
             Nome = EquipamentoValidator
                 .Texto(dto.Nome)
                 .ToUpperInvariant(),
-            Observacao = EquipamentoValidator.Texto(dto.Observacao),
+            Observacao = EquipamentoValidator.Texto(
+                dto.Observacao),
             Ativo = dto.Ativo
         };
 
         var erros = MarcaValidator.Validar(dto);
+
         if (erros.Count > 0)
         {
             return ResultadoOperacaoDto.Falha(
-                string.Join(Environment.NewLine, erros));
+                string.Join(
+                    Environment.NewLine,
+                    erros));
         }
 
         if (await _repo.ExisteNomeAsync(
@@ -81,9 +85,12 @@ public sealed class MarcaService : IMarcaService
             }
 
             entidade.Nome = dto.Nome;
-            entidade.Observacao = string.IsNullOrWhiteSpace(dto.Observacao)
-                ? null
-                : dto.Observacao;
+
+            entidade.Observacao =
+                string.IsNullOrWhiteSpace(dto.Observacao)
+                    ? null
+                    : dto.Observacao;
+
             entidade.Ativo = dto.Ativo;
             entidade.DataAtualizacao = DateTime.Now;
 
@@ -99,9 +106,10 @@ public sealed class MarcaService : IMarcaService
             new Marca
             {
                 Nome = dto.Nome,
-                Observacao = string.IsNullOrWhiteSpace(dto.Observacao)
-                    ? null
-                    : dto.Observacao,
+                Observacao =
+                    string.IsNullOrWhiteSpace(dto.Observacao)
+                        ? null
+                        : dto.Observacao,
                 Ativo = true,
                 DataCadastro = DateTime.Now
             },
@@ -139,13 +147,60 @@ public sealed class MarcaService : IMarcaService
                 : "Marca inativada com sucesso.");
     }
 
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        var entidade = await _repo.ObterAsync(
+            id,
+            cancellationToken);
+
+        if (entidade is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "A marca selecionada não foi encontrada.");
+        }
+
+        var possuiModelos =
+            await _repo.PossuiModelosAsync(
+                id,
+                cancellationToken);
+
+        if (possuiModelos)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Não é possível excluir esta marca, pois ela " +
+                "possui modelos vinculados. Inative a marca.");
+        }
+
+        var possuiEquipamentos =
+            await _repo.PossuiEquipamentosAsync(
+                id,
+                cancellationToken);
+
+        if (possuiEquipamentos)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Não é possível excluir esta marca, pois ela " +
+                "possui equipamentos vinculados. Inative a marca.");
+        }
+
+        await _repo.ExcluirAsync(
+            entidade,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Marca excluída com sucesso.");
+    }
+
     private static MarcaDto Mapear(
         Marca entidade) =>
         new()
         {
             Id = entidade.Id,
             Nome = entidade.Nome,
-            Observacao = entidade.Observacao ?? string.Empty,
+            Observacao =
+                entidade.Observacao ?? string.Empty,
             Ativo = entidade.Ativo,
             DataCadastro = entidade.DataCadastro,
             DataAtualizacao = entidade.DataAtualizacao

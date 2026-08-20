@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaziEnergiaSolar.Infrastructure.Migrations
 {
     [DbContext(typeof(LeaziDbContext))]
-    [Migration("20260820181409_InitialCreate")]
+    [Migration("20260820191909_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -389,6 +389,42 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.ToTable("Marcas");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.ModeloEquipamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarcaId", "Nome")
+                        .IsUnique();
+
+                    b.ToTable("ModelosEquipamentos");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>
                 {
                     b.Property<int>("Id")
@@ -598,6 +634,17 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Navigation("Vendedor");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.ModeloEquipamento", b =>
+                {
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Marca", "Marca")
+                        .WithMany("Modelos")
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Marca");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>
                 {
                     b.HasOne("LeaziEnergiaSolar.Domain.Entities.Estado", "Estado")
@@ -627,6 +674,8 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Marca", b =>
                 {
                     b.Navigation("Equipamentos");
+
+                    b.Navigation("Modelos");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>

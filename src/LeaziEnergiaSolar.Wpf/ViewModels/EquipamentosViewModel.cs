@@ -1,8 +1,9 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
+using System.Collections.ObjectModel;
+using System.Windows.Media.Media3D;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -11,7 +12,12 @@ public partial class EquipamentosViewModel : ObservableObject
     private readonly IEquipamentoService _equipamentoService;
     private readonly ICategoriaEquipamentoService _categoriaService;
     private readonly IMarcaService _marcaService;
+    private readonly IModeloEquipamentoService _modeloService;
     private readonly IUnidadeMedidaService _unidadeService;
+
+    /*
+     * EQUIPAMENTO
+     */
 
     [ObservableProperty]
     private int? equipamentoId;
@@ -25,6 +31,10 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private MarcaDto? marcaSelecionada;
 
+    /*
+     * Mantido temporariamente como texto.
+     * Posteriormente será substituído por ModeloEquipamentoDto.
+     */
     [ObservableProperty]
     private string modelo = string.Empty;
 
@@ -52,6 +62,10 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private EquipamentoDto? equipamentoSelecionado;
 
+    /*
+     * CATEGORIA
+     */
+
     [ObservableProperty]
     private int? categoriaId;
 
@@ -68,6 +82,16 @@ public partial class EquipamentosViewModel : ObservableObject
     private CategoriaEquipamentoDto? categoriaSelecionadaAux;
 
     [ObservableProperty]
+    private string pesquisaCategoria = string.Empty;
+
+    [ObservableProperty]
+    private string filtroStatusCategoria = "Todos";
+
+    /*
+     * MARCA
+     */
+
+    [ObservableProperty]
     private int? marcaId;
 
     [ObservableProperty]
@@ -81,6 +105,44 @@ public partial class EquipamentosViewModel : ObservableObject
 
     [ObservableProperty]
     private MarcaDto? marcaSelecionadaAux;
+
+    [ObservableProperty]
+    private string pesquisaMarca = string.Empty;
+
+    [ObservableProperty]
+    private string filtroStatusMarca = "Todos";
+
+    /*
+     * MODELO DA MARCA
+     */
+
+    [ObservableProperty]
+    private int? modeloId;
+
+    [ObservableProperty]
+    private string modeloNome = string.Empty;
+
+    [ObservableProperty]
+    private string modeloObservacao = string.Empty;
+
+    [ObservableProperty]
+    private bool modeloAtivo = true;
+
+    [ObservableProperty]
+    private ModeloEquipamentoDto? modeloSelecionadoAux;
+
+    [ObservableProperty]
+    private MarcaDto? marcaSelecionadaParaModelos;
+
+    [ObservableProperty]
+    private string pesquisaModelo = string.Empty;
+
+    [ObservableProperty]
+    private string filtroStatusModelo = "Todos";
+
+    /*
+     * UNIDADE
+     */
 
     [ObservableProperty]
     private int? unidadeId;
@@ -101,22 +163,14 @@ public partial class EquipamentosViewModel : ObservableObject
     private UnidadeMedidaDto? unidadeSelecionadaAux;
 
     [ObservableProperty]
-    private string pesquisaCategoria = string.Empty;
-
-    [ObservableProperty]
-    private string pesquisaMarca = string.Empty;
-
-    [ObservableProperty]
     private string pesquisaUnidade = string.Empty;
 
     [ObservableProperty]
-    private string filtroStatusCategoria = "Todos";
-
-    [ObservableProperty]
-    private string filtroStatusMarca = "Todos";
-
-    [ObservableProperty]
     private string filtroStatusUnidade = "Todos";
+
+    /*
+     * MENSAGENS E CARREGAMENTO
+     */
 
     [ObservableProperty]
     private string mensagem = string.Empty;
@@ -126,6 +180,10 @@ public partial class EquipamentosViewModel : ObservableObject
 
     [ObservableProperty]
     private bool estaCarregando;
+
+    /*
+     * COLEÇÕES
+     */
 
     public ObservableCollection<EquipamentoDto> Equipamentos { get; } =
         new();
@@ -143,6 +201,9 @@ public partial class EquipamentosViewModel : ObservableObject
     public ObservableCollection<MarcaDto> MarcasDisponiveis { get; } =
         new();
 
+    public ObservableCollection<ModeloEquipamentoDto> Modelos { get; } =
+        new();
+
     public ObservableCollection<UnidadeMedidaDto> Unidades { get; } =
         new();
 
@@ -158,6 +219,10 @@ public partial class EquipamentosViewModel : ObservableObject
             "Inativos"
         };
 
+    /*
+     * PROPRIEDADES CALCULADAS
+     */
+
     public bool EstaEditando =>
         EquipamentoId.HasValue;
 
@@ -167,8 +232,14 @@ public partial class EquipamentosViewModel : ObservableObject
     public bool EditandoMarca =>
         MarcaId.HasValue;
 
+    public bool EditandoModelo =>
+        ModeloId.HasValue;
+
     public bool EditandoUnidade =>
         UnidadeId.HasValue;
+
+    public bool PossuiMarcaSelecionadaParaModelos =>
+        MarcaSelecionadaParaModelos is not null;
 
     public string TituloFormulario =>
         EstaEditando
@@ -185,22 +256,37 @@ public partial class EquipamentosViewModel : ObservableObject
             ? "Editar marca"
             : "Nova marca";
 
+    public string TituloModelo =>
+        EditandoModelo
+            ? "Editar modelo"
+            : "Novo modelo";
+
     public string TituloUnidade =>
         EditandoUnidade
             ? "Editar unidade"
             : "Nova unidade";
 
+    public string NomeMarcaModelos =>
+        MarcaSelecionadaParaModelos?.Nome
+        ?? "Nenhuma marca selecionada";
+
     public EquipamentosViewModel(
         IEquipamentoService equipamentoService,
         ICategoriaEquipamentoService categoriaService,
         IMarcaService marcaService,
+        IModeloEquipamentoService modeloService,
         IUnidadeMedidaService unidadeService)
     {
         _equipamentoService = equipamentoService;
         _categoriaService = categoriaService;
         _marcaService = marcaService;
+        _modeloService = modeloService;
         _unidadeService = unidadeService;
     }
+
+    /*
+     * NOTIFICAÇÕES
+     */
 
     partial void OnEquipamentoIdChanged(
         int? value)
@@ -223,12 +309,33 @@ public partial class EquipamentosViewModel : ObservableObject
         OnPropertyChanged(nameof(TituloMarca));
     }
 
+    partial void OnModeloIdChanged(
+        int? value)
+    {
+        OnPropertyChanged(nameof(EditandoModelo));
+        OnPropertyChanged(nameof(TituloModelo));
+    }
+
     partial void OnUnidadeIdChanged(
         int? value)
     {
         OnPropertyChanged(nameof(EditandoUnidade));
         OnPropertyChanged(nameof(TituloUnidade));
     }
+
+    partial void OnMarcaSelecionadaParaModelosChanged(
+        MarcaDto? value)
+    {
+        OnPropertyChanged(
+            nameof(PossuiMarcaSelecionadaParaModelos));
+
+        OnPropertyChanged(
+            nameof(NomeMarcaModelos));
+    }
+
+    /*
+     * CARREGAMENTO
+     */
 
     [RelayCommand]
     private async Task CarregarAsync()
@@ -239,6 +346,10 @@ public partial class EquipamentosViewModel : ObservableObject
             await PesquisarInternoAsync();
         });
     }
+
+    /*
+     * EQUIPAMENTO
+     */
 
     [RelayCommand]
     private async Task PesquisarAsync()
@@ -260,7 +371,8 @@ public partial class EquipamentosViewModel : ObservableObject
                         Descricao = Descricao,
                         CategoriaEquipamentoId =
                             CategoriaSelecionada?.Id ?? 0,
-                        MarcaId = MarcaSelecionada?.Id,
+                        MarcaId =
+                            MarcaSelecionada?.Id ?? 0,
                         Modelo = Modelo,
                         UnidadeMedidaId =
                             UnidadeSelecionada?.Id ?? 0,
@@ -278,6 +390,7 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             LimparEquipamento();
+
             await PesquisarInternoAsync();
         });
     }
@@ -371,6 +484,10 @@ public partial class EquipamentosViewModel : ObservableObject
         Ativo = true;
     }
 
+    /*
+     * CATEGORIA
+     */
+
     [RelayCommand]
     private async Task SalvarCategoriaAsync()
     {
@@ -395,7 +512,8 @@ public partial class EquipamentosViewModel : ObservableObject
                 return;
             }
 
-            LimparCategoria();
+            ResetCategoria();
+
             await CarregarAuxiliaresAsync();
         });
     }
@@ -448,6 +566,10 @@ public partial class EquipamentosViewModel : ObservableObject
         CategoriaAtivo = true;
     }
 
+    /*
+     * MARCA
+     */
+
     [RelayCommand]
     private async Task SalvarMarcaAsync()
     {
@@ -473,6 +595,7 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetMarca();
+
             await CarregarAuxiliaresAsync();
         });
     }
@@ -504,11 +627,68 @@ public partial class EquipamentosViewModel : ObservableObject
                 resultado.Mensagem,
                 !resultado.Sucesso);
 
-            if (resultado.Sucesso)
+            if (!resultado.Sucesso)
             {
-                await CarregarAuxiliaresAsync();
+                return;
+            }
+
+            await CarregarAuxiliaresAsync();
+
+            if (MarcaSelecionadaParaModelos?.Id == item.Id)
+            {
+                MarcaSelecionadaParaModelos =
+                    Marcas.FirstOrDefault(
+                        x => x.Id == item.Id);
             }
         });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirMarcaAsync(
+        MarcaDto item)
+    {
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _marcaService.ExcluirAsync(
+                    item.Id);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (MarcaSelecionadaParaModelos?.Id == item.Id)
+            {
+                MarcaSelecionadaParaModelos = null;
+                Modelos.Clear();
+                ResetModelo();
+            }
+
+            ResetMarca();
+
+            await CarregarAuxiliaresAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task SelecionarMarcaModelosAsync(
+        MarcaDto item)
+    {
+        MarcaSelecionadaParaModelos = item;
+        MarcaSelecionadaAux = item;
+
+        PesquisaModelo = string.Empty;
+        FiltroStatusModelo = "Todos";
+
+        ResetModelo();
+
+        await ExecutarAsync(
+            CarregarModelosAsync);
     }
 
     [RelayCommand]
@@ -524,6 +704,175 @@ public partial class EquipamentosViewModel : ObservableObject
         MarcaObservacao = string.Empty;
         MarcaAtivo = true;
     }
+
+    /*
+     * MODELO
+     */
+
+    [RelayCommand]
+    private async Task SalvarModeloAsync()
+    {
+        if (MarcaSelecionadaParaModelos is null)
+        {
+            ExibirMensagem(
+                "Selecione uma marca para cadastrar o modelo.",
+                true);
+
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _modeloService.SalvarAsync(
+                    new SalvarModeloEquipamentoDto
+                    {
+                        Id = ModeloId,
+                        MarcaId =
+                            MarcaSelecionadaParaModelos.Id,
+                        Nome = ModeloNome,
+                        Observacao = ModeloObservacao,
+                        Ativo = ModeloAtivo
+                    });
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            ResetModelo();
+
+            await CarregarModelosAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task PesquisarModelosAsync()
+    {
+        if (MarcaSelecionadaParaModelos is null)
+        {
+            Modelos.Clear();
+            return;
+        }
+
+        await ExecutarAsync(
+            CarregarModelosAsync);
+    }
+
+    [RelayCommand]
+    private async Task EditarModeloAsync(
+        ModeloEquipamentoDto item)
+    {
+        ModeloId = item.Id;
+        ModeloNome = item.Nome;
+        ModeloObservacao = item.Observacao;
+        ModeloAtivo = item.Ativo;
+        ModeloSelecionadoAux = item;
+
+        await Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private async Task AlterarStatusModeloAsync(
+        ModeloEquipamentoDto item)
+    {
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _modeloService.AlterarStatusAsync(
+                    item.Id,
+                    !item.Ativo);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            ResetModelo();
+
+            await CarregarModelosAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirModeloAsync(
+        ModeloEquipamentoDto item)
+    {
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _modeloService.ExcluirAsync(
+                    item.Id);
+
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            ResetModelo();
+
+            await CarregarModelosAsync();
+        });
+    }
+
+    [RelayCommand]
+    private void LimparModelo()
+    {
+        ResetModelo();
+    }
+
+    private void ResetModelo()
+    {
+        ModeloId = null;
+        ModeloNome = string.Empty;
+        ModeloObservacao = string.Empty;
+        ModeloAtivo = true;
+        ModeloSelecionadoAux = null;
+    }
+
+    private async Task CarregarModelosAsync()
+    {
+        Modelos.Clear();
+
+        if (MarcaSelecionadaParaModelos is null)
+        {
+            return;
+        }
+
+        bool? ativoFiltro = FiltroStatusModelo switch
+        {
+            "Ativos" => true,
+            "Inativos" => false,
+            _ => null
+        };
+
+        var modelos =
+            await _modeloService.ListarAsync(
+                MarcaSelecionadaParaModelos.Id,
+                PesquisaModelo,
+                ativoFiltro);
+
+        foreach (var item in modelos)
+        {
+            Modelos.Add(item);
+        }
+    }
+
+    /*
+     * UNIDADE
+     */
 
     [RelayCommand]
     private async Task SalvarUnidadeAsync()
@@ -552,6 +901,7 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetUnidade();
+
             await CarregarAuxiliaresAsync();
         });
     }
@@ -607,8 +957,15 @@ public partial class EquipamentosViewModel : ObservableObject
         UnidadeAtivo = true;
     }
 
+    /*
+     * CARREGAMENTO DOS AUXILIARES
+     */
+
     private async Task CarregarAuxiliaresAsync()
     {
+        var marcaModelosId =
+            MarcaSelecionadaParaModelos?.Id;
+
         var categorias =
             await _categoriaService.ListarAsync(
                 null,
@@ -645,6 +1002,16 @@ public partial class EquipamentosViewModel : ObservableObject
         foreach (var marca in Marcas.Where(x => x.Ativo))
         {
             MarcasDisponiveis.Add(marca);
+        }
+
+        if (marcaModelosId.HasValue)
+        {
+            MarcaSelecionadaParaModelos =
+                Marcas.FirstOrDefault(
+                    x => x.Id == marcaModelosId.Value);
+
+            MarcaSelecionadaAux =
+                MarcaSelecionadaParaModelos;
         }
 
         var unidades =
@@ -690,6 +1057,10 @@ public partial class EquipamentosViewModel : ObservableObject
             Equipamentos.Add(item);
         }
     }
+
+    /*
+     * EXECUÇÃO E MENSAGENS
+     */
 
     private async Task ExecutarAsync(
         Func<Task> acao)

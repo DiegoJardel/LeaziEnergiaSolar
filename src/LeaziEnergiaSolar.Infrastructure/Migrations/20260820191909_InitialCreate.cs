@@ -162,6 +162,30 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ModelosEquipamentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    MarcaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Nome = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false, collation: "NOCASE"),
+                    Observacao = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Ativo = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModelosEquipamentos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ModelosEquipamentos_Marcas_MarcaId",
+                        column: x => x.MarcaId,
+                        principalTable: "Marcas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Equipamentos",
                 columns: table => new
                 {
@@ -355,6 +379,12 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ModelosEquipamentos_MarcaId_Nome",
+                table: "ModelosEquipamentos",
+                columns: new[] { "MarcaId", "Nome" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Municipios_CodigoIbge",
                 table: "Municipios",
                 column: "CodigoIbge",
@@ -397,10 +427,10 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 name: "Lancamentos");
 
             migrationBuilder.DropTable(
-                name: "CategoriasEquipamento");
+                name: "ModelosEquipamentos");
 
             migrationBuilder.DropTable(
-                name: "Marcas");
+                name: "CategoriasEquipamento");
 
             migrationBuilder.DropTable(
                 name: "UnidadesMedida");
@@ -413,6 +443,9 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Vendedores");
+
+            migrationBuilder.DropTable(
+                name: "Marcas");
 
             migrationBuilder.DropTable(
                 name: "Municipios");

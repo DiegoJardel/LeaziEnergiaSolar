@@ -17,7 +17,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- FORMULÁRIO -->
+                    <!-- FORMULÁRIO DO EQUIPAMENTO -->
                     <Border
                         Grid.Column="0"
                         Padding="24"
@@ -68,8 +68,14 @@
                                     ItemsSource="{Binding MarcasDisponiveis}"
                                     materialDesign:HintAssist.Hint="Marca"
                                     SelectedItem="{Binding MarcaSelecionada}"
-                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                    utils:RequiredFieldHelper.IsRequired="True" />
 
+                                <!--
+                                    Campo temporário.
+                                    Será convertido em ComboBox na próxima etapa,
+                                    depois que o cadastro de modelos estiver validado.
+                                -->
                                 <TextBox
                                     Margin="0,0,0,12"
                                     CharacterCasing="Upper"
@@ -144,7 +150,7 @@
                         </ScrollViewer>
                     </Border>
 
-                    <!-- LISTAGEM -->
+                    <!-- LISTAGEM DOS EQUIPAMENTOS -->
                     <Border
                         Grid.Column="2"
                         Padding="22"
@@ -160,7 +166,6 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- FILTROS -->
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -319,6 +324,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- FORMULÁRIO DA CATEGORIA -->
                     <Border
                         Grid.Column="0"
                         Padding="22"
@@ -386,6 +392,7 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- LISTAGEM DAS CATEGORIAS -->
                     <Border
                         Grid.Column="2"
                         Padding="22"
@@ -476,170 +483,473 @@
                 </Grid>
             </TabItem>
 
-            <!-- MARCAS -->
+            <!-- MARCAS E MODELOS -->
             <TabItem Header="MARCAS">
-                <Grid Margin="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="330" />
-                        <ColumnDefinition Width="18" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
 
-                    <Border
-                        Grid.Column="0"
-                        Padding="22"
-                        Background="White"
-                        CornerRadius="12"
-                        materialDesign:ElevationAssist.Elevation="Dp2">
+                    <Grid Margin="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="18" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                        <StackPanel>
-                            <TextBlock
-                                FontSize="20"
-                                FontWeight="SemiBold"
-                                Text="{Binding TituloMarca}" />
+                        <!-- SEÇÃO DE MARCAS -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="330" />
+                                <ColumnDefinition Width="18" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                            <TextBlock
-                                Margin="0,4,0,20"
-                                Foreground="#667085"
-                                Text="Cadastro auxiliar de marcas." />
+                            <!-- FORMULÁRIO DA MARCA -->
+                            <Border
+                                Grid.Column="0"
+                                MinHeight="300"
+                                Padding="22"
+                                Background="White"
+                                CornerRadius="12"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
 
-                            <TextBox
-                                Margin="0,0,0,12"
-                                CharacterCasing="Upper"
-                                MaxLength="100"
-                                materialDesign:HintAssist.Hint="Nome"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding MarcaNome,
-                                               UpdateSourceTrigger=PropertyChanged}"
-                                utils:RequiredFieldHelper.IsRequired="True" />
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="20"
+                                        FontWeight="SemiBold"
+                                        Text="{Binding TituloMarca}" />
 
-                            <TextBox
-                                Height="70"
-                                Margin="0,0,0,12"
-                                AcceptsReturn="True"
-                                CharacterCasing="Upper"
-                                MaxLength="500"
-                                materialDesign:HintAssist.Hint="Observação"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding MarcaObservacao,
-                                               UpdateSourceTrigger=PropertyChanged}"
-                                TextWrapping="Wrap" />
+                                    <TextBlock
+                                        Margin="0,4,0,20"
+                                        Foreground="#667085"
+                                        Text="Cadastre a marca e depois vincule seus modelos."
+                                        TextWrapping="Wrap" />
 
-                            <ToggleButton
-                                Margin="0,0,0,14"
-                                Content="Marca ativa"
-                                IsChecked="{Binding MarcaAtivo}"
-                                Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                                    <TextBlock
+                                        Margin="0,0,0,14"
+                                        FontSize="11"
+                                        Foreground="#C62828"
+                                        Text="Campos marcados com asterisco são obrigatórios." />
 
-                            <Button
-                                Height="42"
-                                Background="{StaticResource LeaziGreenBrush}"
-                                Command="{Binding SalvarMarcaCommand}"
-                                Content="SALVAR"
-                                Foreground="White"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
+                                    <TextBox
+                                        Margin="0,0,0,12"
+                                        CharacterCasing="Upper"
+                                        MaxLength="100"
+                                        materialDesign:HintAssist.Hint="Nome"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding MarcaNome,
+                                                       UpdateSourceTrigger=PropertyChanged}"
+                                        utils:RequiredFieldHelper.IsRequired="True" />
 
-                            <Button
-                                Height="42"
-                                Margin="0,10,0,0"
-                                Command="{Binding LimparMarcaCommand}"
-                                Content="LIMPAR"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-                        </StackPanel>
-                    </Border>
+                                    <TextBox
+                                        Height="70"
+                                        Margin="0,0,0,12"
+                                        AcceptsReturn="True"
+                                        CharacterCasing="Upper"
+                                        MaxLength="500"
+                                        materialDesign:HintAssist.Hint="Observação"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding MarcaObservacao,
+                                                       UpdateSourceTrigger=PropertyChanged}"
+                                        TextWrapping="Wrap" />
 
-                    <Border
-                        Grid.Column="2"
-                        Padding="22"
-                        Background="White"
-                        CornerRadius="12"
-                        materialDesign:ElevationAssist.Elevation="Dp2">
+                                    <ToggleButton
+                                        Margin="0,0,0,14"
+                                        Content="Marca ativa"
+                                        IsChecked="{Binding MarcaAtivo}"
+                                        Style="{StaticResource MaterialDesignSwitchToggleButton}" />
 
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="140" />
-                                </Grid.ColumnDefinitions>
+                                        <Button
+                                            Grid.Column="0"
+                                            Height="42"
+                                            Background="{StaticResource LeaziGreenBrush}"
+                                            Command="{Binding SalvarMarcaCommand}"
+                                            Content="SALVAR"
+                                            Foreground="White"
+                                            IsEnabled="{Binding EstaCarregando,
+                                                                Converter={StaticResource InverseBooleanConverter}}"
+                                            Style="{StaticResource MaterialDesignRaisedButton}" />
 
-                                <TextBox
-                                    Grid.Column="0"
-                                    Margin="0,0,10,0"
-                                    materialDesign:HintAssist.Hint="Pesquisar marca"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding PesquisaMarca,
-                                                   UpdateSourceTrigger=PropertyChanged}" />
+                                        <Button
+                                            Grid.Column="2"
+                                            Height="42"
+                                            Command="{Binding LimparMarcaCommand}"
+                                            Content="LIMPAR"
+                                            IsEnabled="{Binding EstaCarregando,
+                                                                Converter={StaticResource InverseBooleanConverter}}"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
 
-                                <ComboBox
-                                    Grid.Column="1"
-                                    ItemsSource="{Binding FiltrosStatus}"
-                                    materialDesign:HintAssist.Hint="Status"
-                                    SelectedItem="{Binding FiltroStatusMarca}"
-                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
-                            </Grid>
+                            <!-- LISTAGEM DAS MARCAS -->
+                            <Border
+                                Grid.Column="2"
+                                MinHeight="300"
+                                Padding="22"
+                                Background="White"
+                                CornerRadius="12"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
 
-                            <DataGrid
-                                Grid.Row="2"
-                                AutoGenerateColumns="False"
-                                CanUserAddRows="False"
-                                IsReadOnly="True"
-                                ItemsSource="{Binding Marcas}"
-                                RowHeaderWidth="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn
-                                        Width="*"
-                                        Binding="{Binding Nome}"
-                                        Header="NOME" />
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="140" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <DataGridTextColumn
-                                        Width="120"
-                                        Binding="{Binding Status}"
-                                        Header="STATUS" />
+                                        <TextBox
+                                            Grid.Column="0"
+                                            Margin="0,0,10,0"
+                                            materialDesign:HintAssist.Hint="Pesquisar marca"
+                                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                            Text="{Binding PesquisaMarca,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <DataGridTemplateColumn
-                                        Width="180"
-                                        Header="AÇÕES">
+                                        <ComboBox
+                                            Grid.Column="1"
+                                            ItemsSource="{Binding FiltrosStatus}"
+                                            materialDesign:HintAssist.Hint="Status"
+                                            SelectedItem="{Binding FiltroStatusMarca}"
+                                            Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                    </Grid>
 
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Button
-                                                        Margin="0,0,6,0"
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.EditarMarcaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="Editar"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    <DataGrid
+                                        Grid.Row="2"
+                                        MinHeight="190"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        IsReadOnly="True"
+                                        ItemsSource="{Binding Marcas}"
+                                        RowHeaderWidth="0"
+                                        SelectedItem="{Binding MarcaSelecionadaAux}">
 
-                                                    <Button
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.AlterarStatusMarcaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="{Binding Ativo,
-                                                                          Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="70"
+                                                Binding="{Binding Codigo}"
+                                                Header="CÓD." />
+
+                                            <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding Nome}"
+                                                Header="NOME" />
+
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                Binding="{Binding Status}"
+                                                Header="STATUS" />
+
+                                            <DataGridTemplateColumn
+                                                Width="310"
+                                                Header="AÇÕES">
+
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button
+                                                                Margin="0,0,6,0"
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.SelecionarMarcaModelosCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Modelos"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                            <Button
+                                                                Margin="0,0,6,0"
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.EditarMarcaCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Editar"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                            <Button
+                                                                Margin="0,0,6,0"
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.AlterarStatusMarcaCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="{Binding Ativo,
+                                                                                  Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                            <Button
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.ExcluirMarcaCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Excluir"
+                                                                Foreground="#D92D20"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        Margin="0,12,0,0"
+                                        Foreground="#667085"
+                                        Text="{Binding Marcas.Count,
+                                                       StringFormat={}Marcas encontradas: {0}}" />
+                                </Grid>
+                            </Border>
                         </Grid>
-                    </Border>
-                </Grid>
+
+                        <!-- SEÇÃO DE MODELOS -->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="330" />
+                                <ColumnDefinition Width="18" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- FORMULÁRIO DO MODELO -->
+                            <Border
+                                Grid.Column="0"
+                                MinHeight="330"
+                                Padding="22"
+                                Background="White"
+                                CornerRadius="12"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
+
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="20"
+                                        FontWeight="SemiBold"
+                                        Text="{Binding TituloModelo}" />
+
+                                    <TextBlock
+                                        Margin="0,4,0,4"
+                                        Foreground="#667085"
+                                        Text="Marca selecionada:" />
+
+                                    <TextBlock
+                                        Margin="0,0,0,14"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource LeaziGreenBrush}"
+                                        Text="{Binding NomeMarcaModelos}" />
+
+                                    <TextBlock
+                                        Margin="0,0,0,14"
+                                        FontSize="11"
+                                        Foreground="#667085"
+                                        Text="Selecione uma marca na listagem acima para cadastrar seus modelos."
+                                        TextWrapping="Wrap" />
+
+                                    <TextBox
+                                        Margin="0,0,0,12"
+                                        CharacterCasing="Upper"
+                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                        MaxLength="100"
+                                        materialDesign:HintAssist.Hint="Nome do modelo"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding ModeloNome,
+                                                       UpdateSourceTrigger=PropertyChanged}"
+                                        utils:RequiredFieldHelper.IsRequired="True" />
+
+                                    <TextBox
+                                        Height="70"
+                                        Margin="0,0,0,12"
+                                        AcceptsReturn="True"
+                                        CharacterCasing="Upper"
+                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                        MaxLength="500"
+                                        materialDesign:HintAssist.Hint="Observação"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding ModeloObservacao,
+                                                       UpdateSourceTrigger=PropertyChanged}"
+                                        TextWrapping="Wrap" />
+
+                                    <ToggleButton
+                                        Margin="0,0,0,14"
+                                        Content="Modelo ativo"
+                                        IsChecked="{Binding ModeloAtivo}"
+                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                        Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button
+                                            Grid.Column="0"
+                                            Height="42"
+                                            Background="{StaticResource LeaziGreenBrush}"
+                                            Command="{Binding SalvarModeloCommand}"
+                                            Content="SALVAR"
+                                            Foreground="White"
+                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                            Style="{StaticResource MaterialDesignRaisedButton}" />
+
+                                        <Button
+                                            Grid.Column="2"
+                                            Height="42"
+                                            Command="{Binding LimparModeloCommand}"
+                                            Content="LIMPAR"
+                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- LISTAGEM DOS MODELOS -->
+                            <Border
+                                Grid.Column="2"
+                                MinHeight="330"
+                                Padding="22"
+                                Background="White"
+                                CornerRadius="12"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="110" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox
+                                            Grid.Column="0"
+                                            Margin="0,0,10,0"
+                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                            materialDesign:HintAssist.Hint="Pesquisar modelo"
+                                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                            Text="{Binding PesquisaModelo,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
+
+                                        <ComboBox
+                                            Grid.Column="1"
+                                            Margin="0,0,10,0"
+                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                            ItemsSource="{Binding FiltrosStatus}"
+                                            materialDesign:HintAssist.Hint="Status"
+                                            SelectedItem="{Binding FiltroStatusModelo}"
+                                            Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                                        <Button
+                                            Grid.Column="2"
+                                            Height="42"
+                                            Background="{StaticResource LeaziGreenBrush}"
+                                            Command="{Binding PesquisarModelosCommand}"
+                                            Content="BUSCAR"
+                                            Foreground="White"
+                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
+                                            Style="{StaticResource MaterialDesignRaisedButton}" />
+                                    </Grid>
+
+                                    <DataGrid
+                                        Grid.Row="2"
+                                        MinHeight="200"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        IsReadOnly="True"
+                                        ItemsSource="{Binding Modelos}"
+                                        RowHeaderWidth="0">
+
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="70"
+                                                Binding="{Binding Codigo}"
+                                                Header="CÓD." />
+
+                                            <DataGridTextColumn
+                                                Width="1.2*"
+                                                Binding="{Binding Nome}"
+                                                Header="MODELO" />
+
+                                            <DataGridTextColumn
+                                                Width="1.5*"
+                                                Binding="{Binding Observacao}"
+                                                Header="OBSERVAÇÃO" />
+
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                Binding="{Binding Status}"
+                                                Header="STATUS" />
+
+                                            <DataGridTemplateColumn
+                                                Width="250"
+                                                Header="AÇÕES">
+
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button
+                                                                Margin="0,0,6,0"
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.EditarModeloCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Editar"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                            <Button
+                                                                Margin="0,0,6,0"
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.AlterarStatusModeloCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="{Binding Ativo,
+                                                                                  Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                            <Button
+                                                                Padding="8,4"
+                                                                Command="{Binding DataContext.ExcluirModeloCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Excluir"
+                                                                Foreground="#D92D20"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        Margin="0,12,0,0"
+                                        Foreground="#667085"
+                                        Text="{Binding Modelos.Count,
+                                                       StringFormat={}Modelos encontrados: {0}}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
 
             <!-- UNIDADES -->
@@ -651,6 +961,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- FORMULÁRIO DA UNIDADE -->
                     <Border
                         Grid.Column="0"
                         Padding="22"
@@ -721,6 +1032,7 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- LISTAGEM DAS UNIDADES -->
                     <Border
                         Grid.Column="2"
                         Padding="22"

@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 
 namespace LeaziEnergiaSolar.Wpf.Utils;
@@ -18,49 +17,84 @@ public static class RequiredFieldHelper
                 false,
                 OnIsRequiredChanged));
 
+    public static bool GetIsRequired(
+        DependencyObject element)
+    {
+        return (bool)element.GetValue(
+            IsRequiredProperty);
+    }
+
     public static void SetIsRequired(
         DependencyObject element,
-        bool value) =>
+        bool value)
+    {
         element.SetValue(
             IsRequiredProperty,
             value);
-
-    public static bool GetIsRequired(
-        DependencyObject element) =>
-        (bool)element.GetValue(IsRequiredProperty);
+    }
 
     private static void OnIsRequiredChanged(
         DependencyObject dependencyObject,
-        DependencyPropertyChangedEventArgs e)
+        DependencyPropertyChangedEventArgs eventArgs)
     {
-        if (dependencyObject is not Control control ||
-            e.NewValue is not true)
+        if (dependencyObject is not Control control)
         {
             return;
         }
 
-        control.Dispatcher.BeginInvoke(
-            DispatcherPriority.Loaded,
-            new Action(() => AplicarIndicador(control)));
+        if (eventArgs.NewValue is not bool isRequired ||
+            !isRequired)
+        {
+            return;
+        }
+
+        if (control.IsLoaded)
+        {
+            AplicarIndicador(control);
+            return;
+        }
+
+        control.Loaded += Control_Loaded;
     }
 
-    private static void AplicarIndicador(Control control)
+    private static void Control_Loaded(
+        object sender,
+        RoutedEventArgs eventArgs)
     {
-        if (HintAssist.GetHint(control) is not string hint ||
-            string.IsNullOrWhiteSpace(hint) ||
-            hint.EndsWith(" *", StringComparison.Ordinal))
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        control.Loaded -= Control_Loaded;
+
+        AplicarIndicador(control);
+    }
+
+    private static void AplicarIndicador(
+        Control control)
+    {
+        var hintAtual = HintAssist.GetHint(control);
+
+        if (hintAtual is not string hint ||
+            string.IsNullOrWhiteSpace(hint))
         {
             return;
         }
 
         var texto = new TextBlock();
+
         texto.Inlines.Add(
             new Run(hint));
+
         texto.Inlines.Add(
             new Run(" *")
             {
                 Foreground = new SolidColorBrush(
-                    Color.FromRgb(198, 40, 40)),
+                    Color.FromRgb(
+                        198,
+                        40,
+                        40)),
                 FontWeight = FontWeights.SemiBold
             });
 

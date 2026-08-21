@@ -4,6 +4,7 @@ using LeaziEnergiaSolar.Application.Interfaces;
 using LeaziEnergiaSolar.Application.Services;
 using LeaziEnergiaSolar.Domain.Interfaces;
 using LeaziEnergiaSolar.Infrastructure.Data;
+using LeaziEnergiaSolar.Infrastructure.Reports;
 using LeaziEnergiaSolar.Infrastructure.Repositories;
 using LeaziEnergiaSolar.Infrastructure.Services;
 using LeaziEnergiaSolar.Wpf.Services;
@@ -11,6 +12,7 @@ using LeaziEnergiaSolar.Wpf.ViewModels;
 using LeaziEnergiaSolar.Wpf.Views.Pages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using QuestPDF.Infrastructure;
 
 namespace LeaziEnergiaSolar.Wpf;
 
@@ -22,11 +24,19 @@ public partial class App : System.Windows.Application
     protected override async void OnStartup(
         StartupEventArgs eventArgs)
     {
+        /*
+         * CONFIGURAÇÃO DO QUESTPDF
+         */
+
+        QuestPDF.Settings.License =
+            LicenseType.Community;
+
         base.OnStartup(eventArgs);
 
         AppPaths.PrepararPastas();
 
-        Services = ConfigureServices();
+        Services =
+            ConfigureServices();
 
         RegistrarTratamentoGlobalDeErros();
 
@@ -38,8 +48,9 @@ public partial class App : System.Windows.Application
 
             using (var scope = Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider
-                    .GetRequiredService<LeaziDbContext>();
+                var dbContext =
+                    scope.ServiceProvider
+                        .GetRequiredService<LeaziDbContext>();
 
                 await DbInitializer.InitializeAsync(
                     dbContext);
@@ -205,6 +216,14 @@ public partial class App : System.Windows.Application
             UsuarioService>();
 
         /*
+         * SERVIÇOS DE RELATÓRIOS
+         */
+
+        services.AddScoped<
+            IRelatorioComissaoService,
+            RelatorioComissaoService>();
+
+        /*
          * SERVIÇOS EXTERNOS E COMPARTILHADOS
          */
 
@@ -228,51 +247,78 @@ public partial class App : System.Windows.Application
          * VIEWMODELS
          */
 
-        services.AddTransient<LoginViewModel>();
+        services.AddTransient<
+            LoginViewModel>();
 
-        services.AddTransient<VendedoresViewModel>();
+        services.AddTransient<
+            VendedoresViewModel>();
 
-        services.AddTransient<ClientesViewModel>();
+        services.AddTransient<
+            ClientesViewModel>();
 
-        services.AddTransient<EquipamentosViewModel>();
+        services.AddTransient<
+            EquipamentosViewModel>();
 
-        services.AddTransient<FornecedoresViewModel>();
+        services.AddTransient<
+            FornecedoresViewModel>();
 
-        services.AddTransient<LancamentosViewModel>();
+        services.AddTransient<
+            LancamentosViewModel>();
 
-        services.AddTransient<DashboardViewModel>();
+        services.AddTransient<
+            DashboardViewModel>();
 
-        services.AddTransient<ControleMensalViewModel>();
+        services.AddTransient<
+            ControleMensalViewModel>();
 
-        services.AddTransient<ControleAnualViewModel>();
+        services.AddTransient<
+            ControleAnualViewModel>();
 
-        services.AddTransient<UsuariosViewModel>();
+        services.AddTransient<
+            UsuariosViewModel>();
+
+        services.AddTransient<
+            RelatoriosViewModel>();
 
         /*
          * JANELAS E TELAS
          */
 
-        services.AddTransient<LoginWindow>();
+        services.AddTransient<
+            LoginWindow>();
 
-        services.AddTransient<MainWindow>();
+        services.AddTransient<
+            MainWindow>();
 
-        services.AddTransient<VendedoresView>();
+        services.AddTransient<
+            VendedoresView>();
 
-        services.AddTransient<ClientesView>();
+        services.AddTransient<
+            ClientesView>();
 
-        services.AddTransient<EquipamentosView>();
+        services.AddTransient<
+            EquipamentosView>();
 
-        services.AddTransient<FornecedoresView>();
+        services.AddTransient<
+            FornecedoresView>();
 
-        services.AddTransient<LancamentosView>();
+        services.AddTransient<
+            LancamentosView>();
 
-        services.AddTransient<DashboardView>();
+        services.AddTransient<
+            DashboardView>();
 
-        services.AddTransient<ControleMensalView>();
+        services.AddTransient<
+            ControleMensalView>();
 
-        services.AddTransient<ControleAnualView>();
+        services.AddTransient<
+            ControleAnualView>();
 
-        services.AddTransient<UsuariosView>();
+        services.AddTransient<
+            UsuariosView>();
+
+        services.AddTransient<
+            RelatoriosView>();
 
         return services.BuildServiceProvider();
     }
@@ -304,7 +350,8 @@ public partial class App : System.Windows.Application
             MessageBoxButton.OK,
             MessageBoxImage.Error);
 
-        eventArgs.Handled = true;
+        eventArgs.Handled =
+            true;
     }
 
     private static void OnUnhandledException(

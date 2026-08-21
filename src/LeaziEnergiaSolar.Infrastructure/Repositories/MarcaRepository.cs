@@ -24,13 +24,16 @@ public sealed class MarcaRepository : IMarcaRepository
 
         if (ativo.HasValue)
         {
-            query = query.Where(x => x.Ativo == ativo.Value);
+            query = query.Where(
+                x => x.Ativo == ativo.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(pesquisa))
         {
             var termo = pesquisa.Trim();
-            query = query.Where(x => x.Nome.Contains(termo));
+
+            query = query.Where(
+                x => x.Nome.Contains(termo));
         }
 
         return await query
@@ -41,30 +44,47 @@ public sealed class MarcaRepository : IMarcaRepository
 
     public Task<Marca?> ObterAsync(
         int id,
-        CancellationToken cancellationToken = default) =>
-        _db.Marcas.FirstOrDefaultAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return _db.Marcas.FirstOrDefaultAsync(
             x => x.Id == id,
             cancellationToken);
+    }
 
     public Task<bool> ExisteNomeAsync(
         string nome,
         int? ignorarId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalizado = nome.Trim().ToUpperInvariant();
+        var normalizado = nome
+            .Trim()
+            .ToUpperInvariant();
 
         return _db.Marcas.AnyAsync(
-            x => x.Nome == normalizado &&
-                 (!ignorarId.HasValue || x.Id != ignorarId.Value),
+            x =>
+                x.Nome == normalizado &&
+                (!ignorarId.HasValue ||
+                 x.Id != ignorarId.Value),
             cancellationToken);
     }
 
     public Task<bool> PossuiEquipamentosAsync(
         int id,
-        CancellationToken cancellationToken = default) =>
-        _db.Equipamentos.AnyAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return _db.Equipamentos.AnyAsync(
             x => x.MarcaId == id,
             cancellationToken);
+    }
+
+    public Task<bool> PossuiModelosAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return _db.ModelosEquipamentos.AnyAsync(
+            x => x.MarcaId == id,
+            cancellationToken);
+    }
 
     public async Task AdicionarAsync(
         Marca marca,
@@ -73,7 +93,9 @@ public sealed class MarcaRepository : IMarcaRepository
         await _db.Marcas.AddAsync(
             marca,
             cancellationToken);
-        await _db.SaveChangesAsync(cancellationToken);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
     }
 
     public async Task AtualizarAsync(
@@ -81,6 +103,18 @@ public sealed class MarcaRepository : IMarcaRepository
         CancellationToken cancellationToken = default)
     {
         _db.Marcas.Update(marca);
-        await _db.SaveChangesAsync(cancellationToken);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    public async Task ExcluirAsync(
+        Marca marca,
+        CancellationToken cancellationToken = default)
+    {
+        _db.Marcas.Remove(marca);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
     }
 }

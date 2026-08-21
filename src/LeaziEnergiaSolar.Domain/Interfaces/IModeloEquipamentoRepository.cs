@@ -1,40 +1,38 @@
-using LeaziEnergiaSolar.Domain.Entities;
+﻿using LeaziEnergiaSolar.Domain.Entities;
 
 namespace LeaziEnergiaSolar.Domain.Interfaces;
 
-public interface IMarcaRepository
+public interface IModeloEquipamentoRepository
 {
-    Task<IReadOnlyList<Marca>> ListarAsync(
-        string? pesquisa,
-        bool? ativo,
+    Task<IReadOnlyList<ModeloEquipamento>> ListarAsync(
+        int marcaId,
+        string? pesquisa = null,
+        bool? ativo = null,
         CancellationToken cancellationToken = default);
 
-    Task<Marca?> ObterAsync(
+    Task<ModeloEquipamento?> ObterAsync(
         int id,
         CancellationToken cancellationToken = default);
 
     Task<bool> ExisteNomeAsync(
+        int marcaId,
         string nome,
         int? ignorarId = null,
         CancellationToken cancellationToken = default);
 
-    Task<bool> PossuiEquipamentosAsync(
-        int id,
-        CancellationToken cancellationToken = default);
-
-    Task<bool> PossuiModelosAsync(
-        int id,
+    Task<bool> ExisteAlgumPorMarcaAsync(
+        int marcaId,
         CancellationToken cancellationToken = default);
 
     Task AdicionarAsync(
-        Marca entidade,
+        ModeloEquipamento modelo,
         CancellationToken cancellationToken = default);
 
     Task AtualizarAsync(
-        Marca entidade,
+        ModeloEquipamento modelo,
         CancellationToken cancellationToken = default);
 
     Task ExcluirAsync(
-        Marca entidade,
+        ModeloEquipamento modelo,
         CancellationToken cancellationToken = default);
 }

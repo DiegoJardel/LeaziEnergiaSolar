@@ -8,13 +8,7 @@ public static class EquipamentoValidator
     public static IReadOnlyList<string> Validar(SalvarEquipamentoDto dto)
     {
         var erros = new List<string>();
-        var descricao = Texto(dto.Descricao);
         var modelo = Texto(dto.Modelo);
-
-        if (string.IsNullOrWhiteSpace(descricao))
-            erros.Add("Informe a descrição do equipamento.");
-        else if (descricao.Length > 150)
-            erros.Add("A descrição do equipamento deve possuir no máximo 150 caracteres.");
 
         if (dto.CategoriaEquipamentoId <= 0)
             erros.Add("Selecione uma categoria de equipamento.");
@@ -27,18 +21,6 @@ public static class EquipamentoValidator
 
         if (modelo.Length > 100)
             erros.Add("O modelo deve possuir no máximo 100 caracteres.");
-
-        if (dto.ValorCusto < 0)
-            erros.Add("O valor de custo não pode ser negativo.");
-
-        if (dto.EstoqueMinimo < 0)
-            erros.Add("O estoque mínimo não pode ser negativo.");
-
-        if (dto.ValorCusto > 999999999999.99m)
-            erros.Add("O valor de custo informado excede o limite permitido.");
-
-        if (dto.EstoqueMinimo > 999999999999.99m)
-            erros.Add("O estoque mínimo informado excede o limite permitido.");
 
         return erros;
     }

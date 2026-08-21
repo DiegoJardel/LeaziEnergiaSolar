@@ -16,7 +16,8 @@ namespace LeaziEnergiaSolar.Wpf;
 
 public partial class App : System.Windows.Application
 {
-    public static IServiceProvider Services { get; private set; } = null!;
+    public static IServiceProvider Services { get; private set; } =
+        null!;
 
     protected override async void OnStartup(
         StartupEventArgs eventArgs)
@@ -69,7 +70,12 @@ public partial class App : System.Windows.Application
 
     private static ServiceProvider ConfigureServices()
     {
-        var services = new ServiceCollection();
+        var services =
+            new ServiceCollection();
+
+        /*
+         * BANCO DE DADOS
+         */
 
         services.AddDbContext<LeaziDbContext>(options =>
             options.UseSqlite(
@@ -81,6 +87,10 @@ public partial class App : System.Windows.Application
                             .Assembly
                             .FullName);
                 }));
+
+        /*
+         * REPOSITÓRIOS
+         */
 
         services.AddScoped<
             IUsuarioRepository,
@@ -94,11 +104,29 @@ public partial class App : System.Windows.Application
             IClienteRepository,
             ClienteRepository>();
 
-        services.AddScoped<IEquipamentoRepository, EquipamentoRepository>();
-        services.AddScoped<ICategoriaEquipamentoRepository, CategoriaEquipamentoRepository>();
-        services.AddScoped<IMarcaRepository, MarcaRepository>();
-        services.AddScoped<IUnidadeMedidaRepository, UnidadeMedidaRepository>();
-        services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+        services.AddScoped<
+            IEquipamentoRepository,
+            EquipamentoRepository>();
+
+        services.AddScoped<
+            ICategoriaEquipamentoRepository,
+            CategoriaEquipamentoRepository>();
+
+        services.AddScoped<
+            IMarcaRepository,
+            MarcaRepository>();
+
+        services.AddScoped<
+            IModeloEquipamentoRepository,
+            ModeloEquipamentoRepository>();
+
+        services.AddScoped<
+            IUnidadeMedidaRepository,
+            UnidadeMedidaRepository>();
+
+        services.AddScoped<
+            IFornecedorRepository,
+            FornecedorRepository>();
 
         services.AddScoped<
             ILocalidadeRepository,
@@ -112,6 +140,10 @@ public partial class App : System.Windows.Application
             IDashboardRepository,
             DashboardRepository>();
 
+        /*
+         * SERVIÇOS DA APLICAÇÃO
+         */
+
         services.AddScoped<
             IAutenticacaoService,
             AutenticacaoService>();
@@ -124,15 +156,33 @@ public partial class App : System.Windows.Application
             IClienteService,
             ClienteService>();
 
-        services.AddScoped<IEquipamentoService, EquipamentoService>();
-        services.AddScoped<ICategoriaEquipamentoService, CategoriaEquipamentoService>();
-        services.AddScoped<IMarcaService, MarcaService>();
-        services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
-        services.AddScoped<IFornecedorService, FornecedorService>();
+        services.AddScoped<
+            IEquipamentoService,
+            EquipamentoService>();
 
-        services.AddSingleton<ICepService, ViaCepService>();
+        services.AddScoped<
+            ICategoriaEquipamentoService,
+            CategoriaEquipamentoService>();
 
-        services.AddScoped<IIbgeLocalidadeService, IbgeLocalidadeService>();
+        services.AddScoped<
+            IMarcaService,
+            MarcaService>();
+
+        services.AddScoped<
+            IModeloEquipamentoService,
+            ModeloEquipamentoService>();
+
+        services.AddScoped<
+            IUnidadeMedidaService,
+            UnidadeMedidaService>();
+
+        services.AddScoped<
+            IFornecedorService,
+            FornecedorService>();
+
+        services.AddScoped<
+            IIbgeLocalidadeService,
+            IbgeLocalidadeService>();
 
         services.AddScoped<
             ILancamentoService,
@@ -154,6 +204,14 @@ public partial class App : System.Windows.Application
             IUsuarioService,
             UsuarioService>();
 
+        /*
+         * SERVIÇOS EXTERNOS E COMPARTILHADOS
+         */
+
+        services.AddSingleton<
+            ICepService,
+            ViaCepService>();
+
         services.AddSingleton<
             IUsuarioSessaoService,
             UsuarioSessaoService>();
@@ -166,27 +224,54 @@ public partial class App : System.Windows.Application
             IBackupService,
             BackupService>();
 
+        /*
+         * VIEWMODELS
+         */
+
         services.AddTransient<LoginViewModel>();
+
         services.AddTransient<VendedoresViewModel>();
+
         services.AddTransient<ClientesViewModel>();
+
         services.AddTransient<EquipamentosViewModel>();
+
         services.AddTransient<FornecedoresViewModel>();
+
         services.AddTransient<LancamentosViewModel>();
+
         services.AddTransient<DashboardViewModel>();
+
         services.AddTransient<ControleMensalViewModel>();
+
         services.AddTransient<ControleAnualViewModel>();
+
         services.AddTransient<UsuariosViewModel>();
 
+        /*
+         * JANELAS E TELAS
+         */
+
         services.AddTransient<LoginWindow>();
+
         services.AddTransient<MainWindow>();
+
         services.AddTransient<VendedoresView>();
+
         services.AddTransient<ClientesView>();
+
         services.AddTransient<EquipamentosView>();
+
         services.AddTransient<FornecedoresView>();
+
         services.AddTransient<LancamentosView>();
+
         services.AddTransient<DashboardView>();
+
         services.AddTransient<ControleMensalView>();
+
         services.AddTransient<ControleAnualView>();
+
         services.AddTransient<UsuariosView>();
 
         return services.BuildServiceProvider();
@@ -259,6 +344,10 @@ public partial class App : System.Windows.Application
         }
         catch
         {
+            /*
+             * O tratamento global não deve lançar outra exceção
+             * caso o serviço de log não esteja disponível.
+             */
         }
     }
 }

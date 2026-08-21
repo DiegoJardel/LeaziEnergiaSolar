@@ -11,136 +11,466 @@ public sealed class EquipamentoService : IEquipamentoService
     private readonly IEquipamentoRepository _repository;
     private readonly ICategoriaEquipamentoRepository _categoriaRepository;
     private readonly IMarcaRepository _marcaRepository;
+    private readonly IModeloEquipamentoRepository _modeloRepository;
     private readonly IUnidadeMedidaRepository _unidadeRepository;
 
-    public EquipamentoService(IEquipamentoRepository repository, ICategoriaEquipamentoRepository categoriaRepository, IMarcaRepository marcaRepository, IUnidadeMedidaRepository unidadeRepository)
+    public EquipamentoService(
+        IEquipamentoRepository repository,
+        ICategoriaEquipamentoRepository categoriaRepository,
+        IMarcaRepository marcaRepository,
+        IModeloEquipamentoRepository modeloRepository,
+        IUnidadeMedidaRepository unidadeRepository)
     {
         _repository = repository;
         _categoriaRepository = categoriaRepository;
         _marcaRepository = marcaRepository;
+        _modeloRepository = modeloRepository;
         _unidadeRepository = unidadeRepository;
     }
 
-    public async Task<IReadOnlyList<EquipamentoDto>> ListarAsync(string? pesquisa = null, int? categoriaId = null, int? marcaId = null, bool? ativo = null, CancellationToken cancellationToken = default) =>
-        (await _repository.ListarAsync(pesquisa, categoriaId, marcaId, ativo, cancellationToken)).Select(Mapear).ToList();
-
-    public async Task<EquipamentoDto?> ObterAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<EquipamentoDto>> ListarAsync(
+        string? pesquisa = null,
+        int? categoriaId = null,
+        int? marcaId = null,
+        bool? ativo = null,
+        CancellationToken cancellationToken = default)
     {
-        var item = await _repository.ObterAsync(id, cancellationToken);
-        return item is null ? null : Mapear(item);
+        var itens = await _repository.ListarAsync(
+            pesquisa,
+            categoriaId,
+            marcaId,
+            ativo,
+            cancellationToken);
+
+        return itens
+            .Select(Mapear)
+            .ToList();
     }
 
-    public async Task<ResultadoOperacaoDto> SalvarAsync(SalvarEquipamentoDto dto, CancellationToken cancellationToken = default)
+    public async Task<EquipamentoDto?> ObterAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        var item = await _repository.ObterAsync(
+            id,
+            cancellationToken);
+
+        return item is null
+            ? null
+            : Mapear(item);
+    }
+
+    public async Task<ResultadoOperacaoDto> SalvarAsync(
+        SalvarEquipamentoDto dto,
+        CancellationToken cancellationToken = default)
     {
         dto = Normalizar(dto);
-        var erros = EquipamentoValidator.Validar(dto);
-        if (erros.Count > 0) return ResultadoOperacaoDto.Falha(string.Join(Environment.NewLine, erros));
 
-        Equipamento? existente = null;
-        if (dto.Id.HasValue)
-        {
-            existente = await _repository.ObterAsync(dto.Id.Value, cancellationToken);
-            if (existente is null)
-                return ResultadoOperacaoDto.Falha("O equipamento selecionado não foi encontrado.");
-        }
+        var erros =
+            EquipamentoValidator.Validar(dto);
 
-        var categoria = await _categoriaRepository.ObterAsync(dto.CategoriaEquipamentoId, cancellationToken);
-        if (categoria is null || (!categoria.Ativo && (existente is null || existente.CategoriaEquipamentoId != dto.CategoriaEquipamentoId)))
-            return ResultadoOperacaoDto.Falha("Selecione uma categoria ativa válida.");
-
-        var unidade = await _unidadeRepository.ObterAsync(dto.UnidadeMedidaId, cancellationToken);
-        if (unidade is null || (!unidade.Ativo && (existente is null || existente.UnidadeMedidaId != dto.UnidadeMedidaId)))
-            return ResultadoOperacaoDto.Falha("Selecione uma unidade de medida ativa válida.");
-
-        if (!unidade.PermiteQuantidadeDecimal &&
-            dto.EstoqueMinimo != decimal.Truncate(dto.EstoqueMinimo))
+        if (erros.Count > 0)
         {
             return ResultadoOperacaoDto.Falha(
-                "O estoque mínimo deve ser um número inteiro para a unidade de medida selecionada.");
+                string.Join(
+                    Environment.NewLine,
+                    erros));
         }
 
-        if (dto.MarcaId.HasValue)
-        {
-            var marca = await _marcaRepository.ObterAsync(dto.MarcaId.Value, cancellationToken);
-            if (marca is null || (!marca.Ativo && (existente is null || existente.MarcaId != dto.MarcaId)))
-                return ResultadoOperacaoDto.Falha("A marca selecionada não é válida.");
-        }
-
-        if (await _repository.ExisteDuplicadoAsync(dto.Descricao, dto.MarcaId, dto.Modelo, dto.Id, cancellationToken))
-            return ResultadoOperacaoDto.Falha("Já existe um equipamento com a mesma descrição, marca e modelo.");
+        Equipamento? existente = null;
 
         if (dto.Id.HasValue)
         {
-            var entidade = existente!;
-            entidade.Descricao = dto.Descricao;
-            entidade.CategoriaEquipamentoId = dto.CategoriaEquipamentoId;
-            entidade.MarcaId = dto.MarcaId;
-            entidade.Modelo = ValorNulo(dto.Modelo);
-            entidade.UnidadeMedidaId = dto.UnidadeMedidaId;
-            entidade.ValorCusto = dto.ValorCusto;
-            entidade.EstoqueMinimo = dto.EstoqueMinimo;
-            entidade.Observacao = ValorNulo(dto.Observacao);
-            entidade.Ativo = dto.Ativo;
-            entidade.DataAtualizacao = DateTime.Now;
-            await _repository.AtualizarAsync(entidade, cancellationToken);
-            return ResultadoOperacaoDto.Ok("Equipamento atualizado com sucesso.");
+            existente = await _repository.ObterAsync(
+                dto.Id.Value,
+                cancellationToken);
+
+            if (existente is null)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "O equipamento selecionado não foi encontrado.");
+            }
+        }
+
+        var categoria =
+            await _categoriaRepository.ObterAsync(
+                dto.CategoriaEquipamentoId,
+                cancellationToken);
+
+        if (categoria is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "A categoria selecionada não foi encontrada.");
+        }
+
+        var categoriaFoiAlterada =
+            existente is null ||
+            existente.CategoriaEquipamentoId !=
+            dto.CategoriaEquipamentoId;
+
+        if (!categoria.Ativo &&
+            categoriaFoiAlterada)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Selecione uma categoria ativa válida.");
+        }
+
+        var marca =
+            await _marcaRepository.ObterAsync(
+                dto.MarcaId,
+                cancellationToken);
+
+        if (marca is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "A marca selecionada não foi encontrada.");
+        }
+
+        var marcaFoiAlterada =
+            existente is null ||
+            existente.MarcaId != dto.MarcaId;
+
+        if (!marca.Ativo &&
+            marcaFoiAlterada)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Selecione uma marca ativa válida.");
+        }
+
+        var modeloExiste =
+            await _modeloRepository.ExisteNomeAsync(
+                dto.MarcaId,
+                dto.Modelo,
+                null,
+                cancellationToken);
+
+        if (!modeloExiste)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O modelo selecionado não pertence à marca informada.");
+        }
+
+        var modelosDaMarca =
+            await _modeloRepository.ListarAsync(
+                dto.MarcaId,
+                dto.Modelo,
+                null,
+                cancellationToken);
+
+        var modeloSelecionado =
+            modelosDaMarca.FirstOrDefault(
+                x => string.Equals(
+                    x.Nome,
+                    dto.Modelo,
+                    StringComparison.OrdinalIgnoreCase));
+
+        if (modeloSelecionado is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O modelo selecionado não foi encontrado.");
+        }
+
+        var modeloFoiAlterado =
+            existente is null ||
+            !string.Equals(
+                existente.Modelo,
+                dto.Modelo,
+                StringComparison.OrdinalIgnoreCase) ||
+            existente.MarcaId != dto.MarcaId;
+
+        if (!modeloSelecionado.Ativo &&
+            modeloFoiAlterado)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Selecione um modelo ativo válido.");
+        }
+
+        var unidade =
+            await _unidadeRepository.ObterAsync(
+                dto.UnidadeMedidaId,
+                cancellationToken);
+
+        if (unidade is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "A unidade de medida selecionada não foi encontrada.");
+        }
+
+        var unidadeFoiAlterada =
+            existente is null ||
+            existente.UnidadeMedidaId !=
+            dto.UnidadeMedidaId;
+
+        if (!unidade.Ativo &&
+            unidadeFoiAlterada)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Selecione uma unidade de medida ativa válida.");
+        }
+
+        var duplicado =
+            await _repository.ExisteDuplicadoAsync(
+                dto.CategoriaEquipamentoId,
+                dto.MarcaId,
+                dto.Modelo,
+                dto.Id,
+                cancellationToken);
+
+        if (duplicado)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Já existe um equipamento com a mesma categoria, " +
+                "marca e modelo.");
+        }
+
+        if (dto.Id.HasValue)
+        {
+            existente!.CategoriaEquipamentoId =
+                dto.CategoriaEquipamentoId;
+
+            existente.MarcaId =
+                dto.MarcaId;
+
+            existente.Modelo =
+                dto.Modelo;
+
+            existente.UnidadeMedidaId =
+                dto.UnidadeMedidaId;
+
+            existente.Observacao =
+                ValorNulo(dto.Observacao);
+
+            existente.Ativo =
+                dto.Ativo;
+
+            existente.DataAtualizacao =
+                DateTime.Now;
+
+            await _repository.AtualizarAsync(
+                existente,
+                cancellationToken);
+
+            return ResultadoOperacaoDto.Ok(
+                "Equipamento atualizado com sucesso.");
         }
 
         var novo = new Equipamento
         {
-            Descricao = dto.Descricao,
-            CategoriaEquipamentoId = dto.CategoriaEquipamentoId,
-            MarcaId = dto.MarcaId,
-            Modelo = ValorNulo(dto.Modelo),
-            UnidadeMedidaId = dto.UnidadeMedidaId,
-            ValorCusto = dto.ValorCusto,
-            EstoqueMinimo = dto.EstoqueMinimo,
-            Observacao = ValorNulo(dto.Observacao),
+            CategoriaEquipamentoId =
+                dto.CategoriaEquipamentoId,
+
+            MarcaId =
+                dto.MarcaId,
+
+            Modelo =
+                dto.Modelo,
+
+            UnidadeMedidaId =
+                dto.UnidadeMedidaId,
+
+            Observacao =
+                ValorNulo(dto.Observacao),
+
             Ativo = true,
-            DataCadastro = DateTime.Now
+
+            DataCadastro =
+                DateTime.Now
         };
-        await _repository.AdicionarAsync(novo, cancellationToken);
-        return ResultadoOperacaoDto.Ok("Equipamento cadastrado com sucesso.");
+
+        await _repository.AdicionarAsync(
+            novo,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Equipamento cadastrado com sucesso.");
     }
 
-    public async Task<ResultadoOperacaoDto> AlterarStatusAsync(int id, bool ativo, CancellationToken cancellationToken = default)
+    public async Task<ResultadoOperacaoDto> AlterarStatusAsync(
+        int id,
+        bool ativo,
+        CancellationToken cancellationToken = default)
     {
-        var entidade = await _repository.ObterAsync(id, cancellationToken);
-        if (entidade is null) return ResultadoOperacaoDto.Falha("O equipamento selecionado não foi encontrado.");
-        entidade.Ativo = ativo;
-        entidade.DataAtualizacao = DateTime.Now;
-        await _repository.AtualizarAsync(entidade, cancellationToken);
-        return ResultadoOperacaoDto.Ok(ativo ? "Equipamento reativado com sucesso." : "Equipamento inativado com sucesso.");
+        var entidade =
+            await _repository.ObterAsync(
+                id,
+                cancellationToken);
+
+        if (entidade is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O equipamento selecionado não foi encontrado.");
+        }
+
+        if (ativo)
+        {
+            var categoria =
+                await _categoriaRepository.ObterAsync(
+                    entidade.CategoriaEquipamentoId,
+                    cancellationToken);
+
+            if (categoria is null ||
+                !categoria.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é possível reativar o equipamento porque " +
+                    "a categoria está inativa.");
+            }
+
+            var marca =
+                await _marcaRepository.ObterAsync(
+                    entidade.MarcaId,
+                    cancellationToken);
+
+            if (marca is null ||
+                !marca.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é possível reativar o equipamento porque " +
+                    "a marca está inativa.");
+            }
+
+            var modelos =
+                await _modeloRepository.ListarAsync(
+                    entidade.MarcaId,
+                    entidade.Modelo,
+                    null,
+                    cancellationToken);
+
+            var modelo =
+                modelos.FirstOrDefault(
+                    x => string.Equals(
+                        x.Nome,
+                        entidade.Modelo,
+                        StringComparison.OrdinalIgnoreCase));
+
+            if (modelo is null ||
+                !modelo.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é possível reativar o equipamento porque " +
+                    "o modelo está inativo.");
+            }
+
+            var unidade =
+                await _unidadeRepository.ObterAsync(
+                    entidade.UnidadeMedidaId,
+                    cancellationToken);
+
+            if (unidade is null ||
+                !unidade.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é possível reativar o equipamento porque " +
+                    "a unidade de medida está inativa.");
+            }
+        }
+
+        entidade.Ativo =
+            ativo;
+
+        entidade.DataAtualizacao =
+            DateTime.Now;
+
+        await _repository.AtualizarAsync(
+            entidade,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            ativo
+                ? "Equipamento reativado com sucesso."
+                : "Equipamento inativado com sucesso.");
     }
 
     private static EquipamentoDto Mapear(
-        Equipamento x) =>
-        new()
-        {
-            Id = x.Id,
-            Descricao = x.Descricao,
-            CategoriaEquipamentoId = x.CategoriaEquipamentoId,
-            Categoria = x.CategoriaEquipamento.Descricao,
-            MarcaId = x.MarcaId,
-            Marca = x.Marca?.Nome ?? string.Empty,
-            Modelo = x.Modelo ?? string.Empty,
-            UnidadeMedidaId = x.UnidadeMedidaId,
-            UnidadeMedida = $"{x.UnidadeMedida.Sigla} - {x.UnidadeMedida.Descricao}",
-            ValorCusto = x.ValorCusto,
-            EstoqueMinimo = x.EstoqueMinimo,
-            Observacao = x.Observacao ?? string.Empty,
-            Ativo = x.Ativo,
-            DataCadastro = x.DataCadastro,
-            DataAtualizacao = x.DataAtualizacao
-        };
-
-    private static SalvarEquipamentoDto Normalizar(SalvarEquipamentoDto x) => new()
+        Equipamento entidade)
     {
-        Id = x.Id, Descricao = NormalizarTexto(x.Descricao), CategoriaEquipamentoId = x.CategoriaEquipamentoId, MarcaId = x.MarcaId,
-        Modelo = NormalizarTexto(x.Modelo), UnidadeMedidaId = x.UnidadeMedidaId, ValorCusto = x.ValorCusto,
-        EstoqueMinimo = x.EstoqueMinimo, Observacao = NormalizarTexto(x.Observacao), Ativo = x.Ativo
-    };
+        return new EquipamentoDto
+        {
+            Id =
+                entidade.Id,
 
-    private static string NormalizarTexto(string? value) => string.Join(" ", (value ?? string.Empty).Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToUpperInvariant();
-    private static string? ValorNulo(string? value) => string.IsNullOrWhiteSpace(value) ? null : value;
+            CategoriaEquipamentoId =
+                entidade.CategoriaEquipamentoId,
+
+            Categoria =
+                entidade.CategoriaEquipamento.Descricao,
+
+            MarcaId =
+                entidade.MarcaId,
+
+            Marca =
+                entidade.Marca.Nome,
+
+            Modelo =
+                entidade.Modelo,
+
+            UnidadeMedidaId =
+                entidade.UnidadeMedidaId,
+
+            UnidadeMedida =
+                $"{entidade.UnidadeMedida.Sigla} - " +
+                entidade.UnidadeMedida.Descricao,
+
+            Observacao =
+                entidade.Observacao ?? string.Empty,
+
+            Ativo =
+                entidade.Ativo,
+
+            DataCadastro =
+                entidade.DataCadastro,
+
+            DataAtualizacao =
+                entidade.DataAtualizacao
+        };
+    }
+
+    private static SalvarEquipamentoDto Normalizar(
+        SalvarEquipamentoDto dto)
+    {
+        return new SalvarEquipamentoDto
+        {
+            Id =
+                dto.Id,
+
+            CategoriaEquipamentoId =
+                dto.CategoriaEquipamentoId,
+
+            MarcaId =
+                dto.MarcaId,
+
+            Modelo =
+                NormalizarTexto(dto.Modelo),
+
+            UnidadeMedidaId =
+                dto.UnidadeMedidaId,
+
+            Observacao =
+                NormalizarTexto(dto.Observacao),
+
+            Ativo =
+                dto.Ativo
+        };
+    }
+
+    private static string NormalizarTexto(
+        string? valor)
+    {
+        return string.Join(
+                " ",
+                (valor ?? string.Empty)
+                    .Trim()
+                    .Split(
+                        ' ',
+                        StringSplitOptions.RemoveEmptyEntries))
+            .ToUpperInvariant();
+    }
+
+    private static string? ValorNulo(
+        string? valor)
+    {
+        return string.IsNullOrWhiteSpace(valor)
+            ? null
+            : valor;
+    }
 }

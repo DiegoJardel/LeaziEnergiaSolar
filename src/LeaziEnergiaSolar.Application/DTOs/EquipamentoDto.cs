@@ -12,8 +12,6 @@ public sealed class EquipamentoDto
     public string Modelo { get; init; } = string.Empty;
     public int UnidadeMedidaId { get; init; }
     public string UnidadeMedida { get; init; } = string.Empty;
-    public decimal ValorCusto { get; init; }
-    public decimal EstoqueMinimo { get; init; }
     public string Observacao { get; init; } = string.Empty;
     public bool Ativo { get; init; }
     public DateTime DataCadastro { get; init; }

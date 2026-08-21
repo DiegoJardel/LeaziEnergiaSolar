@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaziEnergiaSolar.Infrastructure.Migrations
 {
     [DbContext(typeof(LeaziDbContext))]
-    [Migration("20260821024838_InitialCreate")]
+    [Migration("20260821033149_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -310,18 +310,30 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
 
                     b.Property<string>("Cliente")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("ClienteId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CpfCnpjCliente")
+                        .HasMaxLength(14)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DataPagamento")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Observacao")
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("PercentualComissao")

@@ -8,9 +8,11 @@ public sealed class LancamentoDto
 
     public DateTime DataVenda { get; init; }
 
-    public string Cliente { get; init; } = string.Empty;
+    public string Cliente { get; init; } =
+        string.Empty;
 
-    public string CpfCnpjCliente { get; init; } = string.Empty;
+    public string CpfCnpjCliente { get; init; } =
+        string.Empty;
 
     public int? ClienteId { get; init; }
 
@@ -18,7 +20,8 @@ public sealed class LancamentoDto
 
     public int VendedorId { get; init; }
 
-    public string VendedorNome { get; init; } = string.Empty;
+    public string VendedorNome { get; init; } =
+        string.Empty;
 
     public decimal ValorVenda { get; init; }
 
@@ -28,9 +31,17 @@ public sealed class LancamentoDto
 
     public StatusLancamento Status { get; init; }
 
-    public string StatusDescricao => Status == StatusLancamento.Pago
-        ? "Pago"
-        : "Pendente";
+    public string StatusDescricao =>
+        Status == StatusLancamento.Pago
+            ? "Pago"
+            : "Pendente";
 
-    public string Observacao { get; init; } = string.Empty;
+    public DateTime? DataPagamento { get; init; }
+
+    public DateTime DataCadastro { get; init; }
+
+    public DateTime? DataAtualizacao { get; init; }
+
+    public string Observacao { get; init; } =
+        string.Empty;
 }

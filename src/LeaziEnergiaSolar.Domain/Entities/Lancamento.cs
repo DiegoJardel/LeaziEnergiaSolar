@@ -6,9 +6,11 @@ public class Lancamento
 {
     public int Id { get; set; }
 
-    public DateTime DataVenda { get; set; } = DateTime.Today;
+    public DateTime DataVenda { get; set; } =
+        DateTime.Today;
 
-    public string Cliente { get; set; } = string.Empty;
+    public string Cliente { get; set; } =
+        string.Empty;
 
     public string? CpfCnpjCliente { get; set; }
 
@@ -18,7 +20,8 @@ public class Lancamento
 
     public int VendedorId { get; set; }
 
-    public Vendedor Vendedor { get; set; } = null!;
+    public Vendedor Vendedor { get; set; } =
+        null!;
 
     public int? UsuarioId { get; set; }
 
@@ -30,8 +33,15 @@ public class Lancamento
 
     public decimal ValorComissao { get; set; }
 
-    public StatusLancamento Status { get; set; }
-        = StatusLancamento.Pendente;
+    public StatusLancamento Status { get; set; } =
+        StatusLancamento.Pendente;
+
+    public DateTime? DataPagamento { get; set; }
 
     public string? Observacao { get; set; }
+
+    public DateTime DataCadastro { get; set; } =
+        DateTime.Now;
+
+    public DateTime? DataAtualizacao { get; set; }
 }

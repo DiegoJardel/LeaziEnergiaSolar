@@ -279,8 +279,8 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     DataVenda = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Cliente = table.Column<string>(type: "TEXT", nullable: false),
-                    CpfCnpjCliente = table.Column<string>(type: "TEXT", nullable: true),
+                    Cliente = table.Column<string>(type: "TEXT", maxLength: 150, nullable: false),
+                    CpfCnpjCliente = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     ClienteId = table.Column<int>(type: "INTEGER", nullable: true),
                     VendedorId = table.Column<int>(type: "INTEGER", nullable: false),
                     UsuarioId = table.Column<int>(type: "INTEGER", nullable: true),
@@ -288,7 +288,10 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     PercentualComissao = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
                     ValorComissao = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    Observacao = table.Column<string>(type: "TEXT", nullable: true)
+                    DataPagamento = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Observacao = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    DataCadastro = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

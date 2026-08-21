@@ -220,11 +220,6 @@
                                         Header="CÓD." />
 
                                     <DataGridTextColumn
-                                        Width="1.6*"
-                                        Binding="{Binding Descricao}"
-                                        Header="DESCRIÇÃO" />
-
-                                    <DataGridTextColumn
                                         Width="1.1*"
                                         Binding="{Binding Categoria}"
                                         Header="CATEGORIA" />

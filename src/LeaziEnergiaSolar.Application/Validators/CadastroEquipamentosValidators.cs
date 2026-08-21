@@ -8,13 +8,7 @@ public static class EquipamentoValidator
     public static IReadOnlyList<string> Validar(SalvarEquipamentoDto dto)
     {
         var erros = new List<string>();
-        var descricao = Texto(dto.Descricao);
         var modelo = Texto(dto.Modelo);
-
-        if (string.IsNullOrWhiteSpace(descricao))
-            erros.Add("Informe a descrição do equipamento.");
-        else if (descricao.Length > 150)
-            erros.Add("A descrição do equipamento deve possuir no máximo 150 caracteres.");
 
         if (dto.CategoriaEquipamentoId <= 0)
             erros.Add("Selecione uma categoria de equipamento.");

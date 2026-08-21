@@ -8,9 +8,11 @@ public sealed class SalvarLancamentoDto
 
     public DateTime DataVenda { get; init; }
 
-    public string Cliente { get; init; } = string.Empty;
+    public string Cliente { get; init; } =
+        string.Empty;
 
-    public string CpfCnpjCliente { get; init; } = string.Empty;
+    public string CpfCnpjCliente { get; init; } =
+        string.Empty;
 
     public int? ClienteId { get; init; }
 
@@ -24,5 +26,8 @@ public sealed class SalvarLancamentoDto
 
     public StatusLancamento Status { get; init; }
 
-    public string Observacao { get; init; } = string.Empty;
+    public DateTime? DataPagamento { get; init; }
+
+    public string Observacao { get; init; } =
+        string.Empty;
 }

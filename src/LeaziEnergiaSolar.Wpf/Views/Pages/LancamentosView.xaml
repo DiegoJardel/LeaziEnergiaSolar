@@ -9,6 +9,7 @@
              d:DesignWidth="1180"
              Loaded="LancamentosView_Loaded"
              mc:Ignorable="d">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -16,11 +17,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- FORMULÁRIO -->
         <Border
+            Grid.Row="0"
             Padding="22"
             Background="White"
             CornerRadius="12"
             materialDesign:ElevationAssist.Elevation="Dp2">
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -30,7 +34,8 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <DockPanel>
+                <!-- CABEÇALHO DO FORMULÁRIO -->
+                <DockPanel Grid.Row="0">
                     <TextBlock
                         FontSize="21"
                         FontWeight="SemiBold"
@@ -42,9 +47,12 @@
                         HorizontalAlignment="Right"
                         Command="{Binding NovoCommand}"
                         Content="NOVO"
+                        IsEnabled="{Binding EstaCarregando,
+                                            Converter={StaticResource InverseBooleanConverter}}"
                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                 </DockPanel>
 
+                <!-- PRIMEIRA LINHA DO FORMULÁRIO -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.05*" />
@@ -58,22 +66,27 @@
                         <ColumnDefinition Width="0.9*" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- DATA DA VENDA -->
                     <DatePicker
                         Grid.Column="0"
                         materialDesign:HintAssist.Hint="Data da venda"
-                        utils:RequiredFieldHelper.IsRequired="True"
-                        SelectedDate="{Binding DataVenda}"
-                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+                        SelectedDate="{Binding DataVenda,
+                                               Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        utils:RequiredFieldHelper.IsRequired="True" />
 
+                    <!-- CLIENTE -->
                     <ComboBox
                         Grid.Column="2"
                         DisplayMemberPath="NomeRazaoSocial"
                         ItemsSource="{Binding Clientes}"
                         materialDesign:HintAssist.Hint="Cliente cadastrado"
-                        utils:RequiredFieldHelper.IsRequired="True"
-                        SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
-                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                        SelectedItem="{Binding ClienteSelecionado,
+                                               Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        utils:RequiredFieldHelper.IsRequired="True" />
 
+                    <!-- CPF/CNPJ DO CLIENTE -->
                     <TextBox
                         Grid.Column="4"
                         IsReadOnly="True"
@@ -81,24 +94,29 @@
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding CpfCnpjCliente}" />
 
+                    <!-- VENDEDOR -->
                     <ComboBox
                         Grid.Column="6"
                         DisplayMemberPath="Nome"
                         ItemsSource="{Binding Vendedores}"
                         materialDesign:HintAssist.Hint="Vendedor"
-                        utils:RequiredFieldHelper.IsRequired="True"
-                        SelectedItem="{Binding VendedorSelecionado}"
-                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                        SelectedItem="{Binding VendedorSelecionado,
+                                               Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        utils:RequiredFieldHelper.IsRequired="True" />
 
+                    <!-- STATUS -->
                     <ComboBox
                         Grid.Column="8"
                         ItemsSource="{Binding StatusDisponiveis}"
                         materialDesign:HintAssist.Hint="Status"
-                        utils:RequiredFieldHelper.IsRequired="True"
-                        SelectedItem="{Binding StatusSelecionado}"
-                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                        SelectedItem="{Binding StatusSelecionado,
+                                               Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        utils:RequiredFieldHelper.IsRequired="True" />
                 </Grid>
 
+                <!-- SEGUNDA LINHA DO FORMULÁRIO -->
                 <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.05*" />
@@ -107,27 +125,34 @@
                         <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="1.05*" />
                         <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="2.2*" />
+                        <ColumnDefinition Width="1.1*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="1.7*" />
                         <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- VALOR DA VENDA -->
                     <TextBox
                         Grid.Column="0"
                         materialDesign:HintAssist.Hint="Valor da venda"
-                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding ValorVenda, UpdateSourceTrigger=PropertyChanged}"
-                        utils:CurrencyInputBehavior.IsEnabled="True" />
+                        Text="{Binding ValorVenda,
+                                       UpdateSourceTrigger=PropertyChanged}"
+                        utils:CurrencyInputBehavior.IsEnabled="True"
+                        utils:RequiredFieldHelper.IsRequired="True" />
 
+                    <!-- PERCENTUAL DA COMISSÃO -->
                     <TextBox
                         Grid.Column="2"
                         materialDesign:HintAssist.Hint="Comissão (%)"
-                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding PercentualComissao, UpdateSourceTrigger=PropertyChanged}"
-                        utils:InputBehavior.Type="Decimal" />
+                        Text="{Binding PercentualComissao,
+                                       UpdateSourceTrigger=PropertyChanged}"
+                        utils:InputBehavior.Type="Decimal"
+                        utils:RequiredFieldHelper.IsRequired="True" />
 
+                    <!-- COMISSÃO CALCULADA -->
                     <TextBox
                         Grid.Column="4"
                         IsReadOnly="True"
@@ -135,14 +160,29 @@
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding ValorComissao}" />
 
-                    <TextBox
+                    <!-- DATA DO PAGAMENTO -->
+                    <DatePicker
                         Grid.Column="6"
+                        IsEnabled="{Binding PodeInformarDataPagamento}"
+                        materialDesign:HintAssist.Hint="Data do pagamento"
+                        SelectedDate="{Binding DataPagamento,
+                                               Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+
+                    <!-- OBSERVAÇÃO -->
+                    <TextBox
+                        Grid.Column="8"
                         MaxLength="500"
                         materialDesign:HintAssist.Hint="Observação"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding Observacao, UpdateSourceTrigger=PropertyChanged}" />
+                        Text="{Binding Observacao,
+                                       UpdateSourceTrigger=PropertyChanged}" />
 
-                    <StackPanel Grid.Column="8" Orientation="Horizontal">
+                    <!-- BOTÕES -->
+                    <StackPanel
+                        Grid.Column="10"
+                        Orientation="Horizontal">
+
                         <Button
                             Width="92"
                             Height="42"
@@ -151,7 +191,8 @@
                             Command="{Binding SalvarCommand}"
                             Content="SALVAR"
                             Foreground="White"
-                            IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
+                            IsEnabled="{Binding EstaCarregando,
+                                                Converter={StaticResource InverseBooleanConverter}}"
                             Style="{StaticResource MaterialDesignRaisedButton}" />
 
                         <Button
@@ -159,18 +200,22 @@
                             Height="42"
                             Command="{Binding LimparCommand}"
                             Content="LIMPAR"
+                            IsEnabled="{Binding EstaCarregando,
+                                                Converter={StaticResource InverseBooleanConverter}}"
                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                     </StackPanel>
                 </Grid>
             </Grid>
         </Border>
 
+        <!-- LISTAGEM -->
         <Border
             Grid.Row="2"
             Padding="22"
             Background="White"
             CornerRadius="12"
             materialDesign:ElevationAssist.Elevation="Dp2">
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -181,11 +226,14 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
+                <!-- TÍTULO DA LISTAGEM -->
                 <TextBlock
+                    Grid.Row="0"
                     FontSize="18"
                     FontWeight="SemiBold"
                     Text="Lançamentos cadastrados" />
 
+                <!-- FILTROS -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.7*" />
@@ -201,40 +249,54 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- PESQUISA -->
                     <TextBox
                         Grid.Column="0"
                         materialDesign:HintAssist.Hint="Cliente, vendedor ou documento"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                        Text="{Binding Pesquisa, UpdateSourceTrigger=PropertyChanged}" />
+                        Text="{Binding Pesquisa,
+                                       UpdateSourceTrigger=PropertyChanged}" />
 
+                    <!-- DATA INICIAL -->
                     <DatePicker
                         Grid.Column="2"
                         materialDesign:HintAssist.Hint="Data inicial"
-                        SelectedDate="{Binding FiltroDataInicial}"
+                        SelectedDate="{Binding FiltroDataInicial,
+                                               Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
+                    <!-- DATA FINAL -->
                     <DatePicker
                         Grid.Column="4"
                         materialDesign:HintAssist.Hint="Data final"
-                        SelectedDate="{Binding FiltroDataFinal}"
+                        SelectedDate="{Binding FiltroDataFinal,
+                                               Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
+                    <!-- FILTRO VENDEDOR -->
                     <ComboBox
                         Grid.Column="6"
                         DisplayMemberPath="Nome"
                         ItemsSource="{Binding Vendedores}"
                         materialDesign:HintAssist.Hint="Vendedor"
-                        SelectedItem="{Binding FiltroVendedor}"
+                        SelectedItem="{Binding FiltroVendedor,
+                                               Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
+                    <!-- FILTRO STATUS -->
                     <ComboBox
                         Grid.Column="8"
                         ItemsSource="{Binding StatusDisponiveis}"
                         materialDesign:HintAssist.Hint="Status"
-                        SelectedItem="{Binding FiltroStatus}"
+                        SelectedItem="{Binding FiltroStatus,
+                                               Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
-                    <StackPanel Grid.Column="10" Orientation="Horizontal">
+                    <!-- BOTÕES DOS FILTROS -->
+                    <StackPanel
+                        Grid.Column="10"
+                        Orientation="Horizontal">
+
                         <Button
                             Width="90"
                             Height="42"
@@ -243,6 +305,8 @@
                             Command="{Binding FiltrarCommand}"
                             Content="FILTRAR"
                             Foreground="White"
+                            IsEnabled="{Binding EstaCarregando,
+                                                Converter={StaticResource InverseBooleanConverter}}"
                             Style="{StaticResource MaterialDesignRaisedButton}" />
 
                         <Button
@@ -250,10 +314,13 @@
                             Height="42"
                             Command="{Binding LimparFiltrosCommand}"
                             Content="LIMPAR"
+                            IsEnabled="{Binding EstaCarregando,
+                                                Converter={StaticResource InverseBooleanConverter}}"
                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                     </StackPanel>
                 </Grid>
 
+                <!-- TABELA DOS LANÇAMENTOS -->
                 <DataGrid
                     Grid.Row="4"
                     AutoGenerateColumns="False"
@@ -261,78 +328,119 @@
                     HeadersVisibility="Column"
                     IsReadOnly="True"
                     ItemsSource="{Binding Lancamentos}"
-                    RowHeaderWidth="0">
+                    RowHeaderWidth="0"
+                    SelectionMode="Single">
+
                     <DataGrid.Columns>
+
+                        <!-- DATA DA VENDA -->
                         <DataGridTextColumn
-                            Width="0.8*"
-                            Binding="{Binding DataVenda, StringFormat={}{0:dd/MM/yyyy}}"
+                            Width="0.75*"
+                            Binding="{Binding DataVenda,
+                                              StringFormat={}{0:dd/MM/yyyy}}"
                             Header="DATA" />
 
+                        <!-- CLIENTE -->
                         <DataGridTextColumn
-                            Width="1.4*"
+                            Width="1.25*"
                             Binding="{Binding Cliente}"
                             Header="CLIENTE" />
 
+                        <!-- VENDEDOR -->
                         <DataGridTextColumn
-                            Width="1.15*"
+                            Width="1.05*"
                             Binding="{Binding VendedorNome}"
                             Header="VENDEDOR" />
 
+                        <!-- VALOR DA VENDA -->
                         <DataGridTextColumn
-                            Width="0.9*"
-                            Binding="{Binding ValorVenda, StringFormat={}{0:C2}}"
+                            Width="0.85*"
+                            Binding="{Binding ValorVenda,
+                                              StringFormat={}{0:C2}}"
                             Header="VENDA" />
 
+                        <!-- PERCENTUAL -->
                         <DataGridTextColumn
-                            Width="0.65*"
-                            Binding="{Binding PercentualComissao, StringFormat={}{0:N2}%}"
+                            Width="0.55*"
+                            Binding="{Binding PercentualComissao,
+                                              StringFormat={}{0:N2}%}"
                             Header="%" />
 
+                        <!-- COMISSÃO -->
                         <DataGridTextColumn
-                            Width="0.9*"
-                            Binding="{Binding ValorComissao, StringFormat={}{0:C2}}"
+                            Width="0.85*"
+                            Binding="{Binding ValorComissao,
+                                              StringFormat={}{0:C2}}"
                             Header="COMISSÃO" />
 
+                        <!-- DATA DO PAGAMENTO -->
+                        <DataGridTextColumn
+                            Width="0.8*"
+                            Binding="{Binding DataPagamento,
+                                              StringFormat={}{0:dd/MM/yyyy},
+                                              TargetNullValue={}}"
+                            Header="PAGO EM" />
+
+                        <!-- STATUS -->
                         <DataGridTemplateColumn
-                            Width="0.75*"
+                            Width="0.7*"
                             Header="STATUS">
+
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock
                                         FontWeight="SemiBold"
-                                        Foreground="{Binding Status, Converter={StaticResource StatusLancamentoToBrushConverter}}"
+                                        Foreground="{Binding Status,
+                                                             Converter={StaticResource StatusLancamentoToBrushConverter}}"
                                         Text="{Binding StatusDescricao}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- AÇÕES -->
                         <DataGridTemplateColumn
-                            Width="1.75*"
+                            Width="1.7*"
                             Header="AÇÕES">
+
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
+
                                         <Button
                                             Margin="0,0,5,0"
                                             Padding="8,4"
-                                            Command="{Binding DataContext.EditarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Command="{Binding DataContext.EditarCommand,
+                                                              RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Content="Editar"
+                                            IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                         <Button
                                             Margin="0,0,5,0"
                                             Padding="8,4"
-                                            Command="{Binding DataContext.AlternarStatusCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Command="{Binding DataContext.AlternarStatusCommand,
+                                                              RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
-                                            Content="{Binding Status, Converter={StaticResource StatusLancamentoToActionConverter}}"
+                                            Content="{Binding Status,
+                                                              Converter={StaticResource StatusLancamentoToActionConverter}}"
+                                            IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                         <Button
                                             Padding="8,4"
-                                            Click="Excluir_Click"
+                                            Command="{Binding DataContext.ExcluirCommand,
+                                                              RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
                                             Content="Excluir"
                                             Foreground="#D92D20"
+                                            IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -341,24 +449,31 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <DockPanel Grid.Row="5" Margin="0,12,0,0">
+                <!-- RODAPÉ -->
+                <DockPanel
+                    Grid.Row="5"
+                    Margin="0,12,0,0">
+
                     <ProgressBar
                         Width="120"
                         Height="3"
                         DockPanel.Dock="Right"
                         IsIndeterminate="True"
-                        Visibility="{Binding EstaCarregando, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Visibility="{Binding EstaCarregando,
+                                             Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                     <TextBlock
                         Margin="0,0,18,0"
-                        Foreground="{Binding MensagemEhErro, Converter={StaticResource BooleanToMessageBrushConverter}}"
+                        Foreground="{Binding MensagemEhErro,
+                                             Converter={StaticResource BooleanToMessageBrushConverter}}"
                         Text="{Binding Mensagem}"
                         TextWrapping="Wrap" />
 
                     <TextBlock
                         DockPanel.Dock="Right"
                         Foreground="#667085"
-                        Text="{Binding Lancamentos.Count, StringFormat={}Registros: {0}}" />
+                        Text="{Binding Lancamentos.Count,
+                                       StringFormat={}Registros: {0}}" />
                 </DockPanel>
             </Grid>
         </Border>

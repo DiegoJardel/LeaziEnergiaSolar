@@ -448,16 +448,50 @@ public class LeaziDbContext : DbContext
         modelBuilder.Entity<Lancamento>(entity =>
         {
             entity
+                .Property(x => x.DataVenda)
+                .IsRequired();
+
+            entity
+                .Property(x => x.Cliente)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            entity
+                .Property(x => x.CpfCnpjCliente)
+                .HasMaxLength(14);
+
+            entity
                 .Property(x => x.ValorVenda)
-                .HasPrecision(18, 2);
+                .HasPrecision(18, 2)
+                .IsRequired();
 
             entity
                 .Property(x => x.PercentualComissao)
-                .HasPrecision(5, 2);
+                .HasPrecision(5, 2)
+                .IsRequired();
 
             entity
                 .Property(x => x.ValorComissao)
-                .HasPrecision(18, 2);
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity
+                .Property(x => x.Status)
+                .IsRequired();
+
+            entity
+                .Property(x => x.DataPagamento);
+
+            entity
+                .Property(x => x.Observacao)
+                .HasMaxLength(500);
+
+            entity
+                .Property(x => x.DataCadastro)
+                .IsRequired();
+
+            entity
+                .Property(x => x.DataAtualizacao);
 
             entity
                 .HasOne(x => x.Vendedor)

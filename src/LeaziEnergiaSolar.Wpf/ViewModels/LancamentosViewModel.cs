@@ -8,8 +8,8 @@ using LeaziEnergiaSolar.Application.Interfaces;
 using LeaziEnergiaSolar.Domain.Enums;
 using LeaziEnergiaSolar.Wpf.Services;
 using LeaziEnergiaSolar.Wpf.Utils;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -58,6 +58,9 @@ public partial class LancamentosViewModel : ObservableObject
         StatusLancamento.Pendente;
 
     [ObservableProperty]
+    private DateTime? dataPagamento;
+
+    [ObservableProperty]
     private string observacao = string.Empty;
 
     [ObservableProperty]
@@ -84,20 +87,28 @@ public partial class LancamentosViewModel : ObservableObject
     [ObservableProperty]
     private bool estaCarregando;
 
-    public ObservableCollection<LancamentoDto> Lancamentos { get; } = new();
+    public ObservableCollection<LancamentoDto> Lancamentos { get; } =
+        new();
 
-    public ObservableCollection<VendedorDto> Vendedores { get; } = new();
+    public ObservableCollection<VendedorDto> Vendedores { get; } =
+        new();
 
-    public ObservableCollection<ClienteDto> Clientes { get; } = new();
+    public ObservableCollection<ClienteDto> Clientes { get; } =
+        new();
 
     public IReadOnlyList<StatusLancamento> StatusDisponiveis { get; } =
         Enum.GetValues<StatusLancamento>();
 
-    public bool EstaEditando => LancamentoId.HasValue;
+    public bool EstaEditando =>
+        LancamentoId.HasValue;
 
-    public string TituloFormulario => EstaEditando
-        ? "Editar lançamento"
-        : "Novo lançamento";
+    public bool PodeInformarDataPagamento =>
+        StatusSelecionado == StatusLancamento.Pago;
+
+    public string TituloFormulario =>
+        EstaEditando
+            ? "Editar lançamento"
+            : "Novo lançamento";
 
     public LancamentosViewModel(
         ILancamentoService lancamentoService,
@@ -105,23 +116,35 @@ public partial class LancamentosViewModel : ObservableObject
         IClienteService clienteService,
         IUsuarioSessaoService sessaoService)
     {
-        _lancamentoService = lancamentoService
-            ?? throw new ArgumentNullException(nameof(lancamentoService));
+        _lancamentoService =
+            lancamentoService
+            ?? throw new ArgumentNullException(
+                nameof(lancamentoService));
 
-        _vendedorService = vendedorService
-            ?? throw new ArgumentNullException(nameof(vendedorService));
+        _vendedorService =
+            vendedorService
+            ?? throw new ArgumentNullException(
+                nameof(vendedorService));
 
-        _clienteService = clienteService
-            ?? throw new ArgumentNullException(nameof(clienteService));
+        _clienteService =
+            clienteService
+            ?? throw new ArgumentNullException(
+                nameof(clienteService));
 
-        _sessaoService = sessaoService
-            ?? throw new ArgumentNullException(nameof(sessaoService));
+        _sessaoService =
+            sessaoService
+            ?? throw new ArgumentNullException(
+                nameof(sessaoService));
     }
 
-    partial void OnLancamentoIdChanged(int? value)
+    partial void OnLancamentoIdChanged(
+        int? value)
     {
-        OnPropertyChanged(nameof(EstaEditando));
-        OnPropertyChanged(nameof(TituloFormulario));
+        OnPropertyChanged(
+            nameof(EstaEditando));
+
+        OnPropertyChanged(
+            nameof(TituloFormulario));
     }
 
     partial void OnClienteSelecionadoChanged(
@@ -132,28 +155,36 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        Cliente = value.NomeRazaoSocial;
+        Cliente =
+            value.NomeRazaoSocial;
 
-        CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
-            value.CpfCnpj);
+        CpfCnpjCliente =
+            MaskHelper.FormatCpfCnpj(
+                value.CpfCnpj);
     }
 
-    partial void OnCpfCnpjClienteChanged(string value)
+    partial void OnCpfCnpjClienteChanged(
+        string value)
     {
-        var formatado = MaskHelper.FormatCpfCnpj(value);
+        var formatado =
+            MaskHelper.FormatCpfCnpj(
+                value);
 
         if (value != formatado)
         {
-            CpfCnpjCliente = formatado;
+            CpfCnpjCliente =
+                formatado;
         }
     }
 
-    partial void OnValorVendaChanged(string value)
+    partial void OnValorVendaChanged(
+        string value)
     {
         AtualizarCalculoComissao();
     }
 
-    partial void OnPercentualComissaoChanged(string value)
+    partial void OnPercentualComissaoChanged(
+        string value)
     {
         AtualizarCalculoComissao();
     }
@@ -164,9 +195,28 @@ public partial class LancamentosViewModel : ObservableObject
         if (!EstaEditando &&
             value is not null)
         {
-            PercentualComissao = value.PercentualComissao.ToString(
-                "N2",
-                CulturaBrasileira);
+            PercentualComissao =
+                value.PercentualComissao.ToString(
+                    "N2",
+                    CulturaBrasileira);
+        }
+    }
+
+    partial void OnStatusSelecionadoChanged(
+        StatusLancamento value)
+    {
+        OnPropertyChanged(
+            nameof(PodeInformarDataPagamento));
+
+        if (value == StatusLancamento.Pago)
+        {
+            DataPagamento ??=
+                DateTime.Today;
+        }
+        else
+        {
+            DataPagamento =
+                null;
         }
     }
 
@@ -194,11 +244,20 @@ public partial class LancamentosViewModel : ObservableObject
     [RelayCommand]
     private async Task LimparFiltrosAsync()
     {
-        Pesquisa = string.Empty;
-        FiltroDataInicial = null;
-        FiltroDataFinal = null;
-        FiltroVendedor = null;
-        FiltroStatus = null;
+        Pesquisa =
+            string.Empty;
+
+        FiltroDataInicial =
+            null;
+
+        FiltroDataFinal =
+            null;
+
+        FiltroVendedor =
+            null;
+
+        FiltroStatus =
+            null;
 
         await ExecutarAsync(
             CarregarLancamentosAsync,
@@ -216,6 +275,11 @@ public partial class LancamentosViewModel : ObservableObject
         }
 
         if (!ValidarDocumentoCliente())
+        {
+            return;
+        }
+
+        if (!ValidarDataPagamento())
         {
             return;
         }
@@ -269,63 +333,99 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        var usuarioId = UsuarioIdResponsavel
+        var usuarioId =
+            UsuarioIdResponsavel
             ?? _sessaoService.UsuarioAtual?.Id;
 
         if (!usuarioId.HasValue ||
             usuarioId.Value <= 0)
         {
             ExibirMensagem(
-                "Não foi possível identificar o usuário responsável pelo lançamento. " +
-                "Saia do sistema, entre novamente e tente salvar.",
+                "Não foi possível identificar o usuário responsável " +
+                "pelo lançamento. Saia do sistema, entre novamente " +
+                "e tente salvar.",
                 true);
 
             return;
         }
 
-        var vendedorId = VendedorSelecionado?.Id;
+        var vendedorId =
+            VendedorSelecionado?.Id;
 
         if (!vendedorId.HasValue ||
             vendedorId.Value <= 0)
         {
             ExibirMensagem(
-                "O vendedor selecionado não possui um identificador válido.",
+                "O vendedor selecionado não possui " +
+                "um identificador válido.",
                 true);
 
             return;
         }
 
-        var clienteId = ClienteSelecionado?.Id;
+        var clienteId =
+            ClienteSelecionado?.Id;
 
         if (clienteId.HasValue &&
             clienteId.Value <= 0)
         {
             ExibirMensagem(
-                "O cliente selecionado não possui um identificador válido.",
+                "O cliente selecionado não possui " +
+                "um identificador válido.",
                 true);
 
             return;
         }
 
-        var dto = new SalvarLancamentoDto
-        {
-            Id = LancamentoId,
-            DataVenda = DataVenda!.Value,
-            Cliente = Cliente,
-            CpfCnpjCliente = CpfCnpjCliente,
-            ClienteId = clienteId,
-            UsuarioId = usuarioId.Value,
-            VendedorId = vendedorId.Value,
-            ValorVenda = valorVendaDecimal,
-            PercentualComissao = percentualComissaoDecimal,
-            Status = StatusSelecionado,
-            Observacao = Observacao
-        };
+        var dto =
+            new SalvarLancamentoDto
+            {
+                Id =
+                    LancamentoId,
+
+                DataVenda =
+                    DataVenda!.Value,
+
+                Cliente =
+                    Cliente,
+
+                CpfCnpjCliente =
+                    CpfCnpjCliente,
+
+                ClienteId =
+                    clienteId,
+
+                UsuarioId =
+                    usuarioId.Value,
+
+                VendedorId =
+                    vendedorId.Value,
+
+                ValorVenda =
+                    valorVendaDecimal,
+
+                PercentualComissao =
+                    percentualComissaoDecimal,
+
+                Status =
+                    StatusSelecionado,
+
+                DataPagamento =
+                    StatusSelecionado ==
+                    StatusLancamento.Pago
+                        ? DataPagamento
+                        : null,
+
+                Observacao =
+                    Observacao
+            };
 
         await ExecutarAsync(
             async () =>
             {
-                var resultado = await _lancamentoService.SalvarAsync(dto);
+                var resultado =
+                    await _lancamentoService.SalvarAsync(
+                        dto);
 
                 ExibirMensagem(
                     resultado.Mensagem,
@@ -336,7 +436,8 @@ public partial class LancamentosViewModel : ObservableObject
                     return;
                 }
 
-                LimparFormulario(preservarMensagem: true);
+                LimparFormulario(
+                    preservarMensagem: true);
 
                 await CarregarLancamentosAsync();
             },
@@ -352,40 +453,64 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        LancamentoId = lancamento.Id;
-        UsuarioIdResponsavel = lancamento.UsuarioId;
-        DataVenda = lancamento.DataVenda;
+        LancamentoId =
+            lancamento.Id;
 
-        ClienteSelecionado = lancamento.ClienteId.HasValue
-            ? Clientes.FirstOrDefault(
-                cliente => cliente.Id == lancamento.ClienteId.Value)
-            : null;
+        UsuarioIdResponsavel =
+            lancamento.UsuarioId;
 
-        Cliente = NormalizarNome(lancamento.Cliente);
+        DataVenda =
+            lancamento.DataVenda;
 
-        CpfCnpjCliente = MaskHelper.FormatCpfCnpj(
-            lancamento.CpfCnpjCliente);
+        ClienteSelecionado =
+            lancamento.ClienteId.HasValue
+                ? Clientes.FirstOrDefault(
+                    cliente =>
+                        cliente.Id ==
+                        lancamento.ClienteId.Value)
+                : null;
 
-        VendedorSelecionado = Vendedores.FirstOrDefault(
-            vendedor => vendedor.Id == lancamento.VendedorId);
+        Cliente =
+            NormalizarNome(
+                lancamento.Cliente);
 
-        ValorVenda = lancamento.ValorVenda.ToString(
-            "C2",
-            CulturaBrasileira);
+        CpfCnpjCliente =
+            MaskHelper.FormatCpfCnpj(
+                lancamento.CpfCnpjCliente);
 
-        PercentualComissao = lancamento.PercentualComissao.ToString(
-            "N2",
-            CulturaBrasileira);
+        VendedorSelecionado =
+            Vendedores.FirstOrDefault(
+                vendedor =>
+                    vendedor.Id ==
+                    lancamento.VendedorId);
 
-        StatusSelecionado = lancamento.Status;
+        ValorVenda =
+            lancamento.ValorVenda.ToString(
+                "C2",
+                CulturaBrasileira);
 
-        Observacao = lancamento.Observacao?.Trim()
+        PercentualComissao =
+            lancamento.PercentualComissao.ToString(
+                "N2",
+                CulturaBrasileira);
+
+        StatusSelecionado =
+            lancamento.Status;
+
+        DataPagamento =
+            lancamento.DataPagamento;
+
+        Observacao =
+            lancamento.Observacao?.Trim()
             ?? string.Empty;
 
         AtualizarCalculoComissao();
 
-        Mensagem = string.Empty;
-        MensagemEhErro = false;
+        Mensagem =
+            string.Empty;
+
+        MensagemEhErro =
+            false;
     }
 
     [RelayCommand]
@@ -397,16 +522,19 @@ public partial class LancamentosViewModel : ObservableObject
             return;
         }
 
-        var novoStatus = lancamento.Status == StatusLancamento.Pago
-            ? StatusLancamento.Pendente
-            : StatusLancamento.Pago;
+        var novoStatus =
+            lancamento.Status ==
+            StatusLancamento.Pago
+                ? StatusLancamento.Pendente
+                : StatusLancamento.Pago;
 
         await ExecutarAsync(
             async () =>
             {
-                var resultado = await _lancamentoService.AlterarStatusAsync(
-                    lancamento.Id,
-                    novoStatus);
+                var resultado =
+                    await _lancamentoService.AlterarStatusAsync(
+                        lancamento.Id,
+                        novoStatus);
 
                 ExibirMensagem(
                     resultado.Mensagem,
@@ -434,8 +562,9 @@ public partial class LancamentosViewModel : ObservableObject
         await ExecutarAsync(
             async () =>
             {
-                var resultado = await _lancamentoService.ExcluirAsync(
-                    lancamento.Id);
+                var resultado =
+                    await _lancamentoService.ExcluirAsync(
+                        lancamento.Id);
 
                 ExibirMensagem(
                     resultado.Mensagem,
@@ -446,9 +575,11 @@ public partial class LancamentosViewModel : ObservableObject
                     return;
                 }
 
-                if (LancamentoId == lancamento.Id)
+                if (LancamentoId ==
+                    lancamento.Id)
                 {
-                    LimparFormulario(preservarMensagem: true);
+                    LimparFormulario(
+                        preservarMensagem: true);
                 }
 
                 await CarregarLancamentosAsync();
@@ -470,63 +601,87 @@ public partial class LancamentosViewModel : ObservableObject
 
     private async Task CarregarVendedoresAsync()
     {
-        var vendedorAtualId = VendedorSelecionado?.Id;
+        var vendedorAtualId =
+            VendedorSelecionado?.Id;
 
-        var vendedores = await _vendedorService.ListarAsync();
+        var vendedores =
+            await _vendedorService.ListarAsync();
 
         Vendedores.Clear();
 
         foreach (var vendedor in vendedores.Where(
                      vendedor => vendedor.Ativo))
         {
-            Vendedores.Add(vendedor);
+            Vendedores.Add(
+                vendedor);
         }
 
         if (vendedorAtualId.HasValue)
         {
-            VendedorSelecionado = Vendedores.FirstOrDefault(
-                vendedor => vendedor.Id == vendedorAtualId.Value);
+            VendedorSelecionado =
+                Vendedores.FirstOrDefault(
+                    vendedor =>
+                        vendedor.Id ==
+                        vendedorAtualId.Value);
         }
     }
 
     private async Task CarregarClientesAsync()
     {
-        var clienteAtualId = ClienteSelecionado?.Id;
+        var clienteAtualId =
+            ClienteSelecionado?.Id;
 
-        var clientes = await _clienteService.ListarAsync(
-            ativo: true);
+        var clientes =
+            await _clienteService.ListarAsync(
+                ativo: true);
 
         Clientes.Clear();
 
-        foreach (var cliente in clientes)
+        foreach (var clienteItem in clientes)
         {
-            Clientes.Add(cliente);
+            Clientes.Add(
+                clienteItem);
         }
 
         if (clienteAtualId.HasValue)
         {
-            ClienteSelecionado = Clientes.FirstOrDefault(
-                cliente => cliente.Id == clienteAtualId.Value);
+            ClienteSelecionado =
+                Clientes.FirstOrDefault(
+                    clienteItem =>
+                        clienteItem.Id ==
+                        clienteAtualId.Value);
         }
     }
 
     private async Task CarregarLancamentosAsync()
     {
-        var lancamentos = await _lancamentoService.ListarAsync(
-            new FiltroLancamentoDto
-            {
-                Pesquisa = Pesquisa?.Trim() ?? string.Empty,
-                DataInicial = FiltroDataInicial,
-                DataFinal = FiltroDataFinal,
-                VendedorId = FiltroVendedor?.Id,
-                Status = FiltroStatus
-            });
+        var lancamentos =
+            await _lancamentoService.ListarAsync(
+                new FiltroLancamentoDto
+                {
+                    Pesquisa =
+                        Pesquisa?.Trim()
+                        ?? string.Empty,
+
+                    DataInicial =
+                        FiltroDataInicial,
+
+                    DataFinal =
+                        FiltroDataFinal,
+
+                    VendedorId =
+                        FiltroVendedor?.Id,
+
+                    Status =
+                        FiltroStatus
+                });
 
         Lancamentos.Clear();
 
         foreach (var lancamento in lancamentos)
         {
-            Lancamentos.Add(lancamento);
+            Lancamentos.Add(
+                lancamento);
         }
     }
 
@@ -539,7 +694,8 @@ public partial class LancamentosViewModel : ObservableObject
                 PercentualComissao,
                 out var percentual))
         {
-            ValorComissao = "R$ 0,00";
+            ValorComissao =
+                "R$ 0,00";
 
             return;
         }
@@ -547,35 +703,46 @@ public partial class LancamentosViewModel : ObservableObject
         if (venda <= 0 ||
             percentual <= 0)
         {
-            ValorComissao = "R$ 0,00";
+            ValorComissao =
+                "R$ 0,00";
 
             return;
         }
 
-        var comissao = _lancamentoService.CalcularComissao(
-            venda,
-            percentual);
+        var comissao =
+            _lancamentoService.CalcularComissao(
+                venda,
+                percentual);
 
-        ValorComissao = comissao.ToString(
-            "C2",
-            CulturaBrasileira);
+        ValorComissao =
+            comissao.ToString(
+                "C2",
+                CulturaBrasileira);
     }
 
     private void NormalizarFormulario()
     {
-        Cliente = NormalizarNome(Cliente);
+        Cliente =
+            NormalizarNome(
+                Cliente);
 
-        CpfCnpjCliente = string.IsNullOrWhiteSpace(CpfCnpjCliente)
-            ? string.Empty
-            : MaskHelper.FormatCpfCnpj(CpfCnpjCliente);
+        CpfCnpjCliente =
+            string.IsNullOrWhiteSpace(
+                CpfCnpjCliente)
+                ? string.Empty
+                : MaskHelper.FormatCpfCnpj(
+                    CpfCnpjCliente);
 
-        ValorVenda = ValorVenda?.Trim()
+        ValorVenda =
+            ValorVenda?.Trim()
             ?? "R$ 0,00";
 
-        PercentualComissao = PercentualComissao?.Trim()
+        PercentualComissao =
+            PercentualComissao?.Trim()
             ?? string.Empty;
 
-        Observacao = Observacao?.Trim()
+        Observacao =
+            Observacao?.Trim()
             ?? string.Empty;
     }
 
@@ -590,7 +757,8 @@ public partial class LancamentosViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(Cliente))
+        if (string.IsNullOrWhiteSpace(
+                Cliente))
         {
             ExibirMensagem(
                 "Informe o nome do cliente.",
@@ -602,7 +770,8 @@ public partial class LancamentosViewModel : ObservableObject
         if (Cliente.Length < 3)
         {
             ExibirMensagem(
-                "O nome do cliente deve possuir pelo menos 3 caracteres.",
+                "O nome do cliente deve possuir " +
+                "pelo menos 3 caracteres.",
                 true);
 
             return false;
@@ -617,7 +786,8 @@ public partial class LancamentosViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(ValorVenda))
+        if (string.IsNullOrWhiteSpace(
+                ValorVenda))
         {
             ExibirMensagem(
                 "Informe o valor da venda.",
@@ -626,7 +796,8 @@ public partial class LancamentosViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(PercentualComissao))
+        if (string.IsNullOrWhiteSpace(
+                PercentualComissao))
         {
             ExibirMensagem(
                 "Informe o percentual de comissão.",
@@ -638,14 +809,61 @@ public partial class LancamentosViewModel : ObservableObject
         return true;
     }
 
+    private bool ValidarDataPagamento()
+    {
+        if (StatusSelecionado ==
+            StatusLancamento.Pendente)
+        {
+            DataPagamento =
+                null;
+
+            return true;
+        }
+
+        if (!DataPagamento.HasValue)
+        {
+            ExibirMensagem(
+                "Informe a data do pagamento.",
+                true);
+
+            return false;
+        }
+
+        if (DataVenda.HasValue &&
+            DataPagamento.Value.Date <
+            DataVenda.Value.Date)
+        {
+            ExibirMensagem(
+                "A data do pagamento não pode ser " +
+                "anterior à data da venda.",
+                true);
+
+            return false;
+        }
+
+        if (DataPagamento.Value.Date >
+            DateTime.Today)
+        {
+            ExibirMensagem(
+                "A data do pagamento não pode ser futura.",
+                true);
+
+            return false;
+        }
+
+        return true;
+    }
+
     private bool ValidarDocumentoCliente()
     {
-        if (string.IsNullOrWhiteSpace(CpfCnpjCliente))
+        if (string.IsNullOrWhiteSpace(
+                CpfCnpjCliente))
         {
             return true;
         }
 
-        if (DocumentValidator.IsValidCpfCnpj(CpfCnpjCliente))
+        if (DocumentValidator.IsValidCpfCnpj(
+                CpfCnpjCliente))
         {
             return true;
         }
@@ -660,19 +878,23 @@ public partial class LancamentosViewModel : ObservableObject
     private static string NormalizarNome(
         string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(
+                value))
         {
             return string.Empty;
         }
 
-        var partes = value
-            .Trim()
-            .Split(
-                ' ',
-                StringSplitOptions.RemoveEmptyEntries);
+        var partes =
+            value
+                .Trim()
+                .Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries);
 
         return string
-            .Join(' ', partes)
+            .Join(
+                ' ',
+                partes)
             .ToUpperInvariant();
     }
 
@@ -680,9 +902,11 @@ public partial class LancamentosViewModel : ObservableObject
         string? valor,
         out decimal resultado)
     {
-        if (string.IsNullOrWhiteSpace(valor))
+        if (string.IsNullOrWhiteSpace(
+                valor))
         {
-            resultado = 0m;
+            resultado =
+                0m;
 
             return false;
         }
@@ -705,7 +929,8 @@ public partial class LancamentosViewModel : ObservableObject
 
         try
         {
-            EstaCarregando = true;
+            EstaCarregando =
+                true;
 
             await acao();
         }
@@ -716,7 +941,8 @@ public partial class LancamentosViewModel : ObservableObject
                 ex);
 
             ExibirMensagem(
-                ObterMensagemBancoDados(ex),
+                ObterMensagemBancoDados(
+                    ex),
                 true);
         }
         catch (SqliteException ex)
@@ -726,7 +952,8 @@ public partial class LancamentosViewModel : ObservableObject
                 ex);
 
             ExibirMensagem(
-                ObterMensagemSqlite(ex),
+                ObterMensagemSqlite(
+                    ex),
                 true);
         }
         catch (InvalidOperationException ex)
@@ -736,7 +963,8 @@ public partial class LancamentosViewModel : ObservableObject
                 ex);
 
             ExibirMensagem(
-                $"Não foi possível {descricaoOperacao}: {ex.Message}",
+                $"Não foi possível {descricaoOperacao}: " +
+                ex.Message,
                 true);
         }
         catch (Exception ex)
@@ -745,9 +973,9 @@ public partial class LancamentosViewModel : ObservableObject
                 descricaoOperacao,
                 ex);
 
-            var mensagemRaiz = ex
-                .GetBaseException()
-                .Message;
+            var mensagemRaiz =
+                ex.GetBaseException()
+                    .Message;
 
             ExibirMensagem(
                 $"Não foi possível {descricaoOperacao}. " +
@@ -756,40 +984,45 @@ public partial class LancamentosViewModel : ObservableObject
         }
         finally
         {
-            EstaCarregando = false;
+            EstaCarregando =
+                false;
         }
     }
 
     private static string ObterMensagemBancoDados(
         DbUpdateException exception)
     {
-        var mensagemRaiz = exception
-            .GetBaseException()
-            .Message;
+        var mensagemRaiz =
+            exception
+                .GetBaseException()
+                .Message;
 
         if (ContemTexto(
                 mensagemRaiz,
                 "FOREIGN KEY constraint failed"))
         {
-            return "Não foi possível salvar o lançamento porque um dos vínculos " +
-                   "informados não existe no banco de dados. Verifique o cliente, " +
-                   "o vendedor e o usuário responsável.";
+            return "Não foi possível salvar o lançamento porque " +
+                   "um dos vínculos informados não existe no banco " +
+                   "de dados. Verifique o cliente, o vendedor e " +
+                   "o usuário responsável.";
         }
 
         if (ContemTexto(
                 mensagemRaiz,
                 "NOT NULL constraint failed"))
         {
-            return "Não foi possível salvar porque o banco de dados exige um campo " +
-                   $"que não foi informado. Detalhes: {mensagemRaiz}";
+            return "Não foi possível salvar porque o banco de dados " +
+                   "exige um campo que não foi informado. " +
+                   $"Detalhes: {mensagemRaiz}";
         }
 
         if (ContemTexto(
                 mensagemRaiz,
                 "UNIQUE constraint failed"))
         {
-            return "Não foi possível salvar porque já existe um registro com uma " +
-                   $"informação que deve ser única. Detalhes: {mensagemRaiz}";
+            return "Não foi possível salvar porque já existe um " +
+                   "registro com uma informação que deve ser única. " +
+                   $"Detalhes: {mensagemRaiz}";
         }
 
         if (ContemTexto(
@@ -823,7 +1056,8 @@ public partial class LancamentosViewModel : ObservableObject
     private static string ObterMensagemSqlite(
         SqliteException exception)
     {
-        var mensagem = exception.Message;
+        var mensagem =
+            exception.Message;
 
         if (ContemTexto(
                 mensagem,
@@ -841,17 +1075,18 @@ public partial class LancamentosViewModel : ObservableObject
                 mensagem,
                 "has no column named"))
         {
-            return "A estrutura do banco de dados está diferente do modelo atual. " +
-                   "Crie ou aplique a migration mais recente. " +
-                   $"Detalhes: {mensagem}";
+            return "A estrutura do banco de dados está diferente " +
+                   "do modelo atual. Crie ou aplique a migration " +
+                   $"mais recente. Detalhes: {mensagem}";
         }
 
         if (ContemTexto(
                 mensagem,
                 "FOREIGN KEY constraint failed"))
         {
-            return "Um dos registros relacionados não foi encontrado no banco. " +
-                   "Verifique o cliente, o vendedor e o usuário responsável.";
+            return "Um dos registros relacionados não foi encontrado " +
+                   "no banco. Verifique o cliente, o vendedor e " +
+                   "o usuário responsável.";
         }
 
         return $"Erro no banco de dados SQLite: {mensagem}";
@@ -886,23 +1121,52 @@ public partial class LancamentosViewModel : ObservableObject
     private void LimparFormulario(
         bool preservarMensagem = false)
     {
-        LancamentoId = null;
-        UsuarioIdResponsavel = null;
-        DataVenda = DateTime.Today;
-        ClienteSelecionado = null;
-        Cliente = string.Empty;
-        CpfCnpjCliente = string.Empty;
-        VendedorSelecionado = null;
-        ValorVenda = "R$ 0,00";
-        PercentualComissao = "5,00";
-        ValorComissao = "R$ 0,00";
-        StatusSelecionado = StatusLancamento.Pendente;
-        Observacao = string.Empty;
+        LancamentoId =
+            null;
+
+        UsuarioIdResponsavel =
+            null;
+
+        DataVenda =
+            DateTime.Today;
+
+        ClienteSelecionado =
+            null;
+
+        Cliente =
+            string.Empty;
+
+        CpfCnpjCliente =
+            string.Empty;
+
+        VendedorSelecionado =
+            null;
+
+        ValorVenda =
+            "R$ 0,00";
+
+        PercentualComissao =
+            "5,00";
+
+        ValorComissao =
+            "R$ 0,00";
+
+        StatusSelecionado =
+            StatusLancamento.Pendente;
+
+        DataPagamento =
+            null;
+
+        Observacao =
+            string.Empty;
 
         if (!preservarMensagem)
         {
-            Mensagem = string.Empty;
-            MensagemEhErro = false;
+            Mensagem =
+                string.Empty;
+
+            MensagemEhErro =
+                false;
         }
     }
 
@@ -910,7 +1174,10 @@ public partial class LancamentosViewModel : ObservableObject
         string mensagem,
         bool ehErro)
     {
-        Mensagem = mensagem;
-        MensagemEhErro = ehErro;
+        Mensagem =
+            mensagem;
+
+        MensagemEhErro =
+            ehErro;
     }
 }

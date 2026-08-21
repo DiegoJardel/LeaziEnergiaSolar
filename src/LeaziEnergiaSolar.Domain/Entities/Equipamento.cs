@@ -22,6 +22,11 @@ public class Equipamento
     public UnidadeMedida UnidadeMedida { get; set; } =
         null!;
 
+    public int FornecedorId { get; set; }
+
+    public Fornecedor Fornecedor { get; set; } =
+        null!;
+
     public string? Observacao { get; set; }
 
     public bool Ativo { get; set; } = true;

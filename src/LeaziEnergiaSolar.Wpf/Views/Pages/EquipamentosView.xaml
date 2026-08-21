@@ -43,6 +43,7 @@
                                     Foreground="#C62828"
                                     Text="Campos marcados com asterisco são obrigatórios." />
 
+                                <!-- CATEGORIA -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Descricao"
@@ -52,6 +53,7 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
+                                <!-- MARCA -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Nome"
@@ -61,6 +63,7 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
+                                <!-- MODELO -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Nome"
@@ -71,6 +74,7 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
+                                <!-- UNIDADE -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Sigla"
@@ -80,6 +84,17 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
+                                <!-- FORNECEDOR -->
+                                <ComboBox
+                                    Margin="0,0,0,12"
+                                    DisplayMemberPath="NomeRazaoSocial"
+                                    ItemsSource="{Binding FornecedoresDisponiveis}"
+                                    materialDesign:HintAssist.Hint="Fornecedor"
+                                    SelectedItem="{Binding FornecedorSelecionado}"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                    utils:RequiredFieldHelper.IsRequired="True" />
+
+                                <!-- OBSERVAÇÃO -->
                                 <TextBox
                                     Height="75"
                                     Margin="0,0,0,14"
@@ -92,12 +107,14 @@
                                                    UpdateSourceTrigger=PropertyChanged}"
                                     TextWrapping="Wrap" />
 
+                                <!-- STATUS -->
                                 <ToggleButton
                                     Margin="0,0,0,14"
                                     Content="Equipamento ativo"
                                     IsChecked="{Binding Ativo}"
                                     Style="{StaticResource MaterialDesignSwitchToggleButton}" />
 
+                                <!-- MENSAGEM -->
                                 <TextBlock
                                     Margin="0,0,0,12"
                                     Foreground="{Binding MensagemEhErro,
@@ -105,6 +122,7 @@
                                     Text="{Binding Mensagem}"
                                     TextWrapping="Wrap" />
 
+                                <!-- BOTÕES -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -152,12 +170,14 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
+                            <!-- FILTROS -->
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="145" />
-                                    <ColumnDefinition Width="145" />
-                                    <ColumnDefinition Width="115" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="155" />
+                                    <ColumnDefinition Width="105" />
                                     <ColumnDefinition Width="105" />
                                 </Grid.ColumnDefinitions>
 
@@ -190,57 +210,77 @@
                                 <ComboBox
                                     Grid.Column="3"
                                     Margin="0,0,8,0"
+                                    DisplayMemberPath="NomeRazaoSocial"
+                                    ItemsSource="{Binding Fornecedores}"
+                                    materialDesign:HintAssist.Hint="Fornecedor"
+                                    SelectedItem="{Binding FiltroFornecedor}"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                                <ComboBox
+                                    Grid.Column="4"
+                                    Margin="0,0,8,0"
                                     ItemsSource="{Binding FiltrosStatus}"
                                     materialDesign:HintAssist.Hint="Status"
                                     SelectedItem="{Binding FiltroStatus}"
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
                                 <Button
-                                    Grid.Column="4"
+                                    Grid.Column="5"
                                     Height="42"
                                     Background="{StaticResource LeaziGreenBrush}"
                                     Command="{Binding PesquisarCommand}"
                                     Content="BUSCAR"
                                     Foreground="White"
+                                    IsEnabled="{Binding EstaCarregando,
+                                                        Converter={StaticResource InverseBooleanConverter}}"
                                     Style="{StaticResource MaterialDesignRaisedButton}" />
                             </Grid>
 
+                            <!-- TABELA -->
                             <DataGrid
                                 Grid.Row="2"
                                 AutoGenerateColumns="False"
                                 CanUserAddRows="False"
+                                HeadersVisibility="Column"
                                 IsReadOnly="True"
                                 ItemsSource="{Binding Equipamentos}"
-                                RowHeaderWidth="0">
+                                RowHeaderWidth="0"
+                                SelectedItem="{Binding EquipamentoSelecionado}"
+                                SelectionMode="Single">
 
                                 <DataGrid.Columns>
                                     <DataGridTextColumn
-                                        Width="65"
+                                        Width="60"
                                         Binding="{Binding Codigo}"
                                         Header="CÓD." />
 
                                     <DataGridTextColumn
-                                        Width="1.1*"
+                                        Width="1.05*"
                                         Binding="{Binding Categoria}"
                                         Header="CATEGORIA" />
 
                                     <DataGridTextColumn
-                                        Width="1*"
+                                        Width="0.9*"
                                         Binding="{Binding Marca}"
                                         Header="MARCA" />
 
                                     <DataGridTextColumn
-                                        Width="1*"
+                                        Width="1.1*"
                                         Binding="{Binding Modelo}"
                                         Header="MODELO" />
 
                                     <DataGridTextColumn
-                                        Width="65"
+                                        Width="1.3*"
+                                        Binding="{Binding Fornecedor}"
+                                        Header="FORNECEDOR" />
+
+                                    <DataGridTextColumn
+                                        Width="70"
                                         Binding="{Binding UnidadeMedida}"
                                         Header="UN." />
 
                                     <DataGridTemplateColumn
-                                        Width="75"
+                                        Width="80"
                                         Header="STATUS">
 
                                         <DataGridTemplateColumn.CellTemplate>
@@ -255,7 +295,7 @@
                                     </DataGridTemplateColumn>
 
                                     <DataGridTemplateColumn
-                                        Width="155"
+                                        Width="160"
                                         Header="AÇÕES">
 
                                         <DataGridTemplateColumn.CellTemplate>
@@ -268,6 +308,9 @@
                                                                           RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                         CommandParameter="{Binding}"
                                                         Content="Editar"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                     <Button
@@ -277,6 +320,9 @@
                                                         CommandParameter="{Binding}"
                                                         Content="{Binding Ativo,
                                                                           Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -285,12 +331,24 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <TextBlock
+                            <!-- RODAPÉ -->
+                            <DockPanel
                                 Grid.Row="3"
-                                Margin="0,12,0,0"
-                                Foreground="#667085"
-                                Text="{Binding Equipamentos.Count,
-                                               StringFormat={}Registros encontrados: {0}}" />
+                                Margin="0,12,0,0">
+
+                                <ProgressBar
+                                    Width="120"
+                                    Height="3"
+                                    DockPanel.Dock="Right"
+                                    IsIndeterminate="True"
+                                    Visibility="{Binding EstaCarregando,
+                                                         Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                <TextBlock
+                                    Foreground="#667085"
+                                    Text="{Binding Equipamentos.Count,
+                                                   StringFormat={}Registros encontrados: {0}}" />
+                            </DockPanel>
                         </Grid>
                     </Border>
                 </Grid>
@@ -323,6 +381,12 @@
                                 Margin="0,4,0,20"
                                 Foreground="#667085"
                                 Text="Cadastro auxiliar de categorias." />
+
+                            <TextBlock
+                                Margin="0,0,0,14"
+                                FontSize="11"
+                                Foreground="#C62828"
+                                Text="Campos marcados com asterisco são obrigatórios." />
 
                             <TextBox
                                 Margin="0,0,0,12"
@@ -386,6 +450,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0">
@@ -424,10 +489,20 @@
                                         Binding="{Binding Descricao}"
                                         Header="DESCRIÇÃO" />
 
-                                    <DataGridTextColumn
+                                    <DataGridTemplateColumn
                                         Width="120"
-                                        Binding="{Binding Status}"
-                                        Header="STATUS" />
+                                        Header="STATUS">
+
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{Binding Ativo,
+                                                                         Converter={StaticResource BooleanToStatusBrushConverter}}"
+                                                    Text="{Binding Status}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
                                     <DataGridTemplateColumn
                                         Width="180"
@@ -443,6 +518,9 @@
                                                                           RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                         CommandParameter="{Binding}"
                                                         Content="Editar"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                     <Button
@@ -452,6 +530,9 @@
                                                         CommandParameter="{Binding}"
                                                         Content="{Binding Ativo,
                                                                           Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -459,6 +540,13 @@
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
+
+                            <TextBlock
+                                Grid.Row="3"
+                                Margin="0,12,0,0"
+                                Foreground="#667085"
+                                Text="{Binding Categorias.Count,
+                                               StringFormat={}Categorias encontradas: {0}}" />
                         </Grid>
                     </Border>
                 </Grid>
@@ -630,10 +718,20 @@
                                                 Binding="{Binding Nome}"
                                                 Header="NOME" />
 
-                                            <DataGridTextColumn
+                                            <DataGridTemplateColumn
                                                 Width="100"
-                                                Binding="{Binding Status}"
-                                                Header="STATUS" />
+                                                Header="STATUS">
+
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            FontWeight="SemiBold"
+                                                            Foreground="{Binding Ativo,
+                                                                                 Converter={StaticResource BooleanToStatusBrushConverter}}"
+                                                            Text="{Binding Status}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn
                                                 Width="310"
@@ -649,6 +747,9 @@
                                                                                   RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                 CommandParameter="{Binding}"
                                                                 Content="Modelos"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                             <Button
@@ -658,6 +759,9 @@
                                                                                   RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                 CommandParameter="{Binding}"
                                                                 Content="Editar"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                             <Button
@@ -668,6 +772,9 @@
                                                                 CommandParameter="{Binding}"
                                                                 Content="{Binding Ativo,
                                                                                   Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                             <Button
@@ -677,6 +784,9 @@
                                                                 CommandParameter="{Binding}"
                                                                 Content="Excluir"
                                                                 Foreground="#D92D20"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -874,10 +984,20 @@
                                                 Binding="{Binding Observacao}"
                                                 Header="OBSERVAÇÃO" />
 
-                                            <DataGridTextColumn
+                                            <DataGridTemplateColumn
                                                 Width="100"
-                                                Binding="{Binding Status}"
-                                                Header="STATUS" />
+                                                Header="STATUS">
+
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            FontWeight="SemiBold"
+                                                            Foreground="{Binding Ativo,
+                                                                                 Converter={StaticResource BooleanToStatusBrushConverter}}"
+                                                            Text="{Binding Status}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn
                                                 Width="250"
@@ -893,6 +1013,9 @@
                                                                                   RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                 CommandParameter="{Binding}"
                                                                 Content="Editar"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                             <Button
@@ -903,6 +1026,9 @@
                                                                 CommandParameter="{Binding}"
                                                                 Content="{Binding Ativo,
                                                                                   Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                             <Button
@@ -912,6 +1038,9 @@
                                                                 CommandParameter="{Binding}"
                                                                 Content="Excluir"
                                                                 Foreground="#D92D20"
+                                                                IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                                    Converter={StaticResource InverseBooleanConverter}}"
                                                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -960,6 +1089,12 @@
                                 Margin="0,4,0,20"
                                 Foreground="#667085"
                                 Text="Cadastro auxiliar de unidades de medida." />
+
+                            <TextBlock
+                                Margin="0,0,0,14"
+                                FontSize="11"
+                                Foreground="#C62828"
+                                Text="Campos marcados com asterisco são obrigatórios." />
 
                             <TextBox
                                 Margin="0,0,0,12"
@@ -1026,6 +1161,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0">
@@ -1074,10 +1210,20 @@
                                         Binding="{Binding PermiteQuantidadeDecimal}"
                                         Header="DECIMAL" />
 
-                                    <DataGridTextColumn
+                                    <DataGridTemplateColumn
                                         Width="100"
-                                        Binding="{Binding Status}"
-                                        Header="STATUS" />
+                                        Header="STATUS">
+
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{Binding Ativo,
+                                                                         Converter={StaticResource BooleanToStatusBrushConverter}}"
+                                                    Text="{Binding Status}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
                                     <DataGridTemplateColumn
                                         Width="180"
@@ -1093,6 +1239,9 @@
                                                                           RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                         CommandParameter="{Binding}"
                                                         Content="Editar"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                     <Button
@@ -1102,6 +1251,9 @@
                                                         CommandParameter="{Binding}"
                                                         Content="{Binding Ativo,
                                                                           Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando,
+                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                                            Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -1109,6 +1261,13 @@
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
+
+                            <TextBlock
+                                Grid.Row="3"
+                                Margin="0,12,0,0"
+                                Foreground="#667085"
+                                Text="{Binding Unidades.Count,
+                                               StringFormat={}Unidades encontradas: {0}}" />
                         </Grid>
                     </Border>
                 </Grid>

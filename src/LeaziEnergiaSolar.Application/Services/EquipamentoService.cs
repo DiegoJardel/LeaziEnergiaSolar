@@ -13,19 +13,33 @@ public sealed class EquipamentoService : IEquipamentoService
     private readonly IMarcaRepository _marcaRepository;
     private readonly IModeloEquipamentoRepository _modeloRepository;
     private readonly IUnidadeMedidaRepository _unidadeRepository;
+    private readonly IFornecedorRepository _fornecedorRepository;
 
     public EquipamentoService(
         IEquipamentoRepository repository,
         ICategoriaEquipamentoRepository categoriaRepository,
         IMarcaRepository marcaRepository,
         IModeloEquipamentoRepository modeloRepository,
-        IUnidadeMedidaRepository unidadeRepository)
+        IUnidadeMedidaRepository unidadeRepository,
+        IFornecedorRepository fornecedorRepository)
     {
-        _repository = repository;
-        _categoriaRepository = categoriaRepository;
-        _marcaRepository = marcaRepository;
-        _modeloRepository = modeloRepository;
-        _unidadeRepository = unidadeRepository;
+        _repository =
+            repository;
+
+        _categoriaRepository =
+            categoriaRepository;
+
+        _marcaRepository =
+            marcaRepository;
+
+        _modeloRepository =
+            modeloRepository;
+
+        _unidadeRepository =
+            unidadeRepository;
+
+        _fornecedorRepository =
+            fornecedorRepository;
     }
 
     public async Task<IReadOnlyList<EquipamentoDto>> ListarAsync(
@@ -35,12 +49,13 @@ public sealed class EquipamentoService : IEquipamentoService
         bool? ativo = null,
         CancellationToken cancellationToken = default)
     {
-        var itens = await _repository.ListarAsync(
-            pesquisa,
-            categoriaId,
-            marcaId,
-            ativo,
-            cancellationToken);
+        var itens =
+            await _repository.ListarAsync(
+                pesquisa,
+                categoriaId,
+                marcaId,
+                ativo,
+                cancellationToken);
 
         return itens
             .Select(Mapear)
@@ -51,9 +66,10 @@ public sealed class EquipamentoService : IEquipamentoService
         int id,
         CancellationToken cancellationToken = default)
     {
-        var item = await _repository.ObterAsync(
-            id,
-            cancellationToken);
+        var item =
+            await _repository.ObterAsync(
+                id,
+                cancellationToken);
 
         return item is null
             ? null
@@ -64,7 +80,8 @@ public sealed class EquipamentoService : IEquipamentoService
         SalvarEquipamentoDto dto,
         CancellationToken cancellationToken = default)
     {
-        dto = Normalizar(dto);
+        dto =
+            Normalizar(dto);
 
         var erros =
             EquipamentoValidator.Validar(dto);
@@ -81,9 +98,10 @@ public sealed class EquipamentoService : IEquipamentoService
 
         if (dto.Id.HasValue)
         {
-            existente = await _repository.ObterAsync(
-                dto.Id.Value,
-                cancellationToken);
+            existente =
+                await _repository.ObterAsync(
+                    dto.Id.Value,
+                    cancellationToken);
 
             if (existente is null)
             {
@@ -91,6 +109,10 @@ public sealed class EquipamentoService : IEquipamentoService
                     "O equipamento selecionado não foi encontrado.");
             }
         }
+
+        /*
+         * CATEGORIA
+         */
 
         var categoria =
             await _categoriaRepository.ObterAsync(
@@ -115,6 +137,10 @@ public sealed class EquipamentoService : IEquipamentoService
                 "Selecione uma categoria ativa válida.");
         }
 
+        /*
+         * MARCA
+         */
+
         var marca =
             await _marcaRepository.ObterAsync(
                 dto.MarcaId,
@@ -128,7 +154,8 @@ public sealed class EquipamentoService : IEquipamentoService
 
         var marcaFoiAlterada =
             existente is null ||
-            existente.MarcaId != dto.MarcaId;
+            existente.MarcaId !=
+            dto.MarcaId;
 
         if (!marca.Ativo &&
             marcaFoiAlterada)
@@ -136,6 +163,10 @@ public sealed class EquipamentoService : IEquipamentoService
             return ResultadoOperacaoDto.Falha(
                 "Selecione uma marca ativa válida.");
         }
+
+        /*
+         * MODELO
+         */
 
         var modeloExiste =
             await _modeloRepository.ExisteNomeAsync(
@@ -172,11 +203,12 @@ public sealed class EquipamentoService : IEquipamentoService
 
         var modeloFoiAlterado =
             existente is null ||
+            existente.MarcaId !=
+            dto.MarcaId ||
             !string.Equals(
                 existente.Modelo,
                 dto.Modelo,
-                StringComparison.OrdinalIgnoreCase) ||
-            existente.MarcaId != dto.MarcaId;
+                StringComparison.OrdinalIgnoreCase);
 
         if (!modeloSelecionado.Ativo &&
             modeloFoiAlterado)
@@ -184,6 +216,10 @@ public sealed class EquipamentoService : IEquipamentoService
             return ResultadoOperacaoDto.Falha(
                 "Selecione um modelo ativo válido.");
         }
+
+        /*
+         * UNIDADE DE MEDIDA
+         */
 
         var unidade =
             await _unidadeRepository.ObterAsync(
@@ -208,6 +244,37 @@ public sealed class EquipamentoService : IEquipamentoService
                 "Selecione uma unidade de medida ativa válida.");
         }
 
+        /*
+         * FORNECEDOR
+         */
+
+        var fornecedor =
+            await _fornecedorRepository.ObterAsync(
+                dto.FornecedorId,
+                cancellationToken);
+
+        if (fornecedor is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O fornecedor selecionado não foi encontrado.");
+        }
+
+        var fornecedorFoiAlterado =
+            existente is null ||
+            existente.FornecedorId !=
+            dto.FornecedorId;
+
+        if (!fornecedor.Ativo &&
+            fornecedorFoiAlterado)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Selecione um fornecedor ativo válido.");
+        }
+
+        /*
+         * DUPLICIDADE
+         */
+
         var duplicado =
             await _repository.ExisteDuplicadoAsync(
                 dto.CategoriaEquipamentoId,
@@ -223,6 +290,10 @@ public sealed class EquipamentoService : IEquipamentoService
                 "marca e modelo.");
         }
 
+        /*
+         * EDIÇÃO
+         */
+
         if (dto.Id.HasValue)
         {
             existente!.CategoriaEquipamentoId =
@@ -236,6 +307,9 @@ public sealed class EquipamentoService : IEquipamentoService
 
             existente.UnidadeMedidaId =
                 dto.UnidadeMedidaId;
+
+            existente.FornecedorId =
+                dto.FornecedorId;
 
             existente.Observacao =
                 ValorNulo(dto.Observacao);
@@ -254,28 +328,37 @@ public sealed class EquipamentoService : IEquipamentoService
                 "Equipamento atualizado com sucesso.");
         }
 
-        var novo = new Equipamento
-        {
-            CategoriaEquipamentoId =
-                dto.CategoriaEquipamentoId,
+        /*
+         * NOVO CADASTRO
+         */
 
-            MarcaId =
-                dto.MarcaId,
+        var novo =
+            new Equipamento
+            {
+                CategoriaEquipamentoId =
+                    dto.CategoriaEquipamentoId,
 
-            Modelo =
-                dto.Modelo,
+                MarcaId =
+                    dto.MarcaId,
 
-            UnidadeMedidaId =
-                dto.UnidadeMedidaId,
+                Modelo =
+                    dto.Modelo,
 
-            Observacao =
-                ValorNulo(dto.Observacao),
+                UnidadeMedidaId =
+                    dto.UnidadeMedidaId,
 
-            Ativo = true,
+                FornecedorId =
+                    dto.FornecedorId,
 
-            DataCadastro =
-                DateTime.Now
-        };
+                Observacao =
+                    ValorNulo(dto.Observacao),
+
+                Ativo =
+                    dto.Ativo,
+
+                DataCadastro =
+                    DateTime.Now
+            };
 
         await _repository.AdicionarAsync(
             novo,
@@ -300,6 +383,10 @@ public sealed class EquipamentoService : IEquipamentoService
             return ResultadoOperacaoDto.Falha(
                 "O equipamento selecionado não foi encontrado.");
         }
+
+        /*
+         * SOMENTE AO REATIVAR
+         */
 
         if (ativo)
         {
@@ -363,6 +450,19 @@ public sealed class EquipamentoService : IEquipamentoService
                     "Não é possível reativar o equipamento porque " +
                     "a unidade de medida está inativa.");
             }
+
+            var fornecedor =
+                await _fornecedorRepository.ObterAsync(
+                    entidade.FornecedorId,
+                    cancellationToken);
+
+            if (fornecedor is null ||
+                !fornecedor.Ativo)
+            {
+                return ResultadoOperacaoDto.Falha(
+                    "Não é possível reativar o equipamento porque " +
+                    "o fornecedor está inativo.");
+            }
         }
 
         entidade.Ativo =
@@ -380,6 +480,10 @@ public sealed class EquipamentoService : IEquipamentoService
                 ? "Equipamento reativado com sucesso."
                 : "Equipamento inativado com sucesso.");
     }
+
+    /*
+     * MAPEAMENTO
+     */
 
     private static EquipamentoDto Mapear(
         Equipamento entidade)
@@ -411,8 +515,15 @@ public sealed class EquipamentoService : IEquipamentoService
                 $"{entidade.UnidadeMedida.Sigla} - " +
                 entidade.UnidadeMedida.Descricao,
 
+            FornecedorId =
+                entidade.FornecedorId,
+
+            Fornecedor =
+                entidade.Fornecedor.NomeRazaoSocial,
+
             Observacao =
-                entidade.Observacao ?? string.Empty,
+                entidade.Observacao ??
+                string.Empty,
 
             Ativo =
                 entidade.Ativo,
@@ -424,6 +535,10 @@ public sealed class EquipamentoService : IEquipamentoService
                 entidade.DataAtualizacao
         };
     }
+
+    /*
+     * NORMALIZAÇÃO
+     */
 
     private static SalvarEquipamentoDto Normalizar(
         SalvarEquipamentoDto dto)
@@ -444,6 +559,9 @@ public sealed class EquipamentoService : IEquipamentoService
 
             UnidadeMedidaId =
                 dto.UnidadeMedidaId,
+
+            FornecedorId =
+                dto.FornecedorId,
 
             Observacao =
                 NormalizarTexto(dto.Observacao),

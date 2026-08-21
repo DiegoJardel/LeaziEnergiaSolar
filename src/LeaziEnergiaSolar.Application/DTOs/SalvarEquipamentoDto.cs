@@ -13,6 +13,8 @@ public sealed class SalvarEquipamentoDto
 
     public int UnidadeMedidaId { get; init; }
 
+    public int FornecedorId { get; init; }
+
     public string Observacao { get; init; } =
         string.Empty;
 

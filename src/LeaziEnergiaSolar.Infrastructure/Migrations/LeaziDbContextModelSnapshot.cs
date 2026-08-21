@@ -176,6 +176,9 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("FornecedorId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("MarcaId")
                         .HasColumnType("INTEGER");
 
@@ -193,6 +196,8 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FornecedorId");
 
                     b.HasIndex("MarcaId");
 
@@ -583,6 +588,12 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Fornecedor", "Fornecedor")
+                        .WithMany("Equipamentos")
+                        .HasForeignKey("FornecedorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LeaziEnergiaSolar.Domain.Entities.Marca", "Marca")
                         .WithMany("Equipamentos")
                         .HasForeignKey("MarcaId")
@@ -596,6 +607,8 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("CategoriaEquipamento");
+
+                    b.Navigation("Fornecedor");
 
                     b.Navigation("Marca");
 
@@ -662,6 +675,11 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Estado", b =>
                 {
                     b.Navigation("Municipios");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Fornecedor", b =>
+                {
+                    b.Navigation("Equipamentos");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Marca", b =>

@@ -381,6 +381,14 @@ public class LeaziDbContext : DbContext
                 .HasForeignKey(x => x.CategoriaEquipamentoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
+            entity
+                .HasOne(x => x.Fornecedor)
+                .WithMany(x => x.Equipamentos)
+                .HasForeignKey(x => x.FornecedorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             entity
                 .HasOne(x => x.Marca)
                 .WithMany(x => x.Equipamentos)

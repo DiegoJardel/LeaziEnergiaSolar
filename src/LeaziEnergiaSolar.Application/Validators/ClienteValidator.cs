@@ -65,7 +65,7 @@ public static class ClienteValidator
 
         if (!string.IsNullOrWhiteSpace(
                 cliente.Email) &&
-            !EmailValido(
+            !EmailValidator.IsValid(
                 cliente.Email))
         {
             erros.Add(
@@ -172,27 +172,4 @@ public static class ClienteValidator
         }
     }
 
-    private static bool EmailValido(
-        string valor)
-    {
-        var email =
-            valor.Trim();
-
-        if (email.Length > 150 ||
-            email.Contains(' ') ||
-            email.Count(
-                caractere =>
-                    caractere == '@') != 1)
-        {
-            return false;
-        }
-
-        var partes =
-            email.Split('@');
-
-        return partes[0].Length > 0 &&
-               partes[1].Contains('.') &&
-               !partes[1].StartsWith('.') &&
-               !partes[1].EndsWith('.');
-    }
 }

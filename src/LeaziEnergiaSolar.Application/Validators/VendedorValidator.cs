@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using LeaziEnergiaSolar.Application.DTOs;
 
 namespace LeaziEnergiaSolar.Application.Validators;
@@ -30,7 +29,7 @@ public static class VendedorValidator
             erros.Add("Informe um telefone com DDD válido.");
         }
 
-        if (!EmailValido(vendedor.Email))
+        if (!EmailValidator.IsValid(vendedor.Email))
         {
             erros.Add("Informe um e-mail válido.");
         }
@@ -43,20 +42,4 @@ public static class VendedorValidator
         return erros;
     }
 
-    private static bool EmailValido(string? email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            return false;
-        }
-
-        try
-        {
-            return new MailAddress(email.Trim()).Address == email.Trim();
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-    }
 }

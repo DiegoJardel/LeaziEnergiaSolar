@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
+using LeaziEnergiaSolar.Wpf.Utils;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -42,10 +43,8 @@ public partial class DashboardViewModel : ObservableObject
 
     public ObservableCollection<LancamentoDto> UltimosLancamentos { get; } = new();
 
-    public IReadOnlyList<int> AnosDisponiveis { get; } = Enumerable
-        .Range(DateTime.Today.Year - 5, 11)
-        .OrderByDescending(ano => ano)
-        .ToList();
+    public IReadOnlyList<int> AnosDisponiveis { get; } =
+        YearFilterHelper.CriarAnosDisponiveis();
 
     public IReadOnlyList<MesFiltroDto> MesesDisponiveis { get; } =
         CriarMesesDisponiveis();

@@ -11,54 +11,68 @@ public partial class MainWindow : Window
 {
     private readonly IUsuarioSessaoService _usuarioSessaoService;
 
-    public MainWindow(IUsuarioSessaoService usuarioSessaoService)
+    public MainWindow(
+        IUsuarioSessaoService usuarioSessaoService)
     {
         InitializeComponent();
 
-        _usuarioSessaoService = usuarioSessaoService;
+        _usuarioSessaoService =
+            usuarioSessaoService;
+
         CarregarUsuarioAutenticado();
         AbrirDashboard();
     }
 
     private void CarregarUsuarioAutenticado()
     {
-        var usuario = _usuarioSessaoService.UsuarioAtual;
+        var usuario =
+            _usuarioSessaoService.UsuarioAtual;
 
         if (usuario is null)
         {
             FecharEVoltarAoLogin();
+
             return;
         }
 
-        UsuarioNomeText.Text = usuario.Nome;
-        UsuarioPerfilText.Text = usuario.Perfil.ToString();
+        UsuarioNomeText.Text =
+            usuario.Nome;
 
-        UsuariosButton.Visibility = usuario.Perfil == PerfilUsuario.Administrador
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        UsuarioPerfilText.Text =
+            usuario.Perfil.ToString();
+
+        UsuariosButton.Visibility =
+            usuario.Perfil == PerfilUsuario.Administrador
+                ? Visibility.Visible
+                : Visibility.Collapsed;
     }
 
     private void Navigate_Click(
         object sender,
         RoutedEventArgs eventArgs)
     {
-        var name = (string)((Button)sender).Tag;
+        if (sender is not Button button ||
+            button.Tag is not string nomeModulo)
+        {
+            return;
+        }
 
-        TituloText.Text = name switch
+        TituloText.Text = nomeModulo switch
         {
             "Lancamentos" => "Lançamentos",
             "Mensal" => "Controle Mensal",
             "Anual" => "Controle Anual",
-            _ => name
+            _ => nomeModulo
         };
 
-        if (name == "Dashboard")
+        if (nomeModulo == "Dashboard")
         {
             AbrirDashboard();
+
             return;
         }
 
-        if (name == "Vendedores")
+        if (nomeModulo == "Vendedores")
         {
             PageContent.Content = App.Services
                 .GetRequiredService<VendedoresView>();
@@ -66,7 +80,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (name == "Clientes")
+        if (nomeModulo == "Clientes")
         {
             PageContent.Content = App.Services
                 .GetRequiredService<ClientesView>();
@@ -74,7 +88,23 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (name == "Lancamentos")
+        if (nomeModulo == "Equipamentos")
+        {
+            PageContent.Content = App.Services
+                .GetRequiredService<EquipamentosView>();
+
+            return;
+        }
+
+        if (nomeModulo == "Fornecedores")
+        {
+            PageContent.Content = App.Services
+                .GetRequiredService<FornecedoresView>();
+
+            return;
+        }
+
+        if (nomeModulo == "Lancamentos")
         {
             PageContent.Content = App.Services
                 .GetRequiredService<LancamentosView>();
@@ -82,7 +112,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (name == "Mensal")
+        if (nomeModulo == "Mensal")
         {
             PageContent.Content = App.Services
                 .GetRequiredService<ControleMensalView>();
@@ -90,7 +120,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (name == "Anual")
+        if (nomeModulo == "Anual")
         {
             PageContent.Content = App.Services
                 .GetRequiredService<ControleAnualView>();
@@ -98,51 +128,73 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (name == "Usuarios")
+        if (nomeModulo == "Usuarios")
         {
-            var usuario = _usuarioSessaoService.UsuarioAtual;
-
-            if (usuario?.Perfil != PerfilUsuario.Administrador)
-            {
-                MessageBox.Show(
-                    "Apenas administradores podem acessar este módulo.",
-                    "Leazi Energia Solar",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return;
-            }
-
-            PageContent.Content = App.Services
-                .GetRequiredService<UsuariosView>();
+            AbrirUsuarios();
 
             return;
         }
 
-        PageContent.Content = CriarModuloPendente(TituloText.Text);
+        PageContent.Content =
+            CriarModuloPendente(
+                TituloText.Text);
     }
 
     private void AbrirDashboard()
     {
-        TituloText.Text = "Dashboard";
+        TituloText.Text =
+            "Dashboard";
+
         PageContent.Content = App.Services
             .GetRequiredService<DashboardView>();
     }
 
-    private static Border CriarModuloPendente(string titulo)
+    private void AbrirUsuarios()
+    {
+        var usuario =
+            _usuarioSessaoService.UsuarioAtual;
+
+        if (usuario?.Perfil !=
+            PerfilUsuario.Administrador)
+        {
+            MessageBox.Show(
+                "Apenas administradores podem acessar este módulo.",
+                "Leazi Energia Solar",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+
+            return;
+        }
+
+        PageContent.Content = App.Services
+            .GetRequiredService<UsuariosView>();
+    }
+
+    private static Border CriarModuloPendente(
+        string titulo)
     {
         return new Border
         {
-            Background = System.Windows.Media.Brushes.White,
-            CornerRadius = new CornerRadius(10),
-            Padding = new Thickness(28),
+            Background =
+                System.Windows.Media.Brushes.White,
+
+            CornerRadius =
+                new CornerRadius(10),
+
+            Padding =
+                new Thickness(28),
+
             Child = new TextBlock
             {
-                Text = $"Módulo {titulo}\n\n" +
-                       "A estrutura visual está preparada. " +
-                       "O CRUD será implementado na etapa específica.",
+                Text =
+                    $"Módulo {titulo}\n\n" +
+                    "A estrutura visual está preparada. " +
+                    "O CRUD será implementado na etapa específica.",
+
                 FontSize = 20,
-                TextWrapping = TextWrapping.Wrap
+
+                TextWrapping =
+                    TextWrapping.Wrap
             }
         };
     }
@@ -153,21 +205,26 @@ public partial class MainWindow : Window
     {
         try
         {
-            var caminho = await App.Services
-                .GetRequiredService<IBackupService>()
-                .CriarBackupAsync();
+            var backupService = App.Services
+                .GetRequiredService<IBackupService>();
+
+            var caminho =
+                await backupService.CriarBackupAsync();
 
             MessageBox.Show(
-                $"Backup criado com sucesso em:{caminho}",
+                $"Backup criado com sucesso em:\n{caminho}",
                 "Leazi Energia Solar",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
         catch (Exception exception)
         {
-            App.Services
-                .GetRequiredService<ILogService>()
-                .RegistrarErro(exception, "Backup manual");
+            var logService = App.Services
+                .GetRequiredService<ILogService>();
+
+            logService.RegistrarErro(
+                exception,
+                "Backup manual");
 
             MessageBox.Show(
                 "Não foi possível criar o backup.",
@@ -182,6 +239,7 @@ public partial class MainWindow : Window
         RoutedEventArgs eventArgs)
     {
         _usuarioSessaoService.Encerrar();
+
         FecharEVoltarAoLogin();
     }
 
@@ -191,6 +249,7 @@ public partial class MainWindow : Window
             .GetRequiredService<LoginWindow>();
 
         loginWindow.Show();
+
         Close();
     }
 }

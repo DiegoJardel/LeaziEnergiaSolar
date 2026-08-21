@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
+using LeaziEnergiaSolar.Wpf.Utils;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -42,10 +43,8 @@ public partial class ControleAnualViewModel : ObservableObject
 
     public ObservableCollection<ResumoAnualMesDto> Meses { get; } = new();
 
-    public IReadOnlyList<int> AnosDisponiveis { get; } = Enumerable
-        .Range(DateTime.Today.Year - 5, 11)
-        .OrderByDescending(ano => ano)
-        .ToList();
+    public IReadOnlyList<int> AnosDisponiveis { get; } =
+        YearFilterHelper.CriarAnosDisponiveis();
 
     public string PeriodoDescricao => VendedorSelecionado is null
         ? $"Resumo geral de {AnoSelecionado}"

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaziEnergiaSolar.Infrastructure.Migrations
 {
     [DbContext(typeof(LeaziDbContext))]
-    [Migration("20260814183848_InitialCreate")]
+    [Migration("20260821015707_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,6 +19,39 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.30");
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.CategoriaEquipamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Descricao")
+                        .IsUnique();
+
+                    b.ToTable("CategoriasEquipamento");
+                });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Cliente", b =>
                 {
@@ -57,13 +90,10 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .HasMaxLength(14)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DataAlteracao")
+                    b.Property<DateTime?>("DataAtualizacao")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataCadastro")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("DataNascimentoAbertura")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -131,6 +161,52 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Equipamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoriaEquipamentoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Modelo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UnidadeMedidaId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarcaId");
+
+                    b.HasIndex("UnidadeMedidaId");
+
+                    b.HasIndex("CategoriaEquipamentoId", "MarcaId", "Modelo")
+                        .IsUnique();
+
+                    b.ToTable("Equipamentos");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Estado", b =>
                 {
                     b.Property<int>("Id")
@@ -164,6 +240,61 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Estados");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Fornecedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContatoResponsavel")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CpfCnpj")
+                        .HasMaxLength(14)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeFantasia")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeRazaoSocial")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(11)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TipoPessoa")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CpfCnpj")
+                        .IsUnique();
+
+                    b.ToTable("Fornecedores");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Lancamento", b =>
@@ -220,6 +351,75 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.ToTable("Lancamentos");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Marca", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nome")
+                        .IsUnique();
+
+                    b.ToTable("Marcas");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.ModeloEquipamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarcaId", "Nome")
+                        .IsUnique();
+
+                    b.ToTable("ModelosEquipamentos");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>
                 {
                     b.Property<int>("Id")
@@ -253,6 +453,43 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.HasIndex("EstadoId");
 
                     b.ToTable("Municipios");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.UnidadeMedida", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PermiteQuantidadeDecimal")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Sigla")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Sigla")
+                        .IsUnique();
+
+                    b.ToTable("UnidadesMedida");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Usuario", b =>
@@ -341,6 +578,33 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Navigation("Municipio");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Equipamento", b =>
+                {
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.CategoriaEquipamento", "CategoriaEquipamento")
+                        .WithMany("Equipamentos")
+                        .HasForeignKey("CategoriaEquipamentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Marca", "Marca")
+                        .WithMany("Equipamentos")
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.UnidadeMedida", "UnidadeMedida")
+                        .WithMany("Equipamentos")
+                        .HasForeignKey("UnidadeMedidaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CategoriaEquipamento");
+
+                    b.Navigation("Marca");
+
+                    b.Navigation("UnidadeMedida");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Lancamento", b =>
                 {
                     b.HasOne("LeaziEnergiaSolar.Domain.Entities.Cliente", "ClienteCadastro")
@@ -366,6 +630,17 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Navigation("Vendedor");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.ModeloEquipamento", b =>
+                {
+                    b.HasOne("LeaziEnergiaSolar.Domain.Entities.Marca", "Marca")
+                        .WithMany("Modelos")
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Marca");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>
                 {
                     b.HasOne("LeaziEnergiaSolar.Domain.Entities.Estado", "Estado")
@@ -375,6 +650,11 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Estado");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.CategoriaEquipamento", b =>
+                {
+                    b.Navigation("Equipamentos");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Cliente", b =>
@@ -387,9 +667,21 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     b.Navigation("Municipios");
                 });
 
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Marca", b =>
+                {
+                    b.Navigation("Equipamentos");
+
+                    b.Navigation("Modelos");
+                });
+
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Municipio", b =>
                 {
                     b.Navigation("Clientes");
+                });
+
+            modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.UnidadeMedida", b =>
+                {
+                    b.Navigation("Equipamentos");
                 });
 
             modelBuilder.Entity("LeaziEnergiaSolar.Domain.Entities.Vendedor", b =>

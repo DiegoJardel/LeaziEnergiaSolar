@@ -61,6 +61,7 @@
                     <DatePicker
                         Grid.Column="0"
                         materialDesign:HintAssist.Hint="Data da venda"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         SelectedDate="{Binding DataVenda}"
                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
@@ -69,6 +70,7 @@
                         DisplayMemberPath="NomeRazaoSocial"
                         ItemsSource="{Binding Clientes}"
                         materialDesign:HintAssist.Hint="Cliente cadastrado"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
@@ -84,6 +86,7 @@
                         DisplayMemberPath="Nome"
                         ItemsSource="{Binding Vendedores}"
                         materialDesign:HintAssist.Hint="Vendedor"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         SelectedItem="{Binding VendedorSelecionado}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
@@ -91,6 +94,7 @@
                         Grid.Column="8"
                         ItemsSource="{Binding StatusDisponiveis}"
                         materialDesign:HintAssist.Hint="Status"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         SelectedItem="{Binding StatusSelecionado}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" />
                 </Grid>
@@ -111,6 +115,7 @@
                     <TextBox
                         Grid.Column="0"
                         materialDesign:HintAssist.Hint="Valor da venda"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding ValorVenda, UpdateSourceTrigger=PropertyChanged}"
                         utils:CurrencyInputBehavior.IsEnabled="True" />
@@ -118,6 +123,7 @@
                     <TextBox
                         Grid.Column="2"
                         materialDesign:HintAssist.Hint="Comissão (%)"
+                        utils:RequiredFieldHelper.IsRequired="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         Text="{Binding PercentualComissao, UpdateSourceTrigger=PropertyChanged}"
                         utils:InputBehavior.Type="Decimal" />

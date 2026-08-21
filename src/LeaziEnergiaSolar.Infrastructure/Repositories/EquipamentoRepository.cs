@@ -10,8 +10,10 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
     private readonly LeaziDbContext _db;
 
     public EquipamentoRepository(
-        LeaziDbContext db) =>
+        LeaziDbContext db)
+    {
         _db = db;
+    }
 
     public async Task<IReadOnlyList<Equipamento>> ListarAsync(
         string? pesquisa,
@@ -25,6 +27,7 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
             .Include(x => x.CategoriaEquipamento)
             .Include(x => x.Marca)
             .Include(x => x.UnidadeMedida)
+            .Include(x => x.Fornecedor)
             .AsQueryable();
 
         if (ativo.HasValue)
@@ -43,19 +46,31 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
         if (marcaId.HasValue)
         {
             query = query.Where(
-                x => x.MarcaId == marcaId.Value);
+                x => x.MarcaId ==
+                     marcaId.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(pesquisa))
         {
-            var termo = pesquisa.Trim();
+            var termo =
+                pesquisa.Trim();
 
             query = query.Where(
                 x =>
-                    x.CategoriaEquipamento.Descricao.Contains(termo) ||
-                    x.Marca.Nome.Contains(termo) ||
-                    x.Modelo.Contains(termo) ||
-                    x.Id.ToString().Contains(termo));
+                    x.CategoriaEquipamento.Descricao.Contains(
+                        termo) ||
+
+                    x.Marca.Nome.Contains(
+                        termo) ||
+
+                    x.Modelo.Contains(
+                        termo) ||
+
+                    x.Fornecedor.NomeRazaoSocial.Contains(
+                        termo) ||
+
+                    x.Id.ToString().Contains(
+                        termo));
         }
 
         return await query
@@ -63,6 +78,7 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
             .ThenBy(x => x.CategoriaEquipamento.Descricao)
             .ThenBy(x => x.Marca.Nome)
             .ThenBy(x => x.Modelo)
+            .ThenBy(x => x.Fornecedor.NomeRazaoSocial)
             .ToListAsync(cancellationToken);
     }
 
@@ -74,6 +90,7 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
             .Include(x => x.CategoriaEquipamento)
             .Include(x => x.Marca)
             .Include(x => x.UnidadeMedida)
+            .Include(x => x.Fornecedor)
             .FirstOrDefaultAsync(
                 x => x.Id == id,
                 cancellationToken);
@@ -86,15 +103,22 @@ public sealed class EquipamentoRepository : IEquipamentoRepository
         int? ignorarId = null,
         CancellationToken cancellationToken = default)
     {
-        var modeloNormalizado = modelo
-            .Trim()
-            .ToUpperInvariant();
+        var modeloNormalizado =
+            modelo
+                .Trim()
+                .ToUpperInvariant();
 
         return _db.Equipamentos.AnyAsync(
             x =>
-                x.CategoriaEquipamentoId == categoriaId &&
-                x.MarcaId == marcaId &&
-                x.Modelo == modeloNormalizado &&
+                x.CategoriaEquipamentoId ==
+                categoriaId &&
+
+                x.MarcaId ==
+                marcaId &&
+
+                x.Modelo ==
+                modeloNormalizado &&
+
                 (!ignorarId.HasValue ||
                  x.Id != ignorarId.Value),
             cancellationToken);

@@ -195,6 +195,7 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                     MarcaId = table.Column<int>(type: "INTEGER", nullable: false),
                     Modelo = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false, collation: "NOCASE"),
                     UnidadeMedidaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FornecedorId = table.Column<int>(type: "INTEGER", nullable: false),
                     Observacao = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
                     Ativo = table.Column<bool>(type: "INTEGER", nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -207,6 +208,12 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                         name: "FK_Equipamentos_CategoriasEquipamento_CategoriaEquipamentoId",
                         column: x => x.CategoriaEquipamentoId,
                         principalTable: "CategoriasEquipamento",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Equipamentos_Fornecedores_FornecedorId",
+                        column: x => x.FornecedorId,
+                        principalTable: "Fornecedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -330,6 +337,11 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Equipamentos_FornecedorId",
+                table: "Equipamentos",
+                column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Equipamentos_MarcaId",
                 table: "Equipamentos",
                 column: "MarcaId");
@@ -415,9 +427,6 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
                 name: "Equipamentos");
 
             migrationBuilder.DropTable(
-                name: "Fornecedores");
-
-            migrationBuilder.DropTable(
                 name: "Lancamentos");
 
             migrationBuilder.DropTable(
@@ -425,6 +434,9 @@ namespace LeaziEnergiaSolar.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CategoriasEquipamento");
+
+            migrationBuilder.DropTable(
+                name: "Fornecedores");
 
             migrationBuilder.DropTable(
                 name: "UnidadesMedida");

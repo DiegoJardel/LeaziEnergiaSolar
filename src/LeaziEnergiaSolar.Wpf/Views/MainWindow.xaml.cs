@@ -9,7 +9,8 @@ namespace LeaziEnergiaSolar.Wpf;
 
 public partial class MainWindow : Window
 {
-    private readonly IUsuarioSessaoService _usuarioSessaoService;
+    private readonly IUsuarioSessaoService
+        _usuarioSessaoService;
 
     public MainWindow(
         IUsuarioSessaoService usuarioSessaoService)
@@ -17,9 +18,12 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         _usuarioSessaoService =
-            usuarioSessaoService;
+            usuarioSessaoService
+            ?? throw new ArgumentNullException(
+                nameof(usuarioSessaoService));
 
         CarregarUsuarioAutenticado();
+
         AbrirDashboard();
     }
 
@@ -42,7 +46,8 @@ public partial class MainWindow : Window
             usuario.Perfil.ToString();
 
         UsuariosButton.Visibility =
-            usuario.Perfil == PerfilUsuario.Administrador
+            usuario.Perfil ==
+            PerfilUsuario.Administrador
                 ? Visibility.Visible
                 : Visibility.Collapsed;
     }
@@ -57,13 +62,42 @@ public partial class MainWindow : Window
             return;
         }
 
-        TituloText.Text = nomeModulo switch
-        {
-            "Lancamentos" => "Lançamentos",
-            "Mensal" => "Controle Mensal",
-            "Anual" => "Controle Anual",
-            _ => nomeModulo
-        };
+        TituloText.Text =
+            nomeModulo switch
+            {
+                "Dashboard" =>
+                    "Dashboard",
+
+                "Vendedores" =>
+                    "Vendedores",
+
+                "Clientes" =>
+                    "Clientes",
+
+                "Equipamentos" =>
+                    "Equipamentos",
+
+                "Fornecedores" =>
+                    "Fornecedores",
+
+                "Lancamentos" =>
+                    "Lançamentos",
+
+                "Mensal" =>
+                    "Controle Mensal",
+
+                "Anual" =>
+                    "Controle Anual",
+
+                "Relatorios" =>
+                    "Relatórios",
+
+                "Usuarios" =>
+                    "Usuários",
+
+                _ =>
+                    nomeModulo
+            };
 
         if (nomeModulo == "Dashboard")
         {
@@ -74,56 +108,72 @@ public partial class MainWindow : Window
 
         if (nomeModulo == "Vendedores")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<VendedoresView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<VendedoresView>();
 
             return;
         }
 
         if (nomeModulo == "Clientes")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<ClientesView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<ClientesView>();
 
             return;
         }
 
         if (nomeModulo == "Equipamentos")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<EquipamentosView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<EquipamentosView>();
 
             return;
         }
 
         if (nomeModulo == "Fornecedores")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<FornecedoresView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<FornecedoresView>();
 
             return;
         }
 
         if (nomeModulo == "Lancamentos")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<LancamentosView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<LancamentosView>();
 
             return;
         }
 
         if (nomeModulo == "Mensal")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<ControleMensalView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<ControleMensalView>();
 
             return;
         }
 
         if (nomeModulo == "Anual")
         {
-            PageContent.Content = App.Services
-                .GetRequiredService<ControleAnualView>();
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<ControleAnualView>();
+
+            return;
+        }
+
+        if (nomeModulo == "Relatorios")
+        {
+            PageContent.Content =
+                App.Services
+                    .GetRequiredService<RelatoriosView>();
 
             return;
         }
@@ -145,8 +195,9 @@ public partial class MainWindow : Window
         TituloText.Text =
             "Dashboard";
 
-        PageContent.Content = App.Services
-            .GetRequiredService<DashboardView>();
+        PageContent.Content =
+            App.Services
+                .GetRequiredService<DashboardView>();
     }
 
     private void AbrirUsuarios()
@@ -166,8 +217,12 @@ public partial class MainWindow : Window
             return;
         }
 
-        PageContent.Content = App.Services
-            .GetRequiredService<UsuariosView>();
+        TituloText.Text =
+            "Usuários";
+
+        PageContent.Content =
+            App.Services
+                .GetRequiredService<UsuariosView>();
     }
 
     private static Border CriarModuloPendente(
@@ -179,23 +234,27 @@ public partial class MainWindow : Window
                 System.Windows.Media.Brushes.White,
 
             CornerRadius =
-                new CornerRadius(10),
+                new CornerRadius(
+                    10),
 
             Padding =
-                new Thickness(28),
+                new Thickness(
+                    28),
 
-            Child = new TextBlock
-            {
-                Text =
-                    $"Módulo {titulo}\n\n" +
-                    "A estrutura visual está preparada. " +
-                    "O CRUD será implementado na etapa específica.",
+            Child =
+                new TextBlock
+                {
+                    Text =
+                        $"Módulo {titulo}\n\n" +
+                        "A estrutura visual está preparada. " +
+                        "O CRUD será implementado na etapa específica.",
 
-                FontSize = 20,
+                    FontSize =
+                        20,
 
-                TextWrapping =
-                    TextWrapping.Wrap
-            }
+                    TextWrapping =
+                        TextWrapping.Wrap
+                }
         };
     }
 
@@ -205,11 +264,13 @@ public partial class MainWindow : Window
     {
         try
         {
-            var backupService = App.Services
-                .GetRequiredService<IBackupService>();
+            var backupService =
+                App.Services
+                    .GetRequiredService<IBackupService>();
 
             var caminho =
-                await backupService.CriarBackupAsync();
+                await backupService
+                    .CriarBackupAsync();
 
             MessageBox.Show(
                 $"Backup criado com sucesso em:\n{caminho}",
@@ -219,8 +280,9 @@ public partial class MainWindow : Window
         }
         catch (Exception exception)
         {
-            var logService = App.Services
-                .GetRequiredService<ILogService>();
+            var logService =
+                App.Services
+                    .GetRequiredService<ILogService>();
 
             logService.RegistrarErro(
                 exception,
@@ -245,8 +307,9 @@ public partial class MainWindow : Window
 
     private void FecharEVoltarAoLogin()
     {
-        var loginWindow = App.Services
-            .GetRequiredService<LoginWindow>();
+        var loginWindow =
+            App.Services
+                .GetRequiredService<LoginWindow>();
 
         loginWindow.Show();
 

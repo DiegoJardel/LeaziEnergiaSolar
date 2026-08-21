@@ -6,33 +6,73 @@
         Height="860"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource PageBackgroundBrush}">
+
     <Window.Resources>
-        <Style x:Key="CardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="Margin" Value="0,0,14,0" />
+        <Style
+            x:Key="CardStyle"
+            TargetType="Border">
+
+            <Setter
+                Property="Background"
+                Value="White" />
+
+            <Setter
+                Property="CornerRadius"
+                Value="10" />
+
+            <Setter
+                Property="Padding"
+                Value="20" />
+
+            <Setter
+                Property="Margin"
+                Value="0,0,14,0" />
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Padding" Value="24,14" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter
+                Property="Foreground"
+                Value="White" />
+
+            <Setter
+                Property="Background"
+                Value="Transparent" />
+
+            <Setter
+                Property="BorderThickness"
+                Value="0" />
+
+            <Setter
+                Property="HorizontalContentAlignment"
+                Value="Left" />
+
+            <Setter
+                Property="Padding"
+                Value="24,14" />
+
+            <Setter
+                Property="FontSize"
+                Value="14" />
         </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="235" />
+
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Background="{StaticResource LeaziGreenBrush}">
+        <!-- MENU LATERAL -->
+        <Border
+            Grid.Column="0"
+            Background="{StaticResource LeaziGreenBrush}">
+
             <DockPanel>
+
+                <!-- PARTE SUPERIOR DO MENU -->
                 <StackPanel DockPanel.Dock="Top">
+
                     <Image
                         Width="135"
                         Margin="20"
@@ -78,6 +118,12 @@
                         Content="▥  Controle Anual"
                         Tag="Anual" />
 
+                    <!-- RELATÓRIOS -->
+                    <Button
+                        Click="Navigate_Click"
+                        Content="▤  Relatórios"
+                        Tag="Relatorios" />
+
                     <Button
                         x:Name="UsuariosButton"
                         Click="Navigate_Click"
@@ -85,9 +131,11 @@
                         Tag="Usuarios" />
                 </StackPanel>
 
+                <!-- PARTE INFERIOR DO MENU -->
                 <StackPanel
                     Margin="24"
                     VerticalAlignment="Bottom">
+
                     <TextBlock
                         x:Name="UsuarioNomeText"
                         FontWeight="SemiBold"
@@ -111,13 +159,20 @@
             </DockPanel>
         </Border>
 
-        <Grid Grid.Column="1" Margin="28">
+        <!-- ÁREA PRINCIPAL -->
+        <Grid
+            Grid.Column="1"
+            Margin="28">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!-- CABEÇALHO -->
             <DockPanel Margin="0,0,0,22">
+
                 <TextBlock
                     x:Name="TituloText"
                     FontSize="28"
@@ -130,21 +185,29 @@
                     Text="Leazi Energia Solar" />
             </DockPanel>
 
+            <!-- CONTEÚDO DAS TELAS -->
             <ContentControl
                 x:Name="PageContent"
                 Grid.Row="1">
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
+                    <!-- INDICADORES INICIAIS -->
                     <UniformGrid
+                        Grid.Row="0"
                         Margin="0,0,0,22"
                         Columns="4">
+
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
-                                <TextBlock Text="TOTAL VENDIDO" />
+                                <TextBlock
+                                    Text="TOTAL VENDIDO" />
+
                                 <TextBlock
                                     FontSize="24"
                                     FontWeight="Bold"
@@ -154,7 +217,9 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
-                                <TextBlock Text="TOTAL COMISSÃO" />
+                                <TextBlock
+                                    Text="TOTAL COMISSÃO" />
+
                                 <TextBlock
                                     FontSize="24"
                                     FontWeight="Bold"
@@ -164,7 +229,9 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
-                                <TextBlock Text="PAGOS" />
+                                <TextBlock
+                                    Text="PAGOS" />
+
                                 <TextBlock
                                     FontSize="24"
                                     FontWeight="Bold"
@@ -174,7 +241,9 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
-                                <TextBlock Text="PENDENTES" />
+                                <TextBlock
+                                    Text="PENDENTES" />
+
                                 <TextBlock
                                     FontSize="24"
                                     FontWeight="Bold"
@@ -183,11 +252,13 @@
                         </Border>
                     </UniformGrid>
 
+                    <!-- CONTEÚDO INICIAL -->
                     <Border
                         Grid.Row="1"
                         Padding="24"
                         Background="White"
                         CornerRadius="10">
+
                         <StackPanel>
                             <TextBlock
                                 FontSize="20"

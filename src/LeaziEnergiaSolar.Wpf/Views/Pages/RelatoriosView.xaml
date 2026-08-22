@@ -17,7 +17,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- CABEÇALHO -->
         <Border
             Grid.Row="0"
             Padding="22"
@@ -53,7 +52,6 @@
             </Grid>
         </Border>
 
-        <!-- CONTEÚDO -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="440" />
@@ -61,7 +59,6 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- FILTROS DO RELATÓRIO -->
             <Border
                 Grid.Column="0"
                 Padding="24"
@@ -88,18 +85,15 @@
                             Foreground="#C62828"
                             Text="Campos marcados com asterisco são obrigatórios." />
 
-                        <!-- TIPO DE RELATÓRIO -->
                         <ComboBox
                             Margin="0,0,0,16"
                             DisplayMemberPath="Descricao"
                             ItemsSource="{Binding TiposRelatorio}"
                             materialDesign:HintAssist.Hint="Tipo de relatório"
-                            SelectedItem="{Binding TipoRelatorioSelecionado,
-                                                   Mode=TwoWay}"
+                            SelectedItem="{Binding TipoRelatorioSelecionado, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}"
                             utils:RequiredFieldHelper.IsRequired="True" />
 
-                        <!-- PERÍODO DA VENDA -->
                         <TextBlock
                             Margin="0,2,0,10"
                             FontSize="13"
@@ -117,19 +111,16 @@
                             <DatePicker
                                 Grid.Column="0"
                                 materialDesign:HintAssist.Hint="Data inicial"
-                                SelectedDate="{Binding DataVendaInicial,
-                                                       Mode=TwoWay}"
+                                SelectedDate="{Binding DataVendaInicial, Mode=TwoWay}"
                                 Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
                             <DatePicker
                                 Grid.Column="2"
                                 materialDesign:HintAssist.Hint="Data final"
-                                SelectedDate="{Binding DataVendaFinal,
-                                                       Mode=TwoWay}"
+                                SelectedDate="{Binding DataVendaFinal, Mode=TwoWay}"
                                 Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
                         </Grid>
 
-                        <!-- PERÍODO DO PAGAMENTO -->
                         <TextBlock
                             Margin="0,2,0,10"
                             FontSize="13"
@@ -148,59 +139,48 @@
                                 Grid.Column="0"
                                 IsEnabled="{Binding PodeFiltrarDataPagamento}"
                                 materialDesign:HintAssist.Hint="Pagamento inicial"
-                                SelectedDate="{Binding DataPagamentoInicial,
-                                                       Mode=TwoWay}"
+                                SelectedDate="{Binding DataPagamentoInicial, Mode=TwoWay}"
                                 Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
 
                             <DatePicker
                                 Grid.Column="2"
                                 IsEnabled="{Binding PodeFiltrarDataPagamento}"
                                 materialDesign:HintAssist.Hint="Pagamento final"
-                                SelectedDate="{Binding DataPagamentoFinal,
-                                                       Mode=TwoWay}"
+                                SelectedDate="{Binding DataPagamentoFinal, Mode=TwoWay}"
                                 Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
                         </Grid>
 
-                        <!-- VENDEDOR -->
                         <ComboBox
                             Margin="0,0,0,16"
                             DisplayMemberPath="Nome"
                             ItemsSource="{Binding Vendedores}"
                             materialDesign:HintAssist.Hint="Vendedor"
-                            SelectedItem="{Binding VendedorSelecionado,
-                                                   Mode=TwoWay}"
+                            SelectedItem="{Binding VendedorSelecionado, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
-                        <!-- CLIENTE -->
                         <ComboBox
                             Margin="0,0,0,16"
                             DisplayMemberPath="NomeRazaoSocial"
                             ItemsSource="{Binding Clientes}"
                             materialDesign:HintAssist.Hint="Cliente"
-                            SelectedItem="{Binding ClienteSelecionado,
-                                                   Mode=TwoWay}"
+                            SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
-                        <!-- STATUS -->
                         <ComboBox
                             Margin="0,0,0,16"
                             IsEnabled="{Binding PodeSelecionarStatus}"
                             ItemsSource="{Binding StatusDisponiveis}"
                             materialDesign:HintAssist.Hint="Status"
-                            SelectedItem="{Binding StatusSelecionado,
-                                                   Mode=TwoWay}"
+                            SelectedItem="{Binding StatusSelecionado, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
-                        <!-- PESQUISA -->
                         <TextBox
                             Margin="0,0,0,18"
                             MaxLength="150"
                             materialDesign:HintAssist.Hint="Cliente, vendedor ou documento"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            Text="{Binding Pesquisa,
-                                           UpdateSourceTrigger=PropertyChanged}" />
+                            Text="{Binding Pesquisa, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <!-- INFORMAÇÃO DO TIPO SELECIONADO -->
                         <Border
                             Margin="0,0,0,16"
                             Padding="12"
@@ -232,15 +212,12 @@
                             </Grid>
                         </Border>
 
-                        <!-- MENSAGEM -->
                         <TextBlock
                             Margin="0,0,0,14"
-                            Foreground="{Binding MensagemEhErro,
-                                                 Converter={StaticResource BooleanToMessageBrushConverter}}"
+                            Foreground="{Binding MensagemEhErro, Converter={StaticResource BooleanToMessageBrushConverter}}"
                             Text="{Binding Mensagem}"
                             TextWrapping="Wrap" />
 
-                        <!-- BOTÕES -->
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -253,8 +230,7 @@
                                 Height="42"
                                 Command="{Binding LimparCommand}"
                                 Content="LIMPAR"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
+                                IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                             <Button
@@ -263,8 +239,7 @@
                                 Background="{StaticResource LeaziGreenBrush}"
                                 Command="{Binding GerarPdfCommand}"
                                 Foreground="White"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
+                                IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
                                 Style="{StaticResource MaterialDesignRaisedButton}">
 
                                 <StackPanel Orientation="Horizontal">
@@ -282,18 +257,15 @@
                             </Button>
                         </Grid>
 
-                        <!-- CARREGAMENTO -->
                         <ProgressBar
                             Height="3"
                             Margin="0,14,0,0"
                             IsIndeterminate="True"
-                            Visibility="{Binding EstaCarregando,
-                                                 Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            Visibility="{Binding EstaCarregando, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </ScrollViewer>
             </Border>
 
-            <!-- PAINEL DE ORIENTAÇÃO -->
             <Border
                 Grid.Column="2"
                 Padding="24"
@@ -311,14 +283,12 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <!-- TÍTULO -->
                     <TextBlock
                         Grid.Row="0"
                         FontSize="18"
                         FontWeight="SemiBold"
                         Text="Relatórios disponíveis" />
 
-                    <!-- RESUMO DO RELATÓRIO SELECIONADO -->
                     <Border
                         Grid.Row="2"
                         Padding="16"
@@ -366,249 +336,103 @@
                         </Grid>
                     </Border>
 
-                    <!-- LISTA DOS RELATÓRIOS -->
                     <ScrollViewer
                         Grid.Row="4"
                         VerticalScrollBarVisibility="Auto">
 
                         <StackPanel>
-
-                            <!-- EXECUTIVO -->
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Margin="0,0,0,12" Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Kind="ChartBoxOutline" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="{StaticResource LeaziGreenBrush}" Kind="ChartBoxOutline" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Executivo de vendas e comissões" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Resumo para diretoria com total vendido, comissões pagas, pendentes e indicadores do período."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Executivo de vendas e comissões" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Resumo para diretoria com total vendido, comissões pagas, pendentes e indicadores do período." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- COMISSÕES A PAGAR -->
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Margin="0,0,0,12" Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="#C62828"
-                                        Kind="CashClock" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="#C62828" Kind="CashClock" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Comissões a pagar" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Mostra somente as comissões pendentes e quanto a empresa ainda precisa pagar."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Comissões a pagar" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Mostra somente as comissões pendentes e quanto a empresa ainda precisa pagar." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- COMISSÕES PAGAS -->
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Margin="0,0,0,12" Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Kind="CashCheck" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="{StaticResource LeaziGreenBrush}" Kind="CashCheck" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Comissões pagas" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Apresenta as comissões liquidadas e suas respectivas datas de pagamento."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Comissões pagas" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Apresenta as comissões liquidadas e suas respectivas datas de pagamento." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- POR VENDEDOR -->
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Margin="0,0,0,12" Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Kind="AccountCashOutline" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="{StaticResource LeaziGreenBrush}" Kind="AccountCashOutline" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Comissões por vendedor" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Agrupa vendas, pagamentos e pendências de cada vendedor."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Comissões por vendedor" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Agrupa vendas, pagamentos e pendências de cada vendedor." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- EXTRATO INDIVIDUAL -->
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Margin="0,0,0,12" Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Kind="AccountDetailsOutline" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="{StaticResource LeaziGreenBrush}" Kind="AccountDetailsOutline" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Extrato individual do vendedor" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Gera um demonstrativo individual para o vendedor selecionado."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Extrato individual do vendedor" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Gera um demonstrativo individual para o vendedor selecionado." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- GERAL -->
-                            <Border
-                                Padding="16"
-                                Background="White"
-                                BorderBrush="#D0D5DD"
-                                BorderThickness="1"
-                                CornerRadius="10">
-
+                            <Border Padding="16" Background="White" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="38" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon
-                                        Grid.Column="0"
-                                        Width="24"
-                                        Height="24"
-                                        VerticalAlignment="Top"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Kind="FileTableBoxMultipleOutline" />
-
+                                    <materialDesign:PackIcon Grid.Column="0" Width="24" Height="24" VerticalAlignment="Top" Foreground="{StaticResource LeaziGreenBrush}" Kind="FileTableBoxMultipleOutline" />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Relatório geral de comissões" />
-
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            Foreground="#667085"
-                                            Text="Reúne comissões pagas e pendentes em um único PDF, com totais e detalhamento."
-                                            TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Relatório geral de comissões" />
+                                        <TextBlock Margin="0,4,0,0" Foreground="#667085" Text="Reúne comissões pagas e pendentes em um único PDF, com totais e detalhamento." TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
 
-                    <!-- RODAPÉ DO PAINEL -->
                     <Border
                         Grid.Row="5"
                         Margin="0,18,0,0"
                         Padding="12"
-                        Background="#FFF8E7"
-                        BorderBrush="#F5D58A"
+                        Background="#EAF4EC"
+                        BorderBrush="#B7D9BE"
                         BorderThickness="1"
                         CornerRadius="8">
 
@@ -624,13 +448,13 @@
                                 Width="21"
                                 Height="21"
                                 VerticalAlignment="Top"
-                                Foreground="#B26A00"
-                                Kind="LightbulbOutline" />
+                                Foreground="{StaticResource LeaziGreenBrush}"
+                                Kind="CheckCircleOutline" />
 
                             <TextBlock
                                 Grid.Column="2"
-                                Foreground="#7A4A00"
-                                Text="O Relatório geral de comissões será o primeiro modelo disponível. Os demais serão liberados conforme seus documentos forem implementados."
+                                Foreground="#344054"
+                                Text="Todos os modelos de relatório estão disponíveis. Selecione o tipo desejado, informe os filtros e clique em GERAR PDF."
                                 TextWrapping="Wrap" />
                         </Grid>
                     </Border>

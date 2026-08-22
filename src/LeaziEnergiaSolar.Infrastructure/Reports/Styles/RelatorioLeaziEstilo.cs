@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace LeaziEnergiaSolar.Infrastructure.Reports;
+namespace LeaziEnergiaSolar.Infrastructure.Reports.Styles;
 
 public static class RelatorioLeaziEstilo
 {

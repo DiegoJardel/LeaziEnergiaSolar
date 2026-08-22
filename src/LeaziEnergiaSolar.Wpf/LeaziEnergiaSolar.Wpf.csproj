@@ -46,4 +46,17 @@
 		<Resource Include="Assets\Images\logo-leazi.png" />
 		<Resource Include="Assets\Icons\leazi-app.ico" />
 	</ItemGroup>
+
+	<Target Name="CopyReportLogo"
+			AfterTargets="Build">
+
+		<MakeDir
+			Directories="$(OutDir)Assets\Images" />
+
+		<Copy
+			SourceFiles="$(MSBuildProjectDirectory)\Assets\Images\logo-leazi.png"
+			DestinationFiles="$(OutDir)Assets\Images\logo-leazi.png"
+			SkipUnchangedFiles="true" />
+
+	</Target>
 </Project>

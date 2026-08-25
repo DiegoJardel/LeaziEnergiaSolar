@@ -25,10 +25,6 @@ public partial class RelatoriosViewModel : ObservableObject
     private readonly IUsuarioSessaoService
         _sessaoService;
 
-    /*
-     * FILTROS
-     */
-
     [ObservableProperty]
     private OpcaoRelatorioComissaoDto?
         tipoRelatorioSelecionado;
@@ -62,14 +58,6 @@ public partial class RelatoriosViewModel : ObservableObject
         statusSelecionado;
 
     [ObservableProperty]
-    private string pesquisa =
-        string.Empty;
-
-    /*
-     * MENSAGEM E CARREGAMENTO
-     */
-
-    [ObservableProperty]
     private string mensagem =
         string.Empty;
 
@@ -79,28 +67,29 @@ public partial class RelatoriosViewModel : ObservableObject
     [ObservableProperty]
     private bool estaCarregando;
 
-    /*
-     * COLEÇÕES
-     */
-
     public ObservableCollection<VendedorDto>
         Vendedores
-    { get; } =
-        new();
+    {
+        get;
+    } = new();
 
     public ObservableCollection<ClienteDto>
         Clientes
-    { get; } =
-        new();
+    {
+        get;
+    } = new();
 
     public IReadOnlyList<StatusLancamento>
         StatusDisponiveis
-    { get; } =
-        Enum.GetValues<StatusLancamento>();
+    {
+        get;
+    } = Enum.GetValues<StatusLancamento>();
 
     public IReadOnlyList<OpcaoRelatorioComissaoDto>
         TiposRelatorio
-    { get; } =
+    {
+        get;
+    } =
         new[]
         {
             new OpcaoRelatorioComissaoDto
@@ -163,10 +152,6 @@ public partial class RelatoriosViewModel : ObservableObject
                     "Relatório geral de comissões"
             }
         };
-
-    /*
-     * PROPRIEDADES CALCULADAS
-     */
 
     public TipoRelatorioComissao?
         TipoRelatorio =>
@@ -243,10 +228,6 @@ public partial class RelatoriosViewModel : ObservableObject
                 "as opções disponíveis."
         };
 
-    /*
-     * CONSTRUTOR
-     */
-
     public RelatoriosViewModel(
         IRelatorioComissaoService relatorioComissaoService,
         IVendedorService vendedorService,
@@ -283,10 +264,6 @@ public partial class RelatoriosViewModel : ObservableObject
         DefinirPeriodoPadrao();
     }
 
-    /*
-     * NOTIFICAÇÕES
-     */
-
     partial void OnTipoRelatorioSelecionadoChanged(
         OpcaoRelatorioComissaoDto? value)
     {
@@ -311,10 +288,6 @@ public partial class RelatoriosViewModel : ObservableObject
             nameof(DescricaoTipoRelatorio));
     }
 
-    /*
-     * COMANDOS
-     */
-
     [RelayCommand]
     private async Task CarregarAsync()
     {
@@ -322,7 +295,6 @@ public partial class RelatoriosViewModel : ObservableObject
             async () =>
             {
                 await CarregarVendedoresAsync();
-
                 await CarregarClientesAsync();
             },
             "carregar os filtros dos relatórios");
@@ -416,10 +388,6 @@ public partial class RelatoriosViewModel : ObservableObject
             "gerar o relatório em PDF");
     }
 
-    /*
-     * CARREGAMENTO
-     */
-
     private async Task CarregarVendedoresAsync()
     {
         var vendedorAtualId =
@@ -442,14 +410,19 @@ public partial class RelatoriosViewModel : ObservableObject
                 vendedor);
         }
 
-        if (vendedorAtualId.HasValue)
+        if (!vendedorAtualId.HasValue)
         {
             VendedorSelecionado =
-                Vendedores.FirstOrDefault(
-                    item =>
-                        item.Id ==
-                        vendedorAtualId.Value);
+                null;
+
+            return;
         }
+
+        VendedorSelecionado =
+            Vendedores.FirstOrDefault(
+                item =>
+                    item.Id ==
+                    vendedorAtualId.Value);
     }
 
     private async Task CarregarClientesAsync()
@@ -472,19 +445,20 @@ public partial class RelatoriosViewModel : ObservableObject
                 cliente);
         }
 
-        if (clienteAtualId.HasValue)
+        if (!clienteAtualId.HasValue)
         {
             ClienteSelecionado =
-                Clientes.FirstOrDefault(
-                    item =>
-                        item.Id ==
-                        clienteAtualId.Value);
-        }
-    }
+                null;
 
-    /*
-     * REGRAS DOS TIPOS DE RELATÓRIO
-     */
+            return;
+        }
+
+        ClienteSelecionado =
+            Clientes.FirstOrDefault(
+                item =>
+                    item.Id ==
+                    clienteAtualId.Value);
+    }
 
     private void AplicarRegrasTipoRelatorio()
     {
@@ -561,9 +535,6 @@ public partial class RelatoriosViewModel : ObservableObject
 
     private void LimparFiltros()
     {
-        Pesquisa =
-            string.Empty;
-
         VendedorSelecionado =
             null;
 
@@ -611,10 +582,6 @@ public partial class RelatoriosViewModel : ObservableObject
         DataVendaFinal =
             hoje;
     }
-
-    /*
-     * VALIDAÇÕES
-     */
 
     private bool ValidarFiltros()
     {
@@ -693,10 +660,6 @@ public partial class RelatoriosViewModel : ObservableObject
         return true;
     }
 
-    /*
-     * MONTAGEM DO FILTRO
-     */
-
     private FiltroRelatorioComissaoDto CriarFiltro()
     {
         var usuarioAtual =
@@ -747,10 +710,6 @@ public partial class RelatoriosViewModel : ObservableObject
             Status =
                 status,
 
-            Pesquisa =
-                Pesquisa?.Trim()
-                ?? string.Empty,
-
             UsuarioEmissorId =
                 usuarioAtual?.Id,
 
@@ -759,10 +718,6 @@ public partial class RelatoriosViewModel : ObservableObject
                 ?? string.Empty
         };
     }
-
-    /*
-     * NOME DO ARQUIVO
-     */
 
     private static string CriarNomeArquivo(
         TipoRelatorioComissao tipoRelatorio)
@@ -802,10 +757,6 @@ public partial class RelatoriosViewModel : ObservableObject
                $"{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
     }
 
-    /*
-     * ABERTURA DO PDF
-     */
-
     private static void AbrirPdf(
         string caminhoArquivo)
     {
@@ -823,20 +774,8 @@ public partial class RelatoriosViewModel : ObservableObject
         }
         catch
         {
-            /*
-             * O PDF já foi gerado.
-             *
-             * Caso não exista um aplicativo padrão
-             * configurado para abrir arquivos PDF,
-             * o sistema mantém a mensagem de sucesso
-             * com o caminho em que o arquivo foi salvo.
-             */
         }
     }
-
-    /*
-     * EXECUÇÃO SEGURA
-     */
 
     private async Task ExecutarAsync(
         Func<Task> acao,
@@ -878,10 +817,6 @@ public partial class RelatoriosViewModel : ObservableObject
                 false;
         }
     }
-
-    /*
-     * MENSAGENS
-     */
 
     private void ExibirMensagem(
         string texto,

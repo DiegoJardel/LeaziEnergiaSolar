@@ -480,6 +480,28 @@ public sealed class EquipamentoService : IEquipamentoService
                 ? "Equipamento reativado com sucesso."
                 : "Equipamento inativado com sucesso.");
     }
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+    int id,
+    CancellationToken cancellationToken = default)
+    {
+        var entidade =
+            await _repository.ObterAsync(
+                id,
+                cancellationToken);
+
+        if (entidade is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "O equipamento selecionado não foi encontrado.");
+        }
+
+        await _repository.ExcluirAsync(
+            entidade,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Equipamento excluído com sucesso.");
+    }
 
     /*
      * MAPEAMENTO

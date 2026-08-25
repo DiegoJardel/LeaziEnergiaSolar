@@ -21,4 +21,8 @@ public interface IFornecedorService
         int id,
         bool ativo,
         CancellationToken cancellationToken = default);
+
+    Task<ResultadoOperacaoDto> ExcluirAsync(
+        int id,
+        CancellationToken cancellationToken = default);
 }

@@ -5,84 +5,143 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeaziEnergiaSolar.Infrastructure.Repositories;
 
-public sealed class UnidadeMedidaRepository : IUnidadeMedidaRepository
+public sealed class UnidadeMedidaRepository
+    : IUnidadeMedidaRepository
 {
-    private readonly LeaziDbContext _db;
+    private readonly LeaziDbContext
+        _db;
 
     public UnidadeMedidaRepository(
-        LeaziDbContext db) =>
-        _db = db;
+        LeaziDbContext db)
+    {
+        _db =
+            db
+            ?? throw new ArgumentNullException(
+                nameof(db));
+    }
 
     public async Task<IReadOnlyList<UnidadeMedida>> ListarAsync(
         string? pesquisa,
         bool? ativo,
         CancellationToken cancellationToken = default)
     {
-        var query = _db.UnidadesMedida
-            .AsNoTracking()
-            .AsQueryable();
+        var query =
+            _db.UnidadesMedida
+                .AsNoTracking()
+                .AsQueryable();
 
         if (ativo.HasValue)
         {
-            query = query.Where(x => x.Ativo == ativo.Value);
+            query =
+                query.Where(
+                    x =>
+                        x.Ativo ==
+                        ativo.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(pesquisa))
+        if (!string.IsNullOrWhiteSpace(
+                pesquisa))
         {
-            var termo = pesquisa.Trim();
-            query = query.Where(x =>
-                x.Sigla.Contains(termo) ||
-                x.Descricao.Contains(termo));
+            var termo =
+                pesquisa.Trim();
+
+            query =
+                query.Where(
+                    x =>
+                        x.Sigla.Contains(
+                            termo) ||
+                        x.Descricao.Contains(
+                            termo));
         }
 
         return await query
-            .OrderByDescending(x => x.Ativo)
-            .ThenBy(x => x.Sigla)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(
+                x =>
+                    x.Ativo)
+            .ThenBy(
+                x =>
+                    x.Sigla)
+            .ToListAsync(
+                cancellationToken);
     }
 
     public Task<UnidadeMedida?> ObterAsync(
         int id,
-        CancellationToken cancellationToken = default) =>
-        _db.UnidadesMedida.FirstOrDefaultAsync(
-            x => x.Id == id,
-            cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        return _db.UnidadesMedida
+            .FirstOrDefaultAsync(
+                x =>
+                    x.Id ==
+                    id,
+                cancellationToken);
+    }
 
     public Task<bool> ExisteSiglaAsync(
         string sigla,
         int? ignorarId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalizada = sigla.Trim().ToUpperInvariant();
+        var normalizada =
+            sigla
+                .Trim()
+                .ToUpperInvariant();
 
-        return _db.UnidadesMedida.AnyAsync(
-            x => x.Sigla == normalizada &&
-                 (!ignorarId.HasValue || x.Id != ignorarId.Value),
-            cancellationToken);
+        return _db.UnidadesMedida
+            .AnyAsync(
+                x =>
+                    x.Sigla ==
+                    normalizada &&
+                    (!ignorarId.HasValue ||
+                     x.Id !=
+                     ignorarId.Value),
+                cancellationToken);
     }
 
     public Task<bool> PossuiEquipamentosAsync(
         int id,
-        CancellationToken cancellationToken = default) =>
-        _db.Equipamentos.AnyAsync(
-            x => x.UnidadeMedidaId == id,
-            cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        return _db.Equipamentos
+            .AnyAsync(
+                x =>
+                    x.UnidadeMedidaId ==
+                    id,
+                cancellationToken);
+    }
 
     public async Task AdicionarAsync(
         UnidadeMedida unidade,
         CancellationToken cancellationToken = default)
     {
-        await _db.UnidadesMedida.AddAsync(
-            unidade,
+        await _db.UnidadesMedida
+            .AddAsync(
+                unidade,
+                cancellationToken);
+
+        await _db.SaveChangesAsync(
             cancellationToken);
-        await _db.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AtualizarAsync(
         UnidadeMedida unidade,
         CancellationToken cancellationToken = default)
     {
-        _db.UnidadesMedida.Update(unidade);
-        await _db.SaveChangesAsync(cancellationToken);
+        _db.UnidadesMedida.Update(
+            unidade);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    public async Task ExcluirAsync(
+        UnidadeMedida entidade,
+        CancellationToken cancellationToken = default)
+    {
+        _db.UnidadesMedida.Remove(
+            entidade);
+
+        await _db.SaveChangesAsync(
+            cancellationToken);
     }
 }

@@ -15,10 +15,6 @@ public partial class EquipamentosViewModel : ObservableObject
     private readonly IUnidadeMedidaService _unidadeService;
     private readonly IFornecedorService _fornecedorService;
 
-    /*
-     * EQUIPAMENTO
-     */
-
     [ObservableProperty]
     private int? equipamentoId;
 
@@ -61,10 +57,6 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private EquipamentoDto? equipamentoSelecionado;
 
-    /*
-     * CATEGORIA
-     */
-
     [ObservableProperty]
     private int? categoriaId;
 
@@ -86,10 +78,6 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private string filtroStatusCategoria = "Todos";
 
-    /*
-     * MARCA
-     */
-
     [ObservableProperty]
     private int? marcaId;
 
@@ -110,10 +98,6 @@ public partial class EquipamentosViewModel : ObservableObject
 
     [ObservableProperty]
     private string filtroStatusMarca = "Todos";
-
-    /*
-     * MODELO
-     */
 
     [ObservableProperty]
     private int? modeloId;
@@ -139,10 +123,6 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private string filtroStatusModelo = "Todos";
 
-    /*
-     * UNIDADE
-     */
-
     [ObservableProperty]
     private int? unidadeId;
 
@@ -167,10 +147,6 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private string filtroStatusUnidade = "Todos";
 
-    /*
-     * MENSAGEM E CARREGAMENTO
-     */
-
     [ObservableProperty]
     private string mensagem = string.Empty;
 
@@ -180,46 +156,17 @@ public partial class EquipamentosViewModel : ObservableObject
     [ObservableProperty]
     private bool estaCarregando;
 
-    /*
-     * COLEÇÕES
-     */
-
-    public ObservableCollection<EquipamentoDto> Equipamentos { get; } =
-        new();
-
-    public ObservableCollection<CategoriaEquipamentoDto> Categorias { get; } =
-        new();
-
-    public ObservableCollection<CategoriaEquipamentoDto>
-        CategoriasDisponiveis
-    { get; } = new();
-
-    public ObservableCollection<MarcaDto> Marcas { get; } =
-        new();
-
-    public ObservableCollection<MarcaDto> MarcasDisponiveis { get; } =
-        new();
-
-    public ObservableCollection<ModeloEquipamentoDto> Modelos { get; } =
-        new();
-
-    public ObservableCollection<ModeloEquipamentoDto>
-        ModelosDisponiveisEquipamento
-    { get; } = new();
-
-    public ObservableCollection<UnidadeMedidaDto> Unidades { get; } =
-        new();
-
-    public ObservableCollection<UnidadeMedidaDto>
-        UnidadesDisponiveis
-    { get; } = new();
-
-    public ObservableCollection<FornecedorDto> Fornecedores { get; } =
-        new();
-
-    public ObservableCollection<FornecedorDto>
-        FornecedoresDisponiveis
-    { get; } = new();
+    public ObservableCollection<EquipamentoDto> Equipamentos { get; } = new();
+    public ObservableCollection<CategoriaEquipamentoDto> Categorias { get; } = new();
+    public ObservableCollection<CategoriaEquipamentoDto> CategoriasDisponiveis { get; } = new();
+    public ObservableCollection<MarcaDto> Marcas { get; } = new();
+    public ObservableCollection<MarcaDto> MarcasDisponiveis { get; } = new();
+    public ObservableCollection<ModeloEquipamentoDto> Modelos { get; } = new();
+    public ObservableCollection<ModeloEquipamentoDto> ModelosDisponiveisEquipamento { get; } = new();
+    public ObservableCollection<UnidadeMedidaDto> Unidades { get; } = new();
+    public ObservableCollection<UnidadeMedidaDto> UnidadesDisponiveis { get; } = new();
+    public ObservableCollection<FornecedorDto> Fornecedores { get; } = new();
+    public ObservableCollection<FornecedorDto> FornecedoresDisponiveis { get; } = new();
 
     public IReadOnlyList<string> FiltrosStatus { get; } =
         new[]
@@ -229,30 +176,13 @@ public partial class EquipamentosViewModel : ObservableObject
             "Inativos"
         };
 
-    /*
-     * PROPRIEDADES CALCULADAS
-     */
-
-    public bool EstaEditando =>
-        EquipamentoId.HasValue;
-
-    public bool EditandoCategoria =>
-        CategoriaId.HasValue;
-
-    public bool EditandoMarca =>
-        MarcaId.HasValue;
-
-    public bool EditandoModelo =>
-        ModeloId.HasValue;
-
-    public bool EditandoUnidade =>
-        UnidadeId.HasValue;
-
-    public bool PossuiMarcaSelecionadaParaModelos =>
-        MarcaSelecionadaParaModelos is not null;
-
-    public bool PossuiMarcaSelecionadaNoEquipamento =>
-        MarcaSelecionada is not null;
+    public bool EstaEditando => EquipamentoId.HasValue;
+    public bool EditandoCategoria => CategoriaId.HasValue;
+    public bool EditandoMarca => MarcaId.HasValue;
+    public bool EditandoModelo => ModeloId.HasValue;
+    public bool EditandoUnidade => UnidadeId.HasValue;
+    public bool PossuiMarcaSelecionadaParaModelos => MarcaSelecionadaParaModelos is not null;
+    public bool PossuiMarcaSelecionadaNoEquipamento => MarcaSelecionada is not null;
 
     public string TituloFormulario =>
         EstaEditando
@@ -283,10 +213,6 @@ public partial class EquipamentosViewModel : ObservableObject
         MarcaSelecionadaParaModelos?.Nome
         ?? "Nenhuma marca selecionada";
 
-    /*
-     * CONSTRUTOR
-     */
-
     public EquipamentosViewModel(
         IEquipamentoService equipamentoService,
         ICategoriaEquipamentoService categoriaService,
@@ -303,61 +229,45 @@ public partial class EquipamentosViewModel : ObservableObject
         _fornecedorService = fornecedorService;
     }
 
-    /*
-     * NOTIFICAÇÕES
-     */
-
-    partial void OnEquipamentoIdChanged(
-        int? value)
+    partial void OnEquipamentoIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EstaEditando));
         OnPropertyChanged(nameof(TituloFormulario));
     }
 
-    partial void OnCategoriaIdChanged(
-        int? value)
+    partial void OnCategoriaIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EditandoCategoria));
         OnPropertyChanged(nameof(TituloCategoria));
     }
 
-    partial void OnMarcaIdChanged(
-        int? value)
+    partial void OnMarcaIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EditandoMarca));
         OnPropertyChanged(nameof(TituloMarca));
     }
 
-    partial void OnModeloIdChanged(
-        int? value)
+    partial void OnModeloIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EditandoModelo));
         OnPropertyChanged(nameof(TituloModelo));
     }
 
-    partial void OnUnidadeIdChanged(
-        int? value)
+    partial void OnUnidadeIdChanged(int? value)
     {
         OnPropertyChanged(nameof(EditandoUnidade));
         OnPropertyChanged(nameof(TituloUnidade));
     }
 
-    partial void OnMarcaSelecionadaParaModelosChanged(
-        MarcaDto? value)
+    partial void OnMarcaSelecionadaParaModelosChanged(MarcaDto? value)
     {
-        OnPropertyChanged(
-            nameof(PossuiMarcaSelecionadaParaModelos));
-
-        OnPropertyChanged(
-            nameof(NomeMarcaModelos));
+        OnPropertyChanged(nameof(PossuiMarcaSelecionadaParaModelos));
+        OnPropertyChanged(nameof(NomeMarcaModelos));
     }
 
-    async partial void OnMarcaSelecionadaChanged(
-        MarcaDto? value)
+    async partial void OnMarcaSelecionadaChanged(MarcaDto? value)
     {
-        OnPropertyChanged(
-            nameof(PossuiMarcaSelecionadaNoEquipamento));
-
+        OnPropertyChanged(nameof(PossuiMarcaSelecionadaNoEquipamento));
         ModeloSelecionado = null;
         ModelosDisponiveisEquipamento.Clear();
 
@@ -368,8 +278,7 @@ public partial class EquipamentosViewModel : ObservableObject
 
         try
         {
-            await CarregarModelosDisponiveisEquipamentoAsync(
-                value.Id);
+            await CarregarModelosDisponiveisEquipamentoAsync(value.Id);
         }
         catch (Exception exception)
         {
@@ -379,10 +288,6 @@ public partial class EquipamentosViewModel : ObservableObject
                 true);
         }
     }
-
-    /*
-     * CARREGAMENTO
-     */
 
     [RelayCommand]
     private async Task CarregarAsync()
@@ -394,15 +299,10 @@ public partial class EquipamentosViewModel : ObservableObject
         });
     }
 
-    /*
-     * EQUIPAMENTO
-     */
-
     [RelayCommand]
     private async Task PesquisarAsync()
     {
-        await ExecutarAsync(
-            PesquisarInternoAsync);
+        await ExecutarAsync(PesquisarInternoAsync);
     }
 
     [RelayCommand]
@@ -410,46 +310,31 @@ public partial class EquipamentosViewModel : ObservableObject
     {
         if (CategoriaSelecionada is null)
         {
-            ExibirMensagem(
-                "Selecione a categoria.",
-                true);
-
+            ExibirMensagem("Selecione a categoria.", true);
             return;
         }
 
         if (MarcaSelecionada is null)
         {
-            ExibirMensagem(
-                "Selecione a marca.",
-                true);
-
+            ExibirMensagem("Selecione a marca.", true);
             return;
         }
 
         if (ModeloSelecionado is null)
         {
-            ExibirMensagem(
-                "Selecione o modelo.",
-                true);
-
+            ExibirMensagem("Selecione o modelo.", true);
             return;
         }
 
         if (UnidadeSelecionada is null)
         {
-            ExibirMensagem(
-                "Selecione a unidade de medida.",
-                true);
-
+            ExibirMensagem("Selecione a unidade de medida.", true);
             return;
         }
 
         if (FornecedorSelecionado is null)
         {
-            ExibirMensagem(
-                "Selecione o fornecedor.",
-                true);
-
+            ExibirMensagem("Selecione o fornecedor.", true);
             return;
         }
 
@@ -460,32 +345,16 @@ public partial class EquipamentosViewModel : ObservableObject
                     new SalvarEquipamentoDto
                     {
                         Id = EquipamentoId,
-
-                        CategoriaEquipamentoId =
-                            CategoriaSelecionada.Id,
-
-                        MarcaId =
-                            MarcaSelecionada.Id,
-
-                        Modelo =
-                            ModeloSelecionado.Nome,
-
-                        UnidadeMedidaId =
-                            UnidadeSelecionada.Id,
-
-                        FornecedorId =
-                            FornecedorSelecionado.Id,
-
-                        Observacao =
-                            Observacao,
-
-                        Ativo =
-                            Ativo
+                        CategoriaEquipamentoId = CategoriaSelecionada.Id,
+                        MarcaId = MarcaSelecionada.Id,
+                        Modelo = ModeloSelecionado.Nome,
+                        UnidadeMedidaId = UnidadeSelecionada.Id,
+                        FornecedorId = FornecedorSelecionado.Id,
+                        Observacao = Observacao,
+                        Ativo = Ativo
                     });
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -493,90 +362,55 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             LimparEquipamento();
-
             await PesquisarInternoAsync();
         });
     }
 
     [RelayCommand]
-    private async Task EditarAsync(
-        EquipamentoDto? item)
+    private async Task EditarAsync(EquipamentoDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        EquipamentoId =
-            item.Id;
-
-        Observacao =
-            item.Observacao;
-
-        Ativo =
-            item.Ativo;
-
-        CategoriaSelecionada =
-            Categorias.FirstOrDefault(
-                x => x.Id ==
-                     item.CategoriaEquipamentoId);
-
-        UnidadeSelecionada =
-            Unidades.FirstOrDefault(
-                x => x.Id ==
-                     item.UnidadeMedidaId);
-
-        FornecedorSelecionado =
-            Fornecedores.FirstOrDefault(
-                x => x.Id ==
-                     item.FornecedorId);
+        EquipamentoId = item.Id;
+        Observacao = item.Observacao;
+        Ativo = item.Ativo;
+        CategoriaSelecionada = Categorias.FirstOrDefault(x => x.Id == item.CategoriaEquipamentoId);
+        UnidadeSelecionada = Unidades.FirstOrDefault(x => x.Id == item.UnidadeMedidaId);
+        FornecedorSelecionado = Fornecedores.FirstOrDefault(x => x.Id == item.FornecedorId);
 
         if (CategoriaSelecionada is not null &&
-            !CategoriasDisponiveis.Any(
-                x => x.Id ==
-                     CategoriaSelecionada.Id))
+            !CategoriasDisponiveis.Any(x => x.Id == CategoriaSelecionada.Id))
         {
-            CategoriasDisponiveis.Add(
-                CategoriaSelecionada);
+            CategoriasDisponiveis.Add(CategoriaSelecionada);
         }
 
         if (UnidadeSelecionada is not null &&
-            !UnidadesDisponiveis.Any(
-                x => x.Id ==
-                     UnidadeSelecionada.Id))
+            !UnidadesDisponiveis.Any(x => x.Id == UnidadeSelecionada.Id))
         {
-            UnidadesDisponiveis.Add(
-                UnidadeSelecionada);
+            UnidadesDisponiveis.Add(UnidadeSelecionada);
         }
 
         if (FornecedorSelecionado is not null &&
-            !FornecedoresDisponiveis.Any(
-                x => x.Id ==
-                     FornecedorSelecionado.Id))
+            !FornecedoresDisponiveis.Any(x => x.Id == FornecedorSelecionado.Id))
         {
-            FornecedoresDisponiveis.Add(
-                FornecedorSelecionado);
+            FornecedoresDisponiveis.Add(FornecedorSelecionado);
         }
 
         var marca =
-            Marcas.FirstOrDefault(
-                x => x.Id ==
-                     item.MarcaId);
+            Marcas.FirstOrDefault(x => x.Id == item.MarcaId);
 
         if (marca is not null &&
-            !MarcasDisponiveis.Any(
-                x => x.Id ==
-                     marca.Id))
+            !MarcasDisponiveis.Any(x => x.Id == marca.Id))
         {
-            MarcasDisponiveis.Add(
-                marca);
+            MarcasDisponiveis.Add(marca);
         }
 
         ModeloSelecionado = null;
         ModelosDisponiveisEquipamento.Clear();
-
-        MarcaSelecionada =
-            marca;
+        MarcaSelecionada = marca;
 
         if (marca is null)
         {
@@ -593,8 +427,7 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var modeloDisponivel in modelos)
         {
-            ModelosDisponiveisEquipamento.Add(
-                modeloDisponivel);
+            ModelosDisponiveisEquipamento.Add(modeloDisponivel);
         }
 
         ModeloSelecionado =
@@ -606,8 +439,7 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AlterarStatusAsync(
-        EquipamentoDto? item)
+    private async Task AlterarStatusAsync(EquipamentoDto? item)
     {
         if (item is null)
         {
@@ -621,9 +453,7 @@ public partial class EquipamentosViewModel : ObservableObject
                     item.Id,
                     !item.Ativo);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -633,6 +463,40 @@ public partial class EquipamentosViewModel : ObservableObject
             if (EquipamentoId == item.Id)
             {
                 Ativo = !item.Ativo;
+            }
+
+            await PesquisarInternoAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirEquipamentoAsync(EquipamentoDto? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _equipamentoService.ExcluirAsync(item.Id);
+
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (EquipamentoId == item.Id)
+            {
+                LimparEquipamento();
+            }
+
+            if (EquipamentoSelecionado?.Id == item.Id)
+            {
+                EquipamentoSelecionado = null;
             }
 
             await PesquisarInternoAsync();
@@ -659,10 +523,6 @@ public partial class EquipamentosViewModel : ObservableObject
         EquipamentoSelecionado = null;
     }
 
-    /*
-     * CATEGORIA
-     */
-
     [RelayCommand]
     private async Task SalvarCategoriaAsync()
     {
@@ -672,22 +532,13 @@ public partial class EquipamentosViewModel : ObservableObject
                 await _categoriaService.SalvarAsync(
                     new SalvarCategoriaEquipamentoDto
                     {
-                        Id =
-                            CategoriaId,
-
-                        Descricao =
-                            CategoriaDescricao,
-
-                        Observacao =
-                            CategoriaObservacao,
-
-                        Ativo =
-                            CategoriaAtivo
+                        Id = CategoriaId,
+                        Descricao = CategoriaDescricao,
+                        Observacao = CategoriaObservacao,
+                        Ativo = CategoriaAtivo
                     });
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -695,36 +546,26 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetCategoria();
-
             await CarregarAuxiliaresAsync();
         });
     }
 
     [RelayCommand]
-    private void EditarCategoria(
-        CategoriaEquipamentoDto? item)
+    private void EditarCategoria(CategoriaEquipamentoDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        CategoriaId =
-            item.Id;
-
-        CategoriaDescricao =
-            item.Descricao;
-
-        CategoriaObservacao =
-            item.Observacao;
-
-        CategoriaAtivo =
-            item.Ativo;
+        CategoriaId = item.Id;
+        CategoriaDescricao = item.Descricao;
+        CategoriaObservacao = item.Observacao;
+        CategoriaAtivo = item.Ativo;
     }
 
     [RelayCommand]
-    private async Task AlterarStatusCategoriaAsync(
-        CategoriaEquipamentoDto? item)
+    private async Task AlterarStatusCategoriaAsync(CategoriaEquipamentoDto? item)
     {
         if (item is null)
         {
@@ -738,9 +579,7 @@ public partial class EquipamentosViewModel : ObservableObject
                     item.Id,
                     !item.Ativo);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -748,6 +587,51 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             await CarregarAuxiliaresAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirCategoriaAsync(CategoriaEquipamentoDto? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _categoriaService.ExcluirAsync(item.Id);
+
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (CategoriaId == item.Id)
+            {
+                ResetCategoria();
+            }
+
+            if (CategoriaSelecionada?.Id == item.Id)
+            {
+                CategoriaSelecionada = null;
+            }
+
+            if (CategoriaSelecionadaAux?.Id == item.Id)
+            {
+                CategoriaSelecionadaAux = null;
+            }
+
+            if (FiltroCategoria?.Id == item.Id)
+            {
+                FiltroCategoria = null;
+            }
+
+            await CarregarAuxiliaresAsync();
+            await PesquisarInternoAsync();
         });
     }
 
@@ -766,10 +650,6 @@ public partial class EquipamentosViewModel : ObservableObject
         CategoriaSelecionadaAux = null;
     }
 
-    /*
-     * MARCA
-     */
-
     [RelayCommand]
     private async Task SalvarMarcaAsync()
     {
@@ -779,22 +659,13 @@ public partial class EquipamentosViewModel : ObservableObject
                 await _marcaService.SalvarAsync(
                     new SalvarMarcaDto
                     {
-                        Id =
-                            MarcaId,
-
-                        Nome =
-                            MarcaNome,
-
-                        Observacao =
-                            MarcaObservacao,
-
-                        Ativo =
-                            MarcaAtivo
+                        Id = MarcaId,
+                        Nome = MarcaNome,
+                        Observacao = MarcaObservacao,
+                        Ativo = MarcaAtivo
                     });
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -802,36 +673,26 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetMarca();
-
             await CarregarAuxiliaresAsync();
         });
     }
 
     [RelayCommand]
-    private void EditarMarca(
-        MarcaDto? item)
+    private void EditarMarca(MarcaDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        MarcaId =
-            item.Id;
-
-        MarcaNome =
-            item.Nome;
-
-        MarcaObservacao =
-            item.Observacao;
-
-        MarcaAtivo =
-            item.Ativo;
+        MarcaId = item.Id;
+        MarcaNome = item.Nome;
+        MarcaObservacao = item.Observacao;
+        MarcaAtivo = item.Ativo;
     }
 
     [RelayCommand]
-    private async Task AlterarStatusMarcaAsync(
-        MarcaDto? item)
+    private async Task AlterarStatusMarcaAsync(MarcaDto? item)
     {
         if (item is null)
         {
@@ -845,9 +706,7 @@ public partial class EquipamentosViewModel : ObservableObject
                     item.Id,
                     !item.Ativo);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -856,29 +715,22 @@ public partial class EquipamentosViewModel : ObservableObject
 
             await CarregarAuxiliaresAsync();
 
-            if (MarcaSelecionadaParaModelos?.Id ==
-                item.Id)
+            if (MarcaSelecionadaParaModelos?.Id == item.Id)
             {
                 MarcaSelecionadaParaModelos =
-                    Marcas.FirstOrDefault(
-                        x => x.Id ==
-                             item.Id);
+                    Marcas.FirstOrDefault(x => x.Id == item.Id);
             }
 
-            if (MarcaSelecionada?.Id ==
-                item.Id)
+            if (MarcaSelecionada?.Id == item.Id)
             {
                 MarcaSelecionada =
-                    MarcasDisponiveis.FirstOrDefault(
-                        x => x.Id ==
-                             item.Id);
+                    MarcasDisponiveis.FirstOrDefault(x => x.Id == item.Id);
             }
         });
     }
 
     [RelayCommand]
-    private async Task ExcluirMarcaAsync(
-        MarcaDto? item)
+    private async Task ExcluirMarcaAsync(MarcaDto? item)
     {
         if (item is null)
         {
@@ -888,20 +740,16 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _marcaService.ExcluirAsync(
-                    item.Id);
+                await _marcaService.ExcluirAsync(item.Id);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
                 return;
             }
 
-            if (MarcaSelecionadaParaModelos?.Id ==
-                item.Id)
+            if (MarcaSelecionadaParaModelos?.Id == item.Id)
             {
                 MarcaSelecionadaParaModelos = null;
                 MarcaSelecionadaAux = null;
@@ -909,8 +757,7 @@ public partial class EquipamentosViewModel : ObservableObject
                 ResetModelo();
             }
 
-            if (MarcaSelecionada?.Id ==
-                item.Id)
+            if (MarcaSelecionada?.Id == item.Id)
             {
                 MarcaSelecionada = null;
                 ModeloSelecionado = null;
@@ -918,36 +765,25 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetMarca();
-
             await CarregarAuxiliaresAsync();
         });
     }
 
     [RelayCommand]
-    private async Task SelecionarMarcaModelosAsync(
-        MarcaDto? item)
+    private async Task SelecionarMarcaModelosAsync(MarcaDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        MarcaSelecionadaParaModelos =
-            item;
-
-        MarcaSelecionadaAux =
-            item;
-
-        PesquisaModelo =
-            string.Empty;
-
-        FiltroStatusModelo =
-            "Todos";
-
+        MarcaSelecionadaParaModelos = item;
+        MarcaSelecionadaAux = item;
+        PesquisaModelo = string.Empty;
+        FiltroStatusModelo = "Todos";
         ResetModelo();
 
-        await ExecutarAsync(
-            CarregarModelosAsync);
+        await ExecutarAsync(CarregarModelosAsync);
     }
 
     [RelayCommand]
@@ -963,10 +799,6 @@ public partial class EquipamentosViewModel : ObservableObject
         MarcaObservacao = string.Empty;
         MarcaAtivo = true;
     }
-
-    /*
-     * MODELO
-     */
 
     [RelayCommand]
     private async Task SalvarModeloAsync()
@@ -986,25 +818,14 @@ public partial class EquipamentosViewModel : ObservableObject
                 await _modeloService.SalvarAsync(
                     new SalvarModeloEquipamentoDto
                     {
-                        Id =
-                            ModeloId,
-
-                        MarcaId =
-                            MarcaSelecionadaParaModelos.Id,
-
-                        Nome =
-                            ModeloNome,
-
-                        Observacao =
-                            ModeloObservacao,
-
-                        Ativo =
-                            ModeloAtivo
+                        Id = ModeloId,
+                        MarcaId = MarcaSelecionadaParaModelos.Id,
+                        Nome = ModeloNome,
+                        Observacao = ModeloObservacao,
+                        Ativo = ModeloAtivo
                     });
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -1012,11 +833,9 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetModelo();
-
             await CarregarModelosAsync();
 
-            if (MarcaSelecionada?.Id ==
-                MarcaSelecionadaParaModelos.Id)
+            if (MarcaSelecionada?.Id == MarcaSelecionadaParaModelos.Id)
             {
                 await CarregarModelosDisponiveisEquipamentoAsync(
                     MarcaSelecionada.Id);
@@ -1030,42 +849,29 @@ public partial class EquipamentosViewModel : ObservableObject
         if (MarcaSelecionadaParaModelos is null)
         {
             Modelos.Clear();
-
             return;
         }
 
-        await ExecutarAsync(
-            CarregarModelosAsync);
+        await ExecutarAsync(CarregarModelosAsync);
     }
 
     [RelayCommand]
-    private void EditarModelo(
-        ModeloEquipamentoDto? item)
+    private void EditarModelo(ModeloEquipamentoDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        ModeloId =
-            item.Id;
-
-        ModeloNome =
-            item.Nome;
-
-        ModeloObservacao =
-            item.Observacao;
-
-        ModeloAtivo =
-            item.Ativo;
-
-        ModeloSelecionadoAux =
-            item;
+        ModeloId = item.Id;
+        ModeloNome = item.Nome;
+        ModeloObservacao = item.Observacao;
+        ModeloAtivo = item.Ativo;
+        ModeloSelecionadoAux = item;
     }
 
     [RelayCommand]
-    private async Task AlterarStatusModeloAsync(
-        ModeloEquipamentoDto? item)
+    private async Task AlterarStatusModeloAsync(ModeloEquipamentoDto? item)
     {
         if (item is null)
         {
@@ -1079,9 +885,7 @@ public partial class EquipamentosViewModel : ObservableObject
                     item.Id,
                     !item.Ativo);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -1089,11 +893,9 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetModelo();
-
             await CarregarModelosAsync();
 
-            if (MarcaSelecionada?.Id ==
-                item.MarcaId)
+            if (MarcaSelecionada?.Id == item.MarcaId)
             {
                 await CarregarModelosDisponiveisEquipamentoAsync(
                     item.MarcaId);
@@ -1102,8 +904,7 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirModeloAsync(
-        ModeloEquipamentoDto? item)
+    private async Task ExcluirModeloAsync(ModeloEquipamentoDto? item)
     {
         if (item is null)
         {
@@ -1113,30 +914,24 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _modeloService.ExcluirAsync(
-                    item.Id);
+                await _modeloService.ExcluirAsync(item.Id);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
                 return;
             }
 
-            if (ModeloSelecionado?.Id ==
-                item.Id)
+            if (ModeloSelecionado?.Id == item.Id)
             {
                 ModeloSelecionado = null;
             }
 
             ResetModelo();
-
             await CarregarModelosAsync();
 
-            if (MarcaSelecionada?.Id ==
-                item.MarcaId)
+            if (MarcaSelecionada?.Id == item.MarcaId)
             {
                 await CarregarModelosDisponiveisEquipamentoAsync(
                     item.MarcaId);
@@ -1188,8 +983,7 @@ public partial class EquipamentosViewModel : ObservableObject
         }
     }
 
-    private async Task CarregarModelosDisponiveisEquipamentoAsync(
-        int marcaId)
+    private async Task CarregarModelosDisponiveisEquipamentoAsync(int marcaId)
     {
         ModelosDisponiveisEquipamento.Clear();
         ModeloSelecionado = null;
@@ -1200,22 +994,16 @@ public partial class EquipamentosViewModel : ObservableObject
                 null,
                 true);
 
-        if (MarcaSelecionada?.Id !=
-            marcaId)
+        if (MarcaSelecionada?.Id != marcaId)
         {
             return;
         }
 
         foreach (var item in modelos)
         {
-            ModelosDisponiveisEquipamento.Add(
-                item);
+            ModelosDisponiveisEquipamento.Add(item);
         }
     }
-
-    /*
-     * UNIDADE
-     */
 
     [RelayCommand]
     private async Task SalvarUnidadeAsync()
@@ -1226,25 +1014,14 @@ public partial class EquipamentosViewModel : ObservableObject
                 await _unidadeService.SalvarAsync(
                     new SalvarUnidadeMedidaDto
                     {
-                        Id =
-                            UnidadeId,
-
-                        Sigla =
-                            UnidadeSigla,
-
-                        Descricao =
-                            UnidadeDescricao,
-
-                        PermiteQuantidadeDecimal =
-                            UnidadePermiteQuantidadeDecimal,
-
-                        Ativo =
-                            UnidadeAtivo
+                        Id = UnidadeId,
+                        Sigla = UnidadeSigla,
+                        Descricao = UnidadeDescricao,
+                        PermiteQuantidadeDecimal = UnidadePermiteQuantidadeDecimal,
+                        Ativo = UnidadeAtivo
                     });
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -1252,39 +1029,27 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             ResetUnidade();
-
             await CarregarAuxiliaresAsync();
         });
     }
 
     [RelayCommand]
-    private void EditarUnidade(
-        UnidadeMedidaDto? item)
+    private void EditarUnidade(UnidadeMedidaDto? item)
     {
         if (item is null)
         {
             return;
         }
 
-        UnidadeId =
-            item.Id;
-
-        UnidadeSigla =
-            item.Sigla;
-
-        UnidadeDescricao =
-            item.Descricao;
-
-        UnidadePermiteQuantidadeDecimal =
-            item.PermiteQuantidadeDecimal;
-
-        UnidadeAtivo =
-            item.Ativo;
+        UnidadeId = item.Id;
+        UnidadeSigla = item.Sigla;
+        UnidadeDescricao = item.Descricao;
+        UnidadePermiteQuantidadeDecimal = item.PermiteQuantidadeDecimal;
+        UnidadeAtivo = item.Ativo;
     }
 
     [RelayCommand]
-    private async Task AlterarStatusUnidadeAsync(
-        UnidadeMedidaDto? item)
+    private async Task AlterarStatusUnidadeAsync(UnidadeMedidaDto? item)
     {
         if (item is null)
         {
@@ -1298,9 +1063,7 @@ public partial class EquipamentosViewModel : ObservableObject
                     item.Id,
                     !item.Ativo);
 
-            ExibirMensagem(
-                resultado.Mensagem,
-                !resultado.Sucesso);
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
@@ -1308,6 +1071,46 @@ public partial class EquipamentosViewModel : ObservableObject
             }
 
             await CarregarAuxiliaresAsync();
+        });
+    }
+
+    [RelayCommand]
+    private async Task ExcluirUnidadeAsync(UnidadeMedidaDto? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ExecutarAsync(async () =>
+        {
+            var resultado =
+                await _unidadeService.ExcluirAsync(item.Id);
+
+            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+
+            if (!resultado.Sucesso)
+            {
+                return;
+            }
+
+            if (UnidadeId == item.Id)
+            {
+                ResetUnidade();
+            }
+
+            if (UnidadeSelecionada?.Id == item.Id)
+            {
+                UnidadeSelecionada = null;
+            }
+
+            if (UnidadeSelecionadaAux?.Id == item.Id)
+            {
+                UnidadeSelecionadaAux = null;
+            }
+
+            await CarregarAuxiliaresAsync();
+            await PesquisarInternoAsync();
         });
     }
 
@@ -1327,26 +1130,13 @@ public partial class EquipamentosViewModel : ObservableObject
         UnidadeSelecionadaAux = null;
     }
 
-    /*
-     * AUXILIARES
-     */
-
     private async Task CarregarAuxiliaresAsync()
     {
-        var categoriaSelecionadaId =
-            CategoriaSelecionada?.Id;
-
-        var marcaSelecionadaId =
-            MarcaSelecionada?.Id;
-
-        var marcaModelosId =
-            MarcaSelecionadaParaModelos?.Id;
-
-        var unidadeSelecionadaId =
-            UnidadeSelecionada?.Id;
-
-        var fornecedorSelecionadoId =
-            FornecedorSelecionado?.Id;
+        var categoriaSelecionadaId = CategoriaSelecionada?.Id;
+        var marcaSelecionadaId = MarcaSelecionada?.Id;
+        var marcaModelosId = MarcaSelecionadaParaModelos?.Id;
+        var unidadeSelecionadaId = UnidadeSelecionada?.Id;
+        var fornecedorSelecionadoId = FornecedorSelecionado?.Id;
 
         var categorias =
             await _categoriaService.ListarAsync(
@@ -1357,33 +1147,26 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var categoria in categorias)
         {
-            Categorias.Add(
-                categoria);
+            Categorias.Add(categoria);
         }
 
         CategoriasDisponiveis.Clear();
 
-        foreach (var categoria in Categorias.Where(
-                     x => x.Ativo))
+        foreach (var categoria in Categorias.Where(x => x.Ativo))
         {
-            CategoriasDisponiveis.Add(
-                categoria);
+            CategoriasDisponiveis.Add(categoria);
         }
 
         if (categoriaSelecionadaId.HasValue)
         {
             CategoriaSelecionada =
                 Categorias.FirstOrDefault(
-                    x => x.Id ==
-                         categoriaSelecionadaId.Value);
+                    x => x.Id == categoriaSelecionadaId.Value);
 
             if (CategoriaSelecionada is not null &&
-                !CategoriasDisponiveis.Any(
-                    x => x.Id ==
-                         CategoriaSelecionada.Id))
+                !CategoriasDisponiveis.Any(x => x.Id == CategoriaSelecionada.Id))
             {
-                CategoriasDisponiveis.Add(
-                    CategoriaSelecionada);
+                CategoriasDisponiveis.Add(CategoriaSelecionada);
             }
         }
 
@@ -1396,44 +1179,35 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var marca in marcas)
         {
-            Marcas.Add(
-                marca);
+            Marcas.Add(marca);
         }
 
         MarcasDisponiveis.Clear();
 
-        foreach (var marca in Marcas.Where(
-                     x => x.Ativo))
+        foreach (var marca in Marcas.Where(x => x.Ativo))
         {
-            MarcasDisponiveis.Add(
-                marca);
+            MarcasDisponiveis.Add(marca);
         }
 
         if (marcaModelosId.HasValue)
         {
             MarcaSelecionadaParaModelos =
                 Marcas.FirstOrDefault(
-                    x => x.Id ==
-                         marcaModelosId.Value);
+                    x => x.Id == marcaModelosId.Value);
 
-            MarcaSelecionadaAux =
-                MarcaSelecionadaParaModelos;
+            MarcaSelecionadaAux = MarcaSelecionadaParaModelos;
         }
 
         if (marcaSelecionadaId.HasValue)
         {
             MarcaSelecionada =
                 Marcas.FirstOrDefault(
-                    x => x.Id ==
-                         marcaSelecionadaId.Value);
+                    x => x.Id == marcaSelecionadaId.Value);
 
             if (MarcaSelecionada is not null &&
-                !MarcasDisponiveis.Any(
-                    x => x.Id ==
-                         MarcaSelecionada.Id))
+                !MarcasDisponiveis.Any(x => x.Id == MarcaSelecionada.Id))
             {
-                MarcasDisponiveis.Add(
-                    MarcaSelecionada);
+                MarcasDisponiveis.Add(MarcaSelecionada);
             }
         }
 
@@ -1446,33 +1220,26 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var unidade in unidades)
         {
-            Unidades.Add(
-                unidade);
+            Unidades.Add(unidade);
         }
 
         UnidadesDisponiveis.Clear();
 
-        foreach (var unidade in Unidades.Where(
-                     x => x.Ativo))
+        foreach (var unidade in Unidades.Where(x => x.Ativo))
         {
-            UnidadesDisponiveis.Add(
-                unidade);
+            UnidadesDisponiveis.Add(unidade);
         }
 
         if (unidadeSelecionadaId.HasValue)
         {
             UnidadeSelecionada =
                 Unidades.FirstOrDefault(
-                    x => x.Id ==
-                         unidadeSelecionadaId.Value);
+                    x => x.Id == unidadeSelecionadaId.Value);
 
             if (UnidadeSelecionada is not null &&
-                !UnidadesDisponiveis.Any(
-                    x => x.Id ==
-                         UnidadeSelecionada.Id))
+                !UnidadesDisponiveis.Any(x => x.Id == UnidadeSelecionada.Id))
             {
-                UnidadesDisponiveis.Add(
-                    UnidadeSelecionada);
+                UnidadesDisponiveis.Add(UnidadeSelecionada);
             }
         }
 
@@ -1485,33 +1252,26 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var fornecedor in fornecedores)
         {
-            Fornecedores.Add(
-                fornecedor);
+            Fornecedores.Add(fornecedor);
         }
 
         FornecedoresDisponiveis.Clear();
 
-        foreach (var fornecedor in Fornecedores.Where(
-                     x => x.Ativo))
+        foreach (var fornecedor in Fornecedores.Where(x => x.Ativo))
         {
-            FornecedoresDisponiveis.Add(
-                fornecedor);
+            FornecedoresDisponiveis.Add(fornecedor);
         }
 
         if (fornecedorSelecionadoId.HasValue)
         {
             FornecedorSelecionado =
                 Fornecedores.FirstOrDefault(
-                    x => x.Id ==
-                         fornecedorSelecionadoId.Value);
+                    x => x.Id == fornecedorSelecionadoId.Value);
 
             if (FornecedorSelecionado is not null &&
-                !FornecedoresDisponiveis.Any(
-                    x => x.Id ==
-                         FornecedorSelecionado.Id))
+                !FornecedoresDisponiveis.Any(x => x.Id == FornecedorSelecionado.Id))
             {
-                FornecedoresDisponiveis.Add(
-                    FornecedorSelecionado);
+                FornecedoresDisponiveis.Add(FornecedorSelecionado);
             }
         }
     }
@@ -1536,9 +1296,7 @@ public partial class EquipamentosViewModel : ObservableObject
         if (FiltroFornecedor is not null)
         {
             itens = itens
-                .Where(
-                    x => x.FornecedorId ==
-                         FiltroFornecedor.Id)
+                .Where(x => x.FornecedorId == FiltroFornecedor.Id)
                 .ToList();
         }
 
@@ -1546,17 +1304,11 @@ public partial class EquipamentosViewModel : ObservableObject
 
         foreach (var item in itens)
         {
-            Equipamentos.Add(
-                item);
+            Equipamentos.Add(item);
         }
     }
 
-    /*
-     * EXECUÇÃO E MENSAGENS
-     */
-
-    private async Task ExecutarAsync(
-        Func<Task> acao)
+    private async Task ExecutarAsync(Func<Task> acao)
     {
         if (EstaCarregando)
         {
@@ -1583,9 +1335,7 @@ public partial class EquipamentosViewModel : ObservableObject
         }
     }
 
-    private void ExibirMensagem(
-        string texto,
-        bool erro)
+    private void ExibirMensagem(string texto, bool erro)
     {
         Mensagem = texto;
         MensagemEhErro = erro;

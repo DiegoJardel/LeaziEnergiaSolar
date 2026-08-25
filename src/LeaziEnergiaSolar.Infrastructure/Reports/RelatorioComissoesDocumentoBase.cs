@@ -10,29 +10,61 @@ using PdfContainer =
 
 namespace LeaziEnergiaSolar.Infrastructure.Reports;
 
-public sealed class RelatorioGeralComissoesDocument
+public abstract class RelatorioComissoesDocumentoBase
     : IDocument
 {
-    private readonly IReadOnlyList<LancamentoDto>
-        _lancamentos;
+    protected IReadOnlyList<LancamentoDto>
+        Lancamentos
+    { get; }
 
-    private readonly FiltroRelatorioComissaoDto
-        _filtro;
+    protected FiltroRelatorioComissaoDto
+        Filtro
+    { get; }
 
     private readonly byte[]?
         _logo;
 
-    public RelatorioGeralComissoesDocument(
+    /*
+     * INFORMAÇÕES DEFINIDAS POR CADA RELATÓRIO
+     */
+
+    protected abstract string Titulo { get; }
+
+    protected abstract string Subtitulo { get; }
+
+    protected abstract string Assunto { get; }
+
+    /*
+     * CONFIGURAÇÕES OPCIONAIS
+     */
+
+    protected virtual bool ExibirDataPagamento =>
+        true;
+
+    protected virtual bool ExibirStatus =>
+        true;
+
+    protected virtual bool ExibirResumoPorVendedor =>
+        false;
+
+    protected virtual bool ExibirIndicadoresExecutivos =>
+        false;
+
+    /*
+     * CONSTRUTOR
+     */
+
+    protected RelatorioComissoesDocumentoBase(
         IReadOnlyList<LancamentoDto> lancamentos,
         FiltroRelatorioComissaoDto filtro,
         byte[]? logo = null)
     {
-        _lancamentos =
+        Lancamentos =
             lancamentos
             ?? throw new ArgumentNullException(
                 nameof(lancamentos));
 
-        _filtro =
+        Filtro =
             filtro
             ?? throw new ArgumentNullException(
                 nameof(filtro));
@@ -41,23 +73,31 @@ public sealed class RelatorioGeralComissoesDocument
             logo;
     }
 
+    /*
+     * METADADOS
+     */
+
     public DocumentMetadata GetMetadata()
     {
         return new DocumentMetadata
         {
             Title =
-                "Relatório Geral de Comissões",
+                Titulo,
 
             Author =
                 "Leazi Energia Solar",
 
             Subject =
-                "Relatório de comissões pagas e pendentes",
+                Assunto,
 
             Creator =
                 "Sistema Leazi Energia Solar"
         };
     }
+
+    /*
+     * DOCUMENTO
+     */
 
     public void Compose(
         IDocumentContainer container)
@@ -101,6 +141,10 @@ public sealed class RelatorioGeralComissoesDocument
         });
     }
 
+    /*
+     * CABEÇALHO
+     */
+
     private void ComporCabecalho(
         PdfContainer container)
     {
@@ -129,7 +173,7 @@ public sealed class RelatorioGeralComissoesDocument
                         column.Item()
                             .AlignCenter()
                             .Text(
-                                "RELATÓRIO GERAL DE COMISSÕES")
+                                Titulo.ToUpperInvariant())
                             .FontSize(
                                 16)
                             .SemiBold()
@@ -142,7 +186,7 @@ public sealed class RelatorioGeralComissoesDocument
                                 3)
                             .AlignCenter()
                             .Text(
-                                "Comissões pagas e pendentes")
+                                Subtitulo)
                             .FontSize(
                                 9)
                             .FontColor(
@@ -182,6 +226,10 @@ public sealed class RelatorioGeralComissoesDocument
                     });
             });
     }
+
+    /*
+     * LOGO
+     */
 
     private void ComporLogo(
         PdfContainer container)
@@ -226,6 +274,10 @@ public sealed class RelatorioGeralComissoesDocument
             });
     }
 
+    /*
+     * CONTEÚDO
+     */
+
     private void ComporConteudo(
         PdfContainer container)
     {
@@ -258,13 +310,32 @@ public sealed class RelatorioGeralComissoesDocument
                         ComporTabela(
                             containerTabela));
 
+            if (ExibirResumoPorVendedor)
+            {
+                column.Item()
+                    .Element(
+                        containerTituloVendedores =>
+                            ComporTituloResumoVendedores(
+                                containerTituloVendedores));
+
+                column.Item()
+                    .Element(
+                        containerResumoVendedores =>
+                            ComporResumoPorVendedor(
+                                containerResumoVendedores));
+            }
+
             column.Item()
                 .Element(
-                    containerTotais =>
-                        ComporTotaisFinais(
-                            containerTotais));
+                    containerTotal =>
+                        ComporTotalFinal(
+                            containerTotal));
         });
     }
+
+    /*
+     * FILTROS
+     */
 
     private void ComporFiltros(
         PdfContainer container)
@@ -306,66 +377,76 @@ public sealed class RelatorioGeralComissoesDocument
             });
     }
 
+    /*
+     * INDICADORES
+     */
+
     private void ComporIndicadores(
         PdfContainer container)
     {
         var totalVendido =
-            _lancamentos.Sum(
-                x => x.ValorVenda);
+            Lancamentos.Sum(
+                item =>
+                    item.ValorVenda);
 
         var totalComissoes =
-            _lancamentos.Sum(
-                x => x.ValorComissao);
+            Lancamentos.Sum(
+                item =>
+                    item.ValorComissao);
 
         var totalPago =
-            _lancamentos
+            Lancamentos
                 .Where(
-                    x =>
-                        x.Status ==
+                    item =>
+                        item.Status ==
                         StatusLancamento.Pago)
                 .Sum(
-                    x => x.ValorComissao);
+                    item =>
+                        item.ValorComissao);
 
         var totalPendente =
-            _lancamentos
+            Lancamentos
                 .Where(
-                    x =>
-                        x.Status ==
+                    item =>
+                        item.Status ==
                         StatusLancamento.Pendente)
                 .Sum(
-                    x => x.ValorComissao);
+                    item =>
+                        item.ValorComissao);
 
         var quantidadePaga =
-            _lancamentos.Count(
-                x =>
-                    x.Status ==
+            Lancamentos.Count(
+                item =>
+                    item.Status ==
                     StatusLancamento.Pago);
 
         var quantidadePendente =
-            _lancamentos.Count(
-                x =>
-                    x.Status ==
+            Lancamentos.Count(
+                item =>
+                    item.Status ==
                     StatusLancamento.Pendente);
 
-        var percentualPago =
-            totalComissoes > 0
-                ? totalPago /
-                  totalComissoes *
-                  100
-                : 0;
+        var quantidadeVendedores =
+            Lancamentos
+                .Select(
+                    item =>
+                        item.VendedorId)
+                .Distinct()
+                .Count();
 
-        var percentualPendente =
-            totalComissoes > 0
-                ? totalPendente /
-                  totalComissoes *
-                  100
+        var ticketMedio =
+            Lancamentos.Count > 0
+                ? totalVendido /
+                  Lancamentos.Count
                 : 0;
 
         container.Column(column =>
         {
             column.Item()
                 .Text(
-                    "RESUMO GERAL")
+                    ExibirIndicadoresExecutivos
+                        ? "INDICADORES EXECUTIVOS"
+                        : "RESUMO DO RELATÓRIO")
                 .FontSize(
                     9)
                 .SemiBold()
@@ -408,7 +489,8 @@ public sealed class RelatorioGeralComissoesDocument
                         RelatorioLeaziEstilo
                             .FormatarMoeda(
                                 totalPendente),
-                        true);
+                        true,
+                        removerMargemDireita: true);
                 });
 
             column.Item()
@@ -418,41 +500,48 @@ public sealed class RelatorioGeralComissoesDocument
                 {
                     AdicionarIndicador(
                         row,
-                        "QTD. TOTAL",
-                        _lancamentos
-                            .Count
-                            .ToString(),
+                        "LANÇAMENTOS",
+                        Lancamentos.Count.ToString(),
                         false);
 
                     AdicionarIndicador(
                         row,
-                        "QTD. PAGAS",
-                        quantidadePaga
-                            .ToString(),
+                        "PAGOS",
+                        quantidadePaga.ToString(),
                         false);
 
                     AdicionarIndicador(
                         row,
-                        "QTD. PENDENTES",
-                        quantidadePendente
-                            .ToString(),
+                        "PENDENTES",
+                        quantidadePendente.ToString(),
                         true);
 
-                    AdicionarIndicador(
-                        row,
-                        "% PAGO",
-                        RelatorioLeaziEstilo
-                            .FormatarPercentual(
-                                percentualPago),
-                        false);
+                    if (ExibirIndicadoresExecutivos)
+                    {
+                        AdicionarIndicador(
+                            row,
+                            "VENDEDORES",
+                            quantidadeVendedores.ToString(),
+                            false);
 
-                    AdicionarIndicador(
-                        row,
-                        "% PENDENTE",
-                        RelatorioLeaziEstilo
-                            .FormatarPercentual(
-                                percentualPendente),
-                        true);
+                        AdicionarIndicador(
+                            row,
+                            "TICKET MÉDIO",
+                            RelatorioLeaziEstilo
+                                .FormatarMoeda(
+                                    ticketMedio),
+                            false,
+                            removerMargemDireita: true);
+                    }
+                    else
+                    {
+                        AdicionarIndicador(
+                            row,
+                            "VENDEDORES",
+                            quantidadeVendedores.ToString(),
+                            false,
+                            removerMargemDireita: true);
+                    }
                 });
         });
     }
@@ -461,11 +550,19 @@ public sealed class RelatorioGeralComissoesDocument
         RowDescriptor row,
         string titulo,
         string valor,
-        bool alerta)
+        bool alerta,
+        bool removerMargemDireita = false)
     {
-        row.RelativeItem()
-            .PaddingRight(
-                6)
+        var item =
+            row.RelativeItem();
+
+        var container =
+            removerMargemDireita
+                ? item
+                : item.PaddingRight(
+                    6);
+
+        container
             .Border(
                 1)
             .BorderColor(
@@ -509,6 +606,10 @@ public sealed class RelatorioGeralComissoesDocument
             });
     }
 
+    /*
+     * TÍTULO DO DETALHAMENTO
+     */
+
     private void ComporTituloDetalhamento(
         PdfContainer container)
     {
@@ -528,6 +629,10 @@ public sealed class RelatorioGeralComissoesDocument
                 RelatorioLeaziEstilo.Branco);
     }
 
+    /*
+     * TABELA PRINCIPAL
+     */
+
     private void ComporTabela(
         PdfContainer container)
     {
@@ -536,7 +641,7 @@ public sealed class RelatorioGeralComissoesDocument
             table.ColumnsDefinition(columns =>
             {
                 columns.ConstantColumn(
-                    55);
+                    58);
 
                 columns.RelativeColumn(
                     1.7f);
@@ -545,19 +650,25 @@ public sealed class RelatorioGeralComissoesDocument
                     1.3f);
 
                 columns.ConstantColumn(
-                    78);
+                    80);
 
                 columns.ConstantColumn(
                     48);
 
                 columns.ConstantColumn(
-                    78);
+                    80);
 
-                columns.ConstantColumn(
-                    58);
+                if (ExibirStatus)
+                {
+                    columns.ConstantColumn(
+                        62);
+                }
 
-                columns.ConstantColumn(
-                    68);
+                if (ExibirDataPagamento)
+                {
+                    columns.ConstantColumn(
+                        68);
+                }
             });
 
             table.Header(header =>
@@ -586,16 +697,22 @@ public sealed class RelatorioGeralComissoesDocument
                     header,
                     "COMISSÃO");
 
-                AdicionarCabecalhoTabela(
-                    header,
-                    "STATUS");
+                if (ExibirStatus)
+                {
+                    AdicionarCabecalhoTabela(
+                        header,
+                        "STATUS");
+                }
 
-                AdicionarCabecalhoTabela(
-                    header,
-                    "PAGO EM");
+                if (ExibirDataPagamento)
+                {
+                    AdicionarCabecalhoTabela(
+                        header,
+                        "PAGO EM");
+                }
             });
 
-            foreach (var item in _lancamentos)
+            foreach (var item in Lancamentos)
             {
                 AdicionarCelula(
                     table,
@@ -634,23 +751,33 @@ public sealed class RelatorioGeralComissoesDocument
                             item.ValorComissao),
                     true);
 
-                AdicionarStatus(
-                    table,
-                    item);
+                if (ExibirStatus)
+                {
+                    AdicionarStatus(
+                        table,
+                        item);
+                }
 
-                AdicionarCelula(
-                    table,
-                    RelatorioLeaziEstilo
-                        .FormatarData(
-                            item.DataPagamento),
-                    true);
+                if (ExibirDataPagamento)
+                {
+                    AdicionarCelula(
+                        table,
+                        RelatorioLeaziEstilo
+                            .FormatarData(
+                                item.DataPagamento),
+                        true);
+                }
             }
         });
     }
 
-    private static void AdicionarCabecalhoTabela(
-    TableCellDescriptor header,
-    string texto)
+    /*
+     * CÉLULAS DA TABELA
+     */
+
+    protected static void AdicionarCabecalhoTabela(
+        TableCellDescriptor header,
+        string texto)
     {
         header.Cell()
             .Background(
@@ -671,10 +798,11 @@ public sealed class RelatorioGeralComissoesDocument
                 6)
             .SemiBold()
             .FontColor(
-                RelatorioLeaziEstilo.VerdeEscuro);
+                RelatorioLeaziEstilo
+                    .VerdeEscuro);
     }
 
-    private static void AdicionarCelula(
+    protected static void AdicionarCelula(
         TableDescriptor table,
         string texto,
         bool centralizar)
@@ -751,11 +879,220 @@ public sealed class RelatorioGeralComissoesDocument
                         .Vermelho);
     }
 
-    private void ComporTotaisFinais(
+    /*
+     * RESUMO POR VENDEDOR
+     */
+
+    private void ComporTituloResumoVendedores(
         PdfContainer container)
     {
+        container
+            .Background(
+                RelatorioLeaziEstilo.VerdeClaro)
+            .Border(
+                1)
+            .BorderColor(
+                RelatorioLeaziEstilo.CinzaBorda)
+            .PaddingVertical(
+                5)
+            .PaddingHorizontal(
+                8)
+            .Text(
+                "RESUMO POR VENDEDOR")
+            .FontSize(
+                8)
+            .SemiBold()
+            .FontColor(
+                RelatorioLeaziEstilo
+                    .VerdeEscuro);
+    }
+
+    private void ComporResumoPorVendedor(
+        PdfContainer container)
+    {
+        var resumo =
+            Lancamentos
+                .GroupBy(
+                    item => new
+                    {
+                        item.VendedorId,
+                        item.VendedorNome
+                    })
+                .Select(
+                    grupo => new
+                    {
+                        grupo.Key.VendedorNome,
+
+                        Quantidade =
+                            grupo.Count(),
+
+                        TotalVendido =
+                            grupo.Sum(
+                                item =>
+                                    item.ValorVenda),
+
+                        TotalComissao =
+                            grupo.Sum(
+                                item =>
+                                    item.ValorComissao),
+
+                        TotalPago =
+                            grupo
+                                .Where(
+                                    item =>
+                                        item.Status ==
+                                        StatusLancamento.Pago)
+                                .Sum(
+                                    item =>
+                                        item.ValorComissao),
+
+                        TotalPendente =
+                            grupo
+                                .Where(
+                                    item =>
+                                        item.Status ==
+                                        StatusLancamento.Pendente)
+                                .Sum(
+                                    item =>
+                                        item.ValorComissao)
+                    })
+                .OrderBy(
+                    item =>
+                        item.VendedorNome)
+                .ToList();
+
+        container.Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.RelativeColumn(
+                    1.6f);
+
+                columns.ConstantColumn(
+                    65);
+
+                columns.ConstantColumn(
+                    100);
+
+                columns.ConstantColumn(
+                    100);
+
+                columns.ConstantColumn(
+                    100);
+
+                columns.ConstantColumn(
+                    100);
+            });
+
+            table.Header(header =>
+            {
+                AdicionarCabecalhoTabela(
+                    header,
+                    "VENDEDOR");
+
+                AdicionarCabecalhoTabela(
+                    header,
+                    "QTD.");
+
+                AdicionarCabecalhoTabela(
+                    header,
+                    "TOTAL VENDIDO");
+
+                AdicionarCabecalhoTabela(
+                    header,
+                    "COMISSÃO");
+
+                AdicionarCabecalhoTabela(
+                    header,
+                    "PAGO");
+
+                AdicionarCabecalhoTabela(
+                    header,
+                    "PENDENTE");
+            });
+
+            foreach (var item in resumo)
+            {
+                AdicionarCelula(
+                    table,
+                    item.VendedorNome,
+                    false);
+
+                AdicionarCelula(
+                    table,
+                    item.Quantidade.ToString(),
+                    true);
+
+                AdicionarCelula(
+                    table,
+                    RelatorioLeaziEstilo
+                        .FormatarMoeda(
+                            item.TotalVendido),
+                    true);
+
+                AdicionarCelula(
+                    table,
+                    RelatorioLeaziEstilo
+                        .FormatarMoeda(
+                            item.TotalComissao),
+                    true);
+
+                AdicionarCelula(
+                    table,
+                    RelatorioLeaziEstilo
+                        .FormatarMoeda(
+                            item.TotalPago),
+                    true);
+
+                AdicionarCelulaPendente(
+                    table,
+                    RelatorioLeaziEstilo
+                        .FormatarMoeda(
+                            item.TotalPendente));
+            }
+        });
+    }
+
+    private static void AdicionarCelulaPendente(
+        TableDescriptor table,
+        string texto)
+    {
+        table.Cell()
+            .BorderBottom(
+                0.5f)
+            .BorderColor(
+                RelatorioLeaziEstilo.CinzaBorda)
+            .Background(
+                RelatorioLeaziEstilo.VermelhoClaro)
+            .PaddingVertical(
+                4)
+            .PaddingHorizontal(
+                4)
+            .AlignCenter()
+            .AlignMiddle()
+            .Text(
+                texto)
+            .FontSize(
+                6.5f)
+            .SemiBold()
+            .FontColor(
+                RelatorioLeaziEstilo.Vermelho);
+    }
+
+    /*
+     * TOTAL FINAL
+     */
+
+    private void ComporTotalFinal(
+        PdfContainer container)
+    {
+        var totalComissoes =
+            Lancamentos.Sum(
+                item =>
+                    item.ValorComissao);
+
         var totalPago =
-            _lancamentos
+            Lancamentos
                 .Where(
                     item =>
                         item.Status ==
@@ -765,7 +1102,7 @@ public sealed class RelatorioGeralComissoesDocument
                         item.ValorComissao);
 
         var totalPendente =
-            _lancamentos
+            Lancamentos
                 .Where(
                     item =>
                         item.Status ==
@@ -773,11 +1110,6 @@ public sealed class RelatorioGeralComissoesDocument
                 .Sum(
                     item =>
                         item.ValorComissao);
-
-        var totalGeral =
-            _lancamentos.Sum(
-                item =>
-                    item.ValorComissao);
 
         container
             .PaddingTop(
@@ -798,19 +1130,19 @@ public sealed class RelatorioGeralComissoesDocument
 
                 AdicionarTotalFinal(
                     row,
-                    "TOTAL GERAL",
-                    totalGeral,
+                    "TOTAL DE COMISSÕES",
+                    totalComissoes,
                     false,
                     removerMargemDireita: true);
             });
     }
 
     private static void AdicionarTotalFinal(
-    RowDescriptor row,
-    string titulo,
-    decimal valor,
-    bool alerta,
-    bool removerMargemDireita = false)
+        RowDescriptor row,
+        string titulo,
+        decimal valor,
+        bool alerta,
+        bool removerMargemDireita = false)
     {
         var item =
             row.RelativeItem();
@@ -825,11 +1157,13 @@ public sealed class RelatorioGeralComissoesDocument
             .Border(
                 1)
             .BorderColor(
-                RelatorioLeaziEstilo.CinzaBorda)
+                alerta
+                    ? RelatorioLeaziEstilo.Vermelho
+                    : RelatorioLeaziEstilo.VerdeEscuro)
             .Background(
                 alerta
                     ? RelatorioLeaziEstilo.VermelhoClaro
-                    : RelatorioLeaziEstilo.Branco)
+                    : RelatorioLeaziEstilo.VerdeClaro)
             .PaddingVertical(
                 8)
             .PaddingHorizontal(
@@ -855,7 +1189,7 @@ public sealed class RelatorioGeralComissoesDocument
                             .FormatarMoeda(
                                 valor))
                     .FontSize(
-                        9)
+                        10)
                     .Bold()
                     .FontColor(
                         alerta
@@ -864,53 +1198,9 @@ public sealed class RelatorioGeralComissoesDocument
             });
     }
 
-    private static void AdicionarTotalFinal(
-        RowDescriptor row,
-        string titulo,
-        decimal valor,
-        bool alerta)
-    {
-        row.RelativeItem()
-            .PaddingRight(
-                8)
-            .Border(
-                1)
-            .BorderColor(
-                RelatorioLeaziEstilo.CinzaBorda)
-            .Padding(
-                6)
-            .Column(column =>
-            {
-                column.Item()
-                    .AlignCenter()
-                    .Text(
-                        titulo)
-                    .FontSize(
-                        6)
-                    .SemiBold()
-                    .FontColor(
-                        RelatorioLeaziEstilo
-                            .CinzaTexto);
-
-                column.Item()
-                    .PaddingTop(
-                        3)
-                    .AlignCenter()
-                    .Text(
-                        RelatorioLeaziEstilo
-                            .FormatarMoeda(
-                                valor))
-                    .FontSize(
-                        9)
-                    .Bold()
-                    .FontColor(
-                        alerta
-                            ? RelatorioLeaziEstilo
-                                .Vermelho
-                            : RelatorioLeaziEstilo
-                                .VerdeEscuro);
-            });
-    }
+    /*
+     * RODAPÉ
+     */
 
     private void ComporRodape(
         PdfContainer container)
@@ -957,33 +1247,43 @@ public sealed class RelatorioGeralComissoesDocument
             });
     }
 
+    /*
+     * TEXTO DOS FILTROS
+     */
+
     private string ObterPeriodoVenda()
     {
-        return
-            $"{RelatorioLeaziEstilo.FormatarData(
-                _filtro.DataVendaInicial)} até " +
-            $"{RelatorioLeaziEstilo.FormatarData(
-                _filtro.DataVendaFinal)}";
-    }
-
-    private string ObterPeriodoPagamento()
-    {
-        if (!_filtro.DataPagamentoInicial.HasValue &&
-            !_filtro.DataPagamentoFinal.HasValue)
+        if (!Filtro.DataVendaInicial.HasValue &&
+            !Filtro.DataVendaFinal.HasValue)
         {
             return "Todos";
         }
 
         return
             $"{RelatorioLeaziEstilo.FormatarData(
-                _filtro.DataPagamentoInicial)} até " +
+                Filtro.DataVendaInicial)} até " +
             $"{RelatorioLeaziEstilo.FormatarData(
-                _filtro.DataPagamentoFinal)}";
+                Filtro.DataVendaFinal)}";
+    }
+
+    private string ObterPeriodoPagamento()
+    {
+        if (!Filtro.DataPagamentoInicial.HasValue &&
+            !Filtro.DataPagamentoFinal.HasValue)
+        {
+            return "Todos";
+        }
+
+        return
+            $"{RelatorioLeaziEstilo.FormatarData(
+                Filtro.DataPagamentoInicial)} até " +
+            $"{RelatorioLeaziEstilo.FormatarData(
+                Filtro.DataPagamentoFinal)}";
     }
 
     private string ObterStatus()
     {
-        return _filtro.Status switch
+        return Filtro.Status switch
         {
             StatusLancamento.Pago =>
                 "Pago",
@@ -999,16 +1299,16 @@ public sealed class RelatorioGeralComissoesDocument
     private string ObterPesquisa()
     {
         return string.IsNullOrWhiteSpace(
-                _filtro.Pesquisa)
+                Filtro.Pesquisa)
             ? "Todas"
-            : _filtro.Pesquisa.Trim();
+            : Filtro.Pesquisa.Trim();
     }
 
     private string ObterUsuarioEmissor()
     {
         return string.IsNullOrWhiteSpace(
-                _filtro.UsuarioEmissor)
+                Filtro.UsuarioEmissor)
             ? "Não informado"
-            : _filtro.UsuarioEmissor.Trim();
+            : Filtro.UsuarioEmissor.Trim();
     }
 }

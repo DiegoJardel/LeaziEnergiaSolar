@@ -22,11 +22,36 @@ public interface IEquipamentoRepository
         int? ignorarId = null,
         CancellationToken cancellationToken = default);
 
+    Task<bool> ExistePorCategoriaAsync(
+        int categoriaId,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistePorMarcaAsync(
+        int marcaId,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistePorModeloAsync(
+        int marcaId,
+        string modelo,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistePorUnidadeAsync(
+        int unidadeMedidaId,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistePorFornecedorAsync(
+        int fornecedorId,
+        CancellationToken cancellationToken = default);
+
     Task AdicionarAsync(
         Equipamento equipamento,
         CancellationToken cancellationToken = default);
 
     Task AtualizarAsync(
+        Equipamento equipamento,
+        CancellationToken cancellationToken = default);
+
+    Task ExcluirAsync(
         Equipamento equipamento,
         CancellationToken cancellationToken = default);
 }

@@ -33,6 +33,23 @@ public sealed class LancamentoService : ILancamentoService
             usuarioRepository;
     }
 
+    public async Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var anos =
+            await _lancamentoRepository
+                .ListarAnosDisponiveisAsync(
+                    cancellationToken);
+
+        return anos
+            .Where(ano =>
+                ano is >= 2000 and <= 2100)
+            .Distinct()
+            .OrderByDescending(ano =>
+                ano)
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<LancamentoDto>> ListarAsync(
         FiltroLancamentoDto filtro,
         CancellationToken cancellationToken = default)
@@ -67,10 +84,6 @@ public sealed class LancamentoService : ILancamentoService
                     erros));
         }
 
-        /*
-         * VALIDAÇÃO DA DATA DE PAGAMENTO
-         */
-
         if (lancamento.Status ==
             StatusLancamento.Pago)
         {
@@ -96,10 +109,6 @@ public sealed class LancamentoService : ILancamentoService
             }
         }
 
-        /*
-         * VALIDAÇÃO DO VENDEDOR
-         */
-
         var vendedor =
             await _vendedorRepository.ObterAsync(
                 lancamento.VendedorId,
@@ -119,10 +128,6 @@ public sealed class LancamentoService : ILancamentoService
                 "para vendedor inativo.");
         }
 
-        /*
-         * VALIDAÇÃO DO USUÁRIO
-         */
-
         if (lancamento.UsuarioId.HasValue)
         {
             var usuario =
@@ -138,10 +143,6 @@ public sealed class LancamentoService : ILancamentoService
                     "não está disponível.");
             }
         }
-
-        /*
-         * VALIDAÇÃO DO CLIENTE
-         */
 
         if (lancamento.ClienteId.HasValue)
         {
@@ -164,10 +165,6 @@ public sealed class LancamentoService : ILancamentoService
                     "para cliente inativo.");
             }
         }
-
-        /*
-         * EDIÇÃO
-         */
 
         if (lancamento.Id.HasValue)
         {
@@ -194,10 +191,6 @@ public sealed class LancamentoService : ILancamentoService
             return ResultadoOperacaoDto.Ok(
                 "Lançamento atualizado com sucesso.");
         }
-
-        /*
-         * NOVO CADASTRO
-         */
 
         var novoLancamento =
             new Lancamento();
@@ -237,13 +230,10 @@ public sealed class LancamentoService : ILancamentoService
         lancamento.Status =
             status;
 
-        /*
-         * DATA AUTOMÁTICA AO ALTERAR DIRETAMENTE
-         * O STATUS PELA LISTAGEM
-         */
-
-        if (status == StatusLancamento.Pago &&
-            statusAnterior != StatusLancamento.Pago)
+        if (status ==
+                StatusLancamento.Pago &&
+            statusAnterior !=
+                StatusLancamento.Pago)
         {
             lancamento.DataPagamento =
                 DateTime.Today;
@@ -255,10 +245,6 @@ public sealed class LancamentoService : ILancamentoService
                 null;
         }
 
-        /*
-         * REGISTRA QUANDO O STATUS FOI ALTERADO
-         */
-
         lancamento.DataAtualizacao =
             DateTime.Now;
 
@@ -267,7 +253,8 @@ public sealed class LancamentoService : ILancamentoService
             cancellationToken);
 
         return ResultadoOperacaoDto.Ok(
-            status == StatusLancamento.Pago
+            status ==
+            StatusLancamento.Pago
                 ? "Lançamento marcado como pago."
                 : "Lançamento marcado como pendente.");
     }
@@ -286,13 +273,6 @@ public sealed class LancamentoService : ILancamentoService
             return ResultadoOperacaoDto.Falha(
                 "O lançamento selecionado não foi encontrado.");
         }
-
-        /*
-         * EXCLUSÃO FÍSICA
-         *
-         * O lançamento será removido definitivamente
-         * do banco de dados.
-         */
 
         await _lancamentoRepository.ExcluirAsync(
             lancamento,
@@ -363,10 +343,6 @@ public sealed class LancamentoService : ILancamentoService
             ValorNulo(
                 lancamento.Observacao);
 
-        /*
-         * DATA DE PAGAMENTO INFORMADA MANUALMENTE
-         */
-
         if (lancamento.Status ==
             StatusLancamento.Pago)
         {
@@ -379,10 +355,6 @@ public sealed class LancamentoService : ILancamentoService
             entidade.DataPagamento =
                 null;
         }
-
-        /*
-         * DATAS DE CADASTRO E ATUALIZAÇÃO
-         */
 
         if (novoCadastro)
         {

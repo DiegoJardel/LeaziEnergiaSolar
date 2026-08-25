@@ -5,6 +5,9 @@ namespace LeaziEnergiaSolar.Domain.Interfaces;
 
 public interface ILancamentoRepository
 {
+    Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Lancamento>> ListarAsync(
         string? pesquisa = null,
         DateTime? dataInicial = null,

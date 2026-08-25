@@ -10,9 +10,25 @@ public sealed class LancamentoRepository : ILancamentoRepository
 {
     private readonly LeaziDbContext _dbContext;
 
-    public LancamentoRepository(LeaziDbContext dbContext)
+    public LancamentoRepository(
+        LeaziDbContext dbContext)
     {
-        _dbContext = dbContext;
+        _dbContext =
+            dbContext;
+    }
+
+    public async Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Lancamentos
+            .AsNoTracking()
+            .Select(lancamento =>
+                lancamento.DataVenda.Year)
+            .Distinct()
+            .OrderByDescending(ano =>
+                ano)
+            .ToListAsync(
+                cancellationToken);
     }
 
     public async Task<IReadOnlyList<Lancamento>> ListarAsync(
@@ -23,50 +39,78 @@ public sealed class LancamentoRepository : ILancamentoRepository
         StatusLancamento? status = null,
         CancellationToken cancellationToken = default)
     {
-        var consulta = _dbContext.Lancamentos
-            .AsNoTracking()
-            .Include(lancamento => lancamento.Vendedor)
-            .AsQueryable();
+        var consulta =
+            _dbContext.Lancamentos
+                .AsNoTracking()
+                .Include(lancamento =>
+                    lancamento.Vendedor)
+                .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(pesquisa))
+        if (!string.IsNullOrWhiteSpace(
+                pesquisa))
         {
-            var termo = pesquisa.Trim();
+            var termo =
+                pesquisa.Trim();
 
-            consulta = consulta.Where(lancamento =>
-                lancamento.Cliente.Contains(termo) ||
-                lancamento.Vendedor.Nome.Contains(termo) ||
-                (lancamento.CpfCnpjCliente != null &&
-                 lancamento.CpfCnpjCliente.Contains(termo)));
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.Cliente.Contains(
+                        termo) ||
+
+                    lancamento.Vendedor.Nome.Contains(
+                        termo) ||
+
+                    (lancamento.CpfCnpjCliente != null &&
+                     lancamento.CpfCnpjCliente.Contains(
+                         termo)));
         }
 
         if (dataInicial.HasValue)
         {
-            consulta = consulta.Where(lancamento =>
-                lancamento.DataVenda.Date >= dataInicial.Value.Date);
+            var inicio =
+                dataInicial.Value.Date;
+
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.DataVenda >=
+                    inicio);
         }
 
         if (dataFinal.HasValue)
         {
-            consulta = consulta.Where(lancamento =>
-                lancamento.DataVenda.Date <= dataFinal.Value.Date);
+            var fimExclusivo =
+                dataFinal.Value.Date.AddDays(
+                    1);
+
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.DataVenda <
+                    fimExclusivo);
         }
 
         if (vendedorId.HasValue)
         {
-            consulta = consulta.Where(lancamento =>
-                lancamento.VendedorId == vendedorId.Value);
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.VendedorId ==
+                    vendedorId.Value);
         }
 
         if (status.HasValue)
         {
-            consulta = consulta.Where(lancamento =>
-                lancamento.Status == status.Value);
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.Status ==
+                    status.Value);
         }
 
         return await consulta
-            .OrderByDescending(lancamento => lancamento.DataVenda)
-            .ThenByDescending(lancamento => lancamento.Id)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(lancamento =>
+                lancamento.DataVenda)
+            .ThenByDescending(lancamento =>
+                lancamento.Id)
+            .ToListAsync(
+                cancellationToken);
     }
 
     public Task<Lancamento?> ObterAsync(
@@ -75,7 +119,9 @@ public sealed class LancamentoRepository : ILancamentoRepository
     {
         return _dbContext.Lancamentos
             .FirstOrDefaultAsync(
-                lancamento => lancamento.Id == id,
+                lancamento =>
+                    lancamento.Id ==
+                    id,
                 cancellationToken);
     }
 
@@ -85,7 +131,9 @@ public sealed class LancamentoRepository : ILancamentoRepository
     {
         return _dbContext.Lancamentos
             .CountAsync(
-                lancamento => lancamento.ClienteId == clienteId,
+                lancamento =>
+                    lancamento.ClienteId ==
+                    clienteId,
                 cancellationToken);
     }
 
@@ -97,22 +145,29 @@ public sealed class LancamentoRepository : ILancamentoRepository
             lancamento,
             cancellationToken);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 
     public async Task AtualizarAsync(
         Lancamento lancamento,
         CancellationToken cancellationToken = default)
     {
-        _dbContext.Lancamentos.Update(lancamento);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        _dbContext.Lancamentos.Update(
+            lancamento);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 
     public async Task ExcluirAsync(
         Lancamento lancamento,
         CancellationToken cancellationToken = default)
     {
-        _dbContext.Lancamentos.Remove(lancamento);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        _dbContext.Lancamentos.Remove(
+            lancamento);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 }

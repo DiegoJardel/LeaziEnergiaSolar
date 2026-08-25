@@ -5,6 +5,9 @@ namespace LeaziEnergiaSolar.Application.Interfaces;
 
 public interface ILancamentoService
 {
+    Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<LancamentoDto>> ListarAsync(
         FiltroLancamentoDto filtro,
         CancellationToken cancellationToken = default);

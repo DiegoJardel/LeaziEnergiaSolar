@@ -6,57 +6,87 @@ using LeaziEnergiaSolar.Domain.Interfaces;
 
 namespace LeaziEnergiaSolar.Application.Services;
 
-public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
+public sealed class CategoriaEquipamentoService
+    : ICategoriaEquipamentoService
 {
-    private readonly ICategoriaEquipamentoRepository _repo;
+    private readonly ICategoriaEquipamentoRepository
+        _repo;
 
     public CategoriaEquipamentoService(
-        ICategoriaEquipamentoRepository repo) =>
-        _repo = repo;
+        ICategoriaEquipamentoRepository repo)
+    {
+        _repo =
+            repo
+            ?? throw new ArgumentNullException(
+                nameof(repo));
+    }
 
     public async Task<IReadOnlyList<CategoriaEquipamentoDto>> ListarAsync(
         string? pesquisa = null,
         bool? ativo = null,
-        CancellationToken cancellationToken = default) =>
-        (await _repo.ListarAsync(
-            pesquisa,
-            ativo,
-            cancellationToken))
-        .Select(Mapear)
-        .ToList();
+        CancellationToken cancellationToken = default)
+    {
+        var categorias =
+            await _repo.ListarAsync(
+                pesquisa,
+                ativo,
+                cancellationToken);
+
+        return categorias
+            .Select(
+                Mapear)
+            .ToList();
+    }
 
     public async Task<CategoriaEquipamentoDto?> ObterAsync(
         int id,
         CancellationToken cancellationToken = default)
     {
-        var entidade = await _repo.ObterAsync(
-            id,
-            cancellationToken);
+        var entidade =
+            await _repo.ObterAsync(
+                id,
+                cancellationToken);
 
         return entidade is null
             ? null
-            : Mapear(entidade);
+            : Mapear(
+                entidade);
     }
 
     public async Task<ResultadoOperacaoDto> SalvarAsync(
         SalvarCategoriaEquipamentoDto dto,
         CancellationToken cancellationToken = default)
     {
-        dto = new SalvarCategoriaEquipamentoDto
-        {
-            Id = dto.Id,
-            Descricao = EquipamentoValidator
-                .Texto(dto.Descricao)
-                .ToUpperInvariant(),
-            Observacao = EquipamentoValidator.Texto(dto.Observacao),
-            Ativo = dto.Ativo
-        };
+        dto =
+            new SalvarCategoriaEquipamentoDto
+            {
+                Id =
+                    dto.Id,
 
-        var erros = CategoriaEquipamentoValidator.Validar(dto);
+                Descricao =
+                    EquipamentoValidator
+                        .Texto(
+                            dto.Descricao)
+                        .ToUpperInvariant(),
+
+                Observacao =
+                    EquipamentoValidator.Texto(
+                        dto.Observacao),
+
+                Ativo =
+                    dto.Ativo
+            };
+
+        var erros =
+            CategoriaEquipamentoValidator.Validar(
+                dto);
+
         if (erros.Count > 0)
         {
             return ResultadoOperacaoDto.Falha(
-                string.Join(Environment.NewLine, erros));
+                string.Join(
+                    Environment.NewLine,
+                    erros));
         }
 
         if (await _repo.ExisteDescricaoAsync(
@@ -70,9 +100,10 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
 
         if (dto.Id.HasValue)
         {
-            var entidade = await _repo.ObterAsync(
-                dto.Id.Value,
-                cancellationToken);
+            var entidade =
+                await _repo.ObterAsync(
+                    dto.Id.Value,
+                    cancellationToken);
 
             if (entidade is null)
             {
@@ -80,12 +111,20 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
                     "A categoria selecionada não foi encontrada.");
             }
 
-            entidade.Descricao = dto.Descricao;
-            entidade.Observacao = string.IsNullOrWhiteSpace(dto.Observacao)
-                ? null
-                : dto.Observacao;
-            entidade.Ativo = dto.Ativo;
-            entidade.DataAtualizacao = DateTime.Now;
+            entidade.Descricao =
+                dto.Descricao;
+
+            entidade.Observacao =
+                string.IsNullOrWhiteSpace(
+                    dto.Observacao)
+                    ? null
+                    : dto.Observacao;
+
+            entidade.Ativo =
+                dto.Ativo;
+
+            entidade.DataAtualizacao =
+                DateTime.Now;
 
             await _repo.AtualizarAsync(
                 entidade,
@@ -95,15 +134,24 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
                 "Categoria atualizada com sucesso.");
         }
 
-        var novaCategoria = new CategoriaEquipamento
-        {
-            Descricao = dto.Descricao,
-            Observacao = string.IsNullOrWhiteSpace(dto.Observacao)
-                ? null
-                : dto.Observacao,
-            Ativo = true,
-            DataCadastro = DateTime.Now
-        };
+        var novaCategoria =
+            new CategoriaEquipamento
+            {
+                Descricao =
+                    dto.Descricao,
+
+                Observacao =
+                    string.IsNullOrWhiteSpace(
+                        dto.Observacao)
+                        ? null
+                        : dto.Observacao,
+
+                Ativo =
+                    true,
+
+                DataCadastro =
+                    DateTime.Now
+            };
 
         await _repo.AdicionarAsync(
             novaCategoria,
@@ -118,9 +166,10 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
         bool ativo,
         CancellationToken cancellationToken = default)
     {
-        var entidade = await _repo.ObterAsync(
-            id,
-            cancellationToken);
+        var entidade =
+            await _repo.ObterAsync(
+                id,
+                cancellationToken);
 
         if (entidade is null)
         {
@@ -128,8 +177,11 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
                 "A categoria selecionada não foi encontrada.");
         }
 
-        entidade.Ativo = ativo;
-        entidade.DataAtualizacao = DateTime.Now;
+        entidade.Ativo =
+            ativo;
+
+        entidade.DataAtualizacao =
+            DateTime.Now;
 
         await _repo.AtualizarAsync(
             entidade,
@@ -141,15 +193,62 @@ public sealed class CategoriaEquipamentoService : ICategoriaEquipamentoService
                 : "Categoria inativada com sucesso.");
     }
 
+    public async Task<ResultadoOperacaoDto> ExcluirAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        var entidade =
+            await _repo.ObterAsync(
+                id,
+                cancellationToken);
+
+        if (entidade is null)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "A categoria selecionada não foi encontrada.");
+        }
+
+        var possuiEquipamentos =
+            await _repo.PossuiEquipamentosAsync(
+                id,
+                cancellationToken);
+
+        if (possuiEquipamentos)
+        {
+            return ResultadoOperacaoDto.Falha(
+                "Não é possível excluir a categoria porque " +
+                "existem equipamentos vinculados.");
+        }
+
+        await _repo.ExcluirAsync(
+            entidade,
+            cancellationToken);
+
+        return ResultadoOperacaoDto.Ok(
+            "Categoria excluída com sucesso.");
+    }
+
     private static CategoriaEquipamentoDto Mapear(
         CategoriaEquipamento entidade) =>
         new()
         {
-            Id = entidade.Id,
-            Descricao = entidade.Descricao,
-            Observacao = entidade.Observacao ?? string.Empty,
-            Ativo = entidade.Ativo,
-            DataCadastro = entidade.DataCadastro,
-            DataAtualizacao = entidade.DataAtualizacao
+            Id =
+                entidade.Id,
+
+            Descricao =
+                entidade.Descricao,
+
+            Observacao =
+                entidade.Observacao
+                ?? string.Empty,
+
+            Ativo =
+                entidade.Ativo,
+
+            DataCadastro =
+                entidade.DataCadastro,
+
+            DataAtualizacao =
+                entidade.DataAtualizacao
         };
 }

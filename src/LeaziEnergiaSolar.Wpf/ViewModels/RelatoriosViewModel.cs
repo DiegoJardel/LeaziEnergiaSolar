@@ -209,17 +209,19 @@ public partial class RelatoriosViewModel : ObservableObject
                 .ExecutivoVendasComissoes =>
                 "Apresenta uma visão resumida para a diretoria, " +
                 "com total vendido, comissão total, valores pagos, " +
-                "valores pendentes e indicadores do período.",
+                "valores pendentes, ticket médio e resumo por vendedor.",
 
             TipoRelatorioComissao
                 .ComissoesAPagar =>
-                "Apresenta somente as comissões pendentes e o valor " +
-                "que a empresa ainda precisa pagar aos vendedores.",
+                "Apresenta somente as comissões pendentes, o total " +
+                "que a empresa precisa pagar, os dias em aberto e " +
+                "o resumo dos valores por vendedor.",
 
             TipoRelatorioComissao
                 .ComissoesPagas =>
                 "Apresenta somente as comissões pagas, incluindo " +
-                "a data em que cada pagamento foi realizado.",
+                "a data em que cada pagamento foi realizado e " +
+                "os totais agrupados por vendedor.",
 
             TipoRelatorioComissao
                 .ComissoesPorVendedor =>
@@ -271,15 +273,10 @@ public partial class RelatoriosViewModel : ObservableObject
             ?? throw new ArgumentNullException(
                 nameof(sessaoService));
 
-        /*
-         * POR ENQUANTO, O RELATÓRIO GERAL É O
-         * PRIMEIRO DOCUMENTO IMPLEMENTADO.
-         */
-
         TipoRelatorioSelecionado =
             TiposRelatorio.FirstOrDefault(
-                x =>
-                    x.Tipo ==
+                item =>
+                    item.Tipo ==
                     TipoRelatorioComissao
                         .GeralComissoes);
 
@@ -435,9 +432,11 @@ public partial class RelatoriosViewModel : ObservableObject
 
         foreach (var vendedor in vendedores
                      .Where(
-                         x => x.Ativo)
+                         item =>
+                             item.Ativo)
                      .OrderBy(
-                         x => x.Nome))
+                         item =>
+                             item.Nome))
         {
             Vendedores.Add(
                 vendedor);
@@ -447,8 +446,8 @@ public partial class RelatoriosViewModel : ObservableObject
         {
             VendedorSelecionado =
                 Vendedores.FirstOrDefault(
-                    x =>
-                        x.Id ==
+                    item =>
+                        item.Id ==
                         vendedorAtualId.Value);
         }
     }
@@ -466,7 +465,8 @@ public partial class RelatoriosViewModel : ObservableObject
 
         foreach (var cliente in clientes
                      .OrderBy(
-                         x => x.NomeRazaoSocial))
+                         item =>
+                             item.NomeRazaoSocial))
         {
             Clientes.Add(
                 cliente);
@@ -476,8 +476,8 @@ public partial class RelatoriosViewModel : ObservableObject
         {
             ClienteSelecionado =
                 Clientes.FirstOrDefault(
-                    x =>
-                        x.Id ==
+                    item =>
+                        item.Id ==
                         clienteAtualId.Value);
         }
     }
@@ -488,6 +488,12 @@ public partial class RelatoriosViewModel : ObservableObject
 
     private void AplicarRegrasTipoRelatorio()
     {
+        Mensagem =
+            string.Empty;
+
+        MensagemEhErro =
+            false;
+
         switch (TipoRelatorio)
         {
             case TipoRelatorioComissao
@@ -513,7 +519,31 @@ public partial class RelatoriosViewModel : ObservableObject
                 break;
 
             case TipoRelatorioComissao
+                .ComissoesPorVendedor:
+
+                StatusSelecionado =
+                    null;
+
+                break;
+
+            case TipoRelatorioComissao
                 .ExtratoIndividualVendedor:
+
+                StatusSelecionado =
+                    null;
+
+                break;
+
+            case TipoRelatorioComissao
+                .ExecutivoVendasComissoes:
+
+                StatusSelecionado =
+                    null;
+
+                break;
+
+            case TipoRelatorioComissao
+                .GeralComissoes:
 
                 StatusSelecionado =
                     null;
@@ -553,8 +583,8 @@ public partial class RelatoriosViewModel : ObservableObject
 
         TipoRelatorioSelecionado =
             TiposRelatorio.FirstOrDefault(
-                x =>
-                    x.Tipo ==
+                item =>
+                    item.Tipo ==
                     TipoRelatorioComissao
                         .GeralComissoes);
 
@@ -655,23 +685,6 @@ public partial class RelatoriosViewModel : ObservableObject
             ExibirMensagem(
                 "Selecione o vendedor para gerar " +
                 "o extrato individual.",
-                true);
-
-            return false;
-        }
-
-        /*
-         * NESTA PRIMEIRA ETAPA, SOMENTE O RELATÓRIO
-         * GERAL POSSUI O DOCUMENTO PDF IMPLEMENTADO.
-         */
-
-        if (TipoRelatorio !=
-            TipoRelatorioComissao
-                .GeralComissoes)
-        {
-            ExibirMensagem(
-                "O modelo selecionado ainda não foi implementado. " +
-                "Selecione Relatório geral de comissões.",
                 true);
 
             return false;

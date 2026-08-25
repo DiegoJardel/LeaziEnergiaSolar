@@ -7,8 +7,6 @@
 
     <Grid>
         <TabControl>
-
-            <!-- EQUIPAMENTOS -->
             <TabItem Header="EQUIPAMENTOS">
                 <Grid Margin="12">
                     <Grid.ColumnDefinitions>
@@ -17,7 +15,6 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- FORMULÁRIO DO EQUIPAMENTO -->
                     <Border
                         Grid.Column="0"
                         Padding="24"
@@ -43,7 +40,6 @@
                                     Foreground="#C62828"
                                     Text="Campos marcados com asterisco são obrigatórios." />
 
-                                <!-- CATEGORIA -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Descricao"
@@ -53,7 +49,6 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!-- MARCA -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Nome"
@@ -63,7 +58,6 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!-- MODELO -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Nome"
@@ -74,7 +68,6 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!-- UNIDADE -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="Sigla"
@@ -84,7 +77,6 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!-- FORNECEDOR -->
                                 <ComboBox
                                     Margin="0,0,0,12"
                                     DisplayMemberPath="NomeRazaoSocial"
@@ -94,7 +86,6 @@
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                     utils:RequiredFieldHelper.IsRequired="True" />
 
-                                <!-- OBSERVAÇÃO -->
                                 <TextBox
                                     Height="75"
                                     Margin="0,0,0,14"
@@ -103,26 +94,21 @@
                                     MaxLength="1000"
                                     materialDesign:HintAssist.Hint="Observação"
                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding Observacao,
-                                                   UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding Observacao, UpdateSourceTrigger=PropertyChanged}"
                                     TextWrapping="Wrap" />
 
-                                <!-- STATUS -->
                                 <ToggleButton
                                     Margin="0,0,0,14"
                                     Content="Equipamento ativo"
                                     IsChecked="{Binding Ativo}"
                                     Style="{StaticResource MaterialDesignSwitchToggleButton}" />
 
-                                <!-- MENSAGEM -->
                                 <TextBlock
                                     Margin="0,0,0,12"
-                                    Foreground="{Binding MensagemEhErro,
-                                                         Converter={StaticResource BooleanToMessageBrushConverter}}"
+                                    Foreground="{Binding MensagemEhErro, Converter={StaticResource BooleanToMessageBrushConverter}}"
                                     Text="{Binding Mensagem}"
                                     TextWrapping="Wrap" />
 
-                                <!-- BOTÕES -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -137,8 +123,7 @@
                                         Command="{Binding SalvarCommand}"
                                         Content="SALVAR"
                                         Foreground="White"
-                                        IsEnabled="{Binding EstaCarregando,
-                                                            Converter={StaticResource InverseBooleanConverter}}"
+                                        IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
                                         Style="{StaticResource MaterialDesignRaisedButton}" />
 
                                     <Button
@@ -146,15 +131,13 @@
                                         Height="42"
                                         Command="{Binding LimparCommand}"
                                         Content="LIMPAR"
-                                        IsEnabled="{Binding EstaCarregando,
-                                                            Converter={StaticResource InverseBooleanConverter}}"
+                                        IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                                 </Grid>
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
 
-                    <!-- LISTAGEM DOS EQUIPAMENTOS -->
                     <Border
                         Grid.Column="2"
                         Padding="22"
@@ -170,7 +153,6 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- FILTROS -->
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -186,8 +168,7 @@
                                     Margin="0,0,8,0"
                                     materialDesign:HintAssist.Hint="Pesquisar"
                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding Pesquisa,
-                                                   UpdateSourceTrigger=PropertyChanged}" />
+                                    Text="{Binding Pesquisa, UpdateSourceTrigger=PropertyChanged}" />
 
                                 <ComboBox
                                     Grid.Column="1"
@@ -231,12 +212,10 @@
                                     Command="{Binding PesquisarCommand}"
                                     Content="BUSCAR"
                                     Foreground="White"
-                                    IsEnabled="{Binding EstaCarregando,
-                                                        Converter={StaticResource InverseBooleanConverter}}"
+                                    IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}"
                                     Style="{StaticResource MaterialDesignRaisedButton}" />
                             </Grid>
 
-                            <!-- TABELA -->
                             <DataGrid
                                 Grid.Row="2"
                                 AutoGenerateColumns="False"
@@ -249,80 +228,53 @@
                                 SelectionMode="Single">
 
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn
-                                        Width="60"
-                                        Binding="{Binding Codigo}"
-                                        Header="CÓD." />
+                                    <DataGridTextColumn Width="60" Binding="{Binding Codigo}" Header="CÓD." />
+                                    <DataGridTextColumn Width="1.05*" Binding="{Binding Categoria}" Header="CATEGORIA" />
+                                    <DataGridTextColumn Width="0.9*" Binding="{Binding Marca}" Header="MARCA" />
+                                    <DataGridTextColumn Width="1.1*" Binding="{Binding Modelo}" Header="MODELO" />
+                                    <DataGridTextColumn Width="1.3*" Binding="{Binding Fornecedor}" Header="FORNECEDOR" />
+                                    <DataGridTextColumn Width="70" Binding="{Binding UnidadeMedida}" Header="UN." />
 
-                                    <DataGridTextColumn
-                                        Width="1.05*"
-                                        Binding="{Binding Categoria}"
-                                        Header="CATEGORIA" />
-
-                                    <DataGridTextColumn
-                                        Width="0.9*"
-                                        Binding="{Binding Marca}"
-                                        Header="MARCA" />
-
-                                    <DataGridTextColumn
-                                        Width="1.1*"
-                                        Binding="{Binding Modelo}"
-                                        Header="MODELO" />
-
-                                    <DataGridTextColumn
-                                        Width="1.3*"
-                                        Binding="{Binding Fornecedor}"
-                                        Header="FORNECEDOR" />
-
-                                    <DataGridTextColumn
-                                        Width="70"
-                                        Binding="{Binding UnidadeMedida}"
-                                        Header="UN." />
-
-                                    <DataGridTemplateColumn
-                                        Width="80"
-                                        Header="STATUS">
-
+                                    <DataGridTemplateColumn Width="80" Header="STATUS">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock
                                                     FontWeight="SemiBold"
-                                                    Foreground="{Binding Ativo,
-                                                                         Converter={StaticResource BooleanToStatusBrushConverter}}"
+                                                    Foreground="{Binding Ativo, Converter={StaticResource BooleanToStatusBrushConverter}}"
                                                     Text="{Binding Status}" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn
-                                        Width="160"
-                                        Header="AÇÕES">
-
+                                    <DataGridTemplateColumn Width="245" Header="AÇÕES">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
                                                     <Button
                                                         Margin="0,0,6,0"
                                                         Padding="8,4"
-                                                        Command="{Binding DataContext.EditarCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        Command="{Binding DataContext.EditarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                         CommandParameter="{Binding}"
                                                         Content="Editar"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
+                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                                    <Button
+                                                        Margin="0,0,6,0"
+                                                        Padding="8,4"
+                                                        Command="{Binding DataContext.AlterarStatusCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
 
                                                     <Button
                                                         Padding="8,4"
-                                                        Command="{Binding DataContext.AlterarStatusCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        Command="{Binding DataContext.ExcluirEquipamentoCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                         CommandParameter="{Binding}"
-                                                        Content="{Binding Ativo,
-                                                                          Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
+                                                        Content="Excluir"
+                                                        Foreground="#D92D20"
+                                                        IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}"
                                                         Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -331,30 +283,23 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <!-- RODAPÉ -->
-                            <DockPanel
-                                Grid.Row="3"
-                                Margin="0,12,0,0">
-
+                            <DockPanel Grid.Row="3" Margin="0,12,0,0">
                                 <ProgressBar
                                     Width="120"
                                     Height="3"
                                     DockPanel.Dock="Right"
                                     IsIndeterminate="True"
-                                    Visibility="{Binding EstaCarregando,
-                                                         Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    Visibility="{Binding EstaCarregando, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                                 <TextBlock
                                     Foreground="#667085"
-                                    Text="{Binding Equipamentos.Count,
-                                                   StringFormat={}Registros encontrados: {0}}" />
+                                    Text="{Binding Equipamentos.Count, StringFormat={}Registros encontrados: {0}}" />
                             </DockPanel>
                         </Grid>
                     </Border>
                 </Grid>
             </TabItem>
 
-            <!-- CATEGORIAS -->
             <TabItem Header="CATEGORIAS">
                 <Grid Margin="12">
                     <Grid.ColumnDefinitions>
@@ -363,7 +308,6 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- FORMULÁRIO DA CATEGORIA -->
                     <Border
                         Grid.Column="0"
                         Padding="22"
@@ -372,21 +316,9 @@
                         materialDesign:ElevationAssist.Elevation="Dp2">
 
                         <StackPanel>
-                            <TextBlock
-                                FontSize="20"
-                                FontWeight="SemiBold"
-                                Text="{Binding TituloCategoria}" />
-
-                            <TextBlock
-                                Margin="0,4,0,20"
-                                Foreground="#667085"
-                                Text="Cadastro auxiliar de categorias." />
-
-                            <TextBlock
-                                Margin="0,0,0,14"
-                                FontSize="11"
-                                Foreground="#C62828"
-                                Text="Campos marcados com asterisco são obrigatórios." />
+                            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding TituloCategoria}" />
+                            <TextBlock Margin="0,4,0,20" Foreground="#667085" Text="Cadastro auxiliar de categorias." />
+                            <TextBlock Margin="0,0,0,14" FontSize="11" Foreground="#C62828" Text="Campos marcados com asterisco são obrigatórios." />
 
                             <TextBox
                                 Margin="0,0,0,12"
@@ -394,8 +326,7 @@
                                 MaxLength="100"
                                 materialDesign:HintAssist.Hint="Descrição"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding CategoriaDescricao,
-                                               UpdateSourceTrigger=PropertyChanged}"
+                                Text="{Binding CategoriaDescricao, UpdateSourceTrigger=PropertyChanged}"
                                 utils:RequiredFieldHelper.IsRequired="True" />
 
                             <TextBox
@@ -406,38 +337,15 @@
                                 MaxLength="500"
                                 materialDesign:HintAssist.Hint="Observação"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding CategoriaObservacao,
-                                               UpdateSourceTrigger=PropertyChanged}"
+                                Text="{Binding CategoriaObservacao, UpdateSourceTrigger=PropertyChanged}"
                                 TextWrapping="Wrap" />
 
-                            <ToggleButton
-                                Margin="0,0,0,14"
-                                Content="Categoria ativa"
-                                IsChecked="{Binding CategoriaAtivo}"
-                                Style="{StaticResource MaterialDesignSwitchToggleButton}" />
-
-                            <Button
-                                Height="42"
-                                Background="{StaticResource LeaziGreenBrush}"
-                                Command="{Binding SalvarCategoriaCommand}"
-                                Content="SALVAR"
-                                Foreground="White"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
-
-                            <Button
-                                Height="42"
-                                Margin="0,10,0,0"
-                                Command="{Binding LimparCategoriaCommand}"
-                                Content="LIMPAR"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            <ToggleButton Margin="0,0,0,14" Content="Categoria ativa" IsChecked="{Binding CategoriaAtivo}" Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                            <Button Height="42" Background="{StaticResource LeaziGreenBrush}" Command="{Binding SalvarCategoriaCommand}" Content="SALVAR" Foreground="White" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignRaisedButton}" />
+                            <Button Height="42" Margin="0,10,0,0" Command="{Binding LimparCategoriaCommand}" Content="LIMPAR" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                         </StackPanel>
                     </Border>
 
-                    <!-- LISTAGEM DAS CATEGORIAS -->
                     <Border
                         Grid.Column="2"
                         Padding="22"
@@ -458,82 +366,27 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="140" />
                                 </Grid.ColumnDefinitions>
-
-                                <TextBox
-                                    Grid.Column="0"
-                                    Margin="0,0,10,0"
-                                    materialDesign:HintAssist.Hint="Pesquisar categoria"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding PesquisaCategoria,
-                                                   UpdateSourceTrigger=PropertyChanged}" />
-
-                                <ComboBox
-                                    Grid.Column="1"
-                                    ItemsSource="{Binding FiltrosStatus}"
-                                    materialDesign:HintAssist.Hint="Status"
-                                    SelectedItem="{Binding FiltroStatusCategoria}"
-                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                <TextBox Grid.Column="0" Margin="0,0,10,0" materialDesign:HintAssist.Hint="Pesquisar categoria" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding PesquisaCategoria, UpdateSourceTrigger=PropertyChanged}" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding FiltrosStatus}" materialDesign:HintAssist.Hint="Status" SelectedItem="{Binding FiltroStatusCategoria}" Style="{StaticResource MaterialDesignOutlinedComboBox}" />
                             </Grid>
 
-                            <DataGrid
-                                Grid.Row="2"
-                                AutoGenerateColumns="False"
-                                CanUserAddRows="False"
-                                IsReadOnly="True"
-                                ItemsSource="{Binding Categorias}"
-                                RowHeaderWidth="0">
-
+                            <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" ItemsSource="{Binding Categorias}" RowHeaderWidth="0">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn
-                                        Width="*"
-                                        Binding="{Binding Descricao}"
-                                        Header="DESCRIÇÃO" />
-
-                                    <DataGridTemplateColumn
-                                        Width="120"
-                                        Header="STATUS">
-
+                                    <DataGridTextColumn Width="*" Binding="{Binding Descricao}" Header="DESCRIÇÃO" />
+                                    <DataGridTemplateColumn Width="120" Header="STATUS">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock
-                                                    FontWeight="SemiBold"
-                                                    Foreground="{Binding Ativo,
-                                                                         Converter={StaticResource BooleanToStatusBrushConverter}}"
-                                                    Text="{Binding Status}" />
+                                                <TextBlock FontWeight="SemiBold" Foreground="{Binding Ativo, Converter={StaticResource BooleanToStatusBrushConverter}}" Text="{Binding Status}" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-
-                                    <DataGridTemplateColumn
-                                        Width="180"
-                                        Header="AÇÕES">
-
+                                    <DataGridTemplateColumn Width="265" Header="AÇÕES">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Button
-                                                        Margin="0,0,6,0"
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.EditarCategoriaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="Editar"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                    <Button
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.AlterarStatusCategoriaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="{Binding Ativo,
-                                                                          Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.EditarCategoriaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Editar" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.AlterarStatusCategoriaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Padding="8,4" Command="{Binding DataContext.ExcluirCategoriaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Excluir" Foreground="#D92D20" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -541,23 +394,14 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <TextBlock
-                                Grid.Row="3"
-                                Margin="0,12,0,0"
-                                Foreground="#667085"
-                                Text="{Binding Categorias.Count,
-                                               StringFormat={}Categorias encontradas: {0}}" />
+                            <TextBlock Grid.Row="3" Margin="0,12,0,0" Foreground="#667085" Text="{Binding Categorias.Count, StringFormat={}Categorias encontradas: {0}}" />
                         </Grid>
                     </Border>
                 </Grid>
             </TabItem>
 
-            <!-- MARCAS E MODELOS -->
             <TabItem Header="MARCAS">
-                <ScrollViewer
-                    HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto">
-
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <Grid Margin="12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -565,7 +409,6 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- SEÇÃO DE MARCAS -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="330" />
@@ -573,100 +416,27 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- FORMULÁRIO DA MARCA -->
-                            <Border
-                                Grid.Column="0"
-                                MinHeight="300"
-                                Padding="22"
-                                Background="White"
-                                CornerRadius="12"
-                                materialDesign:ElevationAssist.Elevation="Dp2">
-
+                            <Border Grid.Column="0" MinHeight="300" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                                 <StackPanel>
-                                    <TextBlock
-                                        FontSize="20"
-                                        FontWeight="SemiBold"
-                                        Text="{Binding TituloMarca}" />
-
-                                    <TextBlock
-                                        Margin="0,4,0,20"
-                                        Foreground="#667085"
-                                        Text="Cadastre a marca e depois vincule seus modelos."
-                                        TextWrapping="Wrap" />
-
-                                    <TextBlock
-                                        Margin="0,0,0,14"
-                                        FontSize="11"
-                                        Foreground="#C62828"
-                                        Text="Campos marcados com asterisco são obrigatórios." />
-
-                                    <TextBox
-                                        Margin="0,0,0,12"
-                                        CharacterCasing="Upper"
-                                        MaxLength="100"
-                                        materialDesign:HintAssist.Hint="Nome"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding MarcaNome,
-                                                       UpdateSourceTrigger=PropertyChanged}"
-                                        utils:RequiredFieldHelper.IsRequired="True" />
-
-                                    <TextBox
-                                        Height="70"
-                                        Margin="0,0,0,12"
-                                        AcceptsReturn="True"
-                                        CharacterCasing="Upper"
-                                        MaxLength="500"
-                                        materialDesign:HintAssist.Hint="Observação"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding MarcaObservacao,
-                                                       UpdateSourceTrigger=PropertyChanged}"
-                                        TextWrapping="Wrap" />
-
-                                    <ToggleButton
-                                        Margin="0,0,0,14"
-                                        Content="Marca ativa"
-                                        IsChecked="{Binding MarcaAtivo}"
-                                        Style="{StaticResource MaterialDesignSwitchToggleButton}" />
-
+                                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding TituloMarca}" />
+                                    <TextBlock Margin="0,4,0,20" Foreground="#667085" Text="Cadastre a marca e depois vincule seus modelos." TextWrapping="Wrap" />
+                                    <TextBlock Margin="0,0,0,14" FontSize="11" Foreground="#C62828" Text="Campos marcados com asterisco são obrigatórios." />
+                                    <TextBox Margin="0,0,0,12" CharacterCasing="Upper" MaxLength="100" materialDesign:HintAssist.Hint="Nome" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding MarcaNome, UpdateSourceTrigger=PropertyChanged}" utils:RequiredFieldHelper.IsRequired="True" />
+                                    <TextBox Height="70" Margin="0,0,0,12" AcceptsReturn="True" CharacterCasing="Upper" MaxLength="500" materialDesign:HintAssist.Hint="Observação" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding MarcaObservacao, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                                    <ToggleButton Margin="0,0,0,14" Content="Marca ativa" IsChecked="{Binding MarcaAtivo}" Style="{StaticResource MaterialDesignSwitchToggleButton}" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="10" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-
-                                        <Button
-                                            Grid.Column="0"
-                                            Height="42"
-                                            Background="{StaticResource LeaziGreenBrush}"
-                                            Command="{Binding SalvarMarcaCommand}"
-                                            Content="SALVAR"
-                                            Foreground="White"
-                                            IsEnabled="{Binding EstaCarregando,
-                                                                Converter={StaticResource InverseBooleanConverter}}"
-                                            Style="{StaticResource MaterialDesignRaisedButton}" />
-
-                                        <Button
-                                            Grid.Column="2"
-                                            Height="42"
-                                            Command="{Binding LimparMarcaCommand}"
-                                            Content="LIMPAR"
-                                            IsEnabled="{Binding EstaCarregando,
-                                                                Converter={StaticResource InverseBooleanConverter}}"
-                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                        <Button Grid.Column="0" Height="42" Background="{StaticResource LeaziGreenBrush}" Command="{Binding SalvarMarcaCommand}" Content="SALVAR" Foreground="White" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignRaisedButton}" />
+                                        <Button Grid.Column="2" Height="42" Command="{Binding LimparMarcaCommand}" Content="LIMPAR" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
 
-                            <!-- LISTAGEM DAS MARCAS -->
-                            <Border
-                                Grid.Column="2"
-                                MinHeight="300"
-                                Padding="22"
-                                Background="White"
-                                CornerRadius="12"
-                                materialDesign:ElevationAssist.Elevation="Dp2">
-
+                            <Border Grid.Column="2" MinHeight="300" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -674,247 +444,72 @@
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-
                                     <Grid Grid.Row="0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="140" />
                                         </Grid.ColumnDefinitions>
-
-                                        <TextBox
-                                            Grid.Column="0"
-                                            Margin="0,0,10,0"
-                                            materialDesign:HintAssist.Hint="Pesquisar marca"
-                                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                            Text="{Binding PesquisaMarca,
-                                                           UpdateSourceTrigger=PropertyChanged}" />
-
-                                        <ComboBox
-                                            Grid.Column="1"
-                                            ItemsSource="{Binding FiltrosStatus}"
-                                            materialDesign:HintAssist.Hint="Status"
-                                            SelectedItem="{Binding FiltroStatusMarca}"
-                                            Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                        <TextBox Grid.Column="0" Margin="0,0,10,0" materialDesign:HintAssist.Hint="Pesquisar marca" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding PesquisaMarca, UpdateSourceTrigger=PropertyChanged}" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding FiltrosStatus}" materialDesign:HintAssist.Hint="Status" SelectedItem="{Binding FiltroStatusMarca}" Style="{StaticResource MaterialDesignOutlinedComboBox}" />
                                     </Grid>
-
-                                    <DataGrid
-                                        Grid.Row="2"
-                                        MinHeight="190"
-                                        AutoGenerateColumns="False"
-                                        CanUserAddRows="False"
-                                        IsReadOnly="True"
-                                        ItemsSource="{Binding Marcas}"
-                                        RowHeaderWidth="0"
-                                        SelectedItem="{Binding MarcaSelecionadaAux}">
-
+                                    <DataGrid Grid.Row="2" MinHeight="190" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" ItemsSource="{Binding Marcas}" RowHeaderWidth="0" SelectedItem="{Binding MarcaSelecionadaAux}">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn
-                                                Width="70"
-                                                Binding="{Binding Codigo}"
-                                                Header="CÓD." />
-
-                                            <DataGridTextColumn
-                                                Width="*"
-                                                Binding="{Binding Nome}"
-                                                Header="NOME" />
-
-                                            <DataGridTemplateColumn
-                                                Width="100"
-                                                Header="STATUS">
-
+                                            <DataGridTextColumn Width="70" Binding="{Binding Codigo}" Header="CÓD." />
+                                            <DataGridTextColumn Width="*" Binding="{Binding Nome}" Header="NOME" />
+                                            <DataGridTemplateColumn Width="100" Header="STATUS">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock
-                                                            FontWeight="SemiBold"
-                                                            Foreground="{Binding Ativo,
-                                                                                 Converter={StaticResource BooleanToStatusBrushConverter}}"
-                                                            Text="{Binding Status}" />
+                                                        <TextBlock FontWeight="SemiBold" Foreground="{Binding Ativo, Converter={StaticResource BooleanToStatusBrushConverter}}" Text="{Binding Status}" />
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-
-                                            <DataGridTemplateColumn
-                                                Width="310"
-                                                Header="AÇÕES">
-
+                                            <DataGridTemplateColumn Width="310" Header="AÇÕES">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <Button
-                                                                Margin="0,0,6,0"
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.SelecionarMarcaModelosCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="Modelos"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                            <Button
-                                                                Margin="0,0,6,0"
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.EditarMarcaCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="Editar"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                            <Button
-                                                                Margin="0,0,6,0"
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.AlterarStatusMarcaCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="{Binding Ativo,
-                                                                                  Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                            <Button
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.ExcluirMarcaCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="Excluir"
-                                                                Foreground="#D92D20"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.SelecionarMarcaModelosCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Modelos" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.EditarMarcaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Editar" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.AlterarStatusMarcaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Padding="8,4" Command="{Binding DataContext.ExcluirMarcaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Excluir" Foreground="#D92D20" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
-
-                                    <TextBlock
-                                        Grid.Row="3"
-                                        Margin="0,12,0,0"
-                                        Foreground="#667085"
-                                        Text="{Binding Marcas.Count,
-                                                       StringFormat={}Marcas encontradas: {0}}" />
+                                    <TextBlock Grid.Row="3" Margin="0,12,0,0" Foreground="#667085" Text="{Binding Marcas.Count, StringFormat={}Marcas encontradas: {0}}" />
                                 </Grid>
                             </Border>
                         </Grid>
 
-                        <!-- SEÇÃO DE MODELOS -->
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="330" />
                                 <ColumnDefinition Width="18" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-
-                            <!-- FORMULÁRIO DO MODELO -->
-                            <Border
-                                Grid.Column="0"
-                                MinHeight="330"
-                                Padding="22"
-                                Background="White"
-                                CornerRadius="12"
-                                materialDesign:ElevationAssist.Elevation="Dp2">
-
+                            <Border Grid.Column="0" MinHeight="330" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                                 <StackPanel>
-                                    <TextBlock
-                                        FontSize="20"
-                                        FontWeight="SemiBold"
-                                        Text="{Binding TituloModelo}" />
-
-                                    <TextBlock
-                                        Margin="0,4,0,4"
-                                        Foreground="#667085"
-                                        Text="Marca selecionada:" />
-
-                                    <TextBlock
-                                        Margin="0,0,0,14"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
-                                        Foreground="{StaticResource LeaziGreenBrush}"
-                                        Text="{Binding NomeMarcaModelos}" />
-
-                                    <TextBlock
-                                        Margin="0,0,0,14"
-                                        FontSize="11"
-                                        Foreground="#667085"
-                                        Text="Selecione uma marca na listagem acima para cadastrar seus modelos."
-                                        TextWrapping="Wrap" />
-
-                                    <TextBox
-                                        Margin="0,0,0,12"
-                                        CharacterCasing="Upper"
-                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                        MaxLength="100"
-                                        materialDesign:HintAssist.Hint="Nome do modelo"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding ModeloNome,
-                                                       UpdateSourceTrigger=PropertyChanged}"
-                                        utils:RequiredFieldHelper.IsRequired="True" />
-
-                                    <TextBox
-                                        Height="70"
-                                        Margin="0,0,0,12"
-                                        AcceptsReturn="True"
-                                        CharacterCasing="Upper"
-                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                        MaxLength="500"
-                                        materialDesign:HintAssist.Hint="Observação"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding ModeloObservacao,
-                                                       UpdateSourceTrigger=PropertyChanged}"
-                                        TextWrapping="Wrap" />
-
-                                    <ToggleButton
-                                        Margin="0,0,0,14"
-                                        Content="Modelo ativo"
-                                        IsChecked="{Binding ModeloAtivo}"
-                                        IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                        Style="{StaticResource MaterialDesignSwitchToggleButton}" />
-
+                                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding TituloModelo}" />
+                                    <TextBlock Margin="0,4,0,4" Foreground="#667085" Text="Marca selecionada:" />
+                                    <TextBlock Margin="0,0,0,14" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource LeaziGreenBrush}" Text="{Binding NomeMarcaModelos}" />
+                                    <TextBlock Margin="0,0,0,14" FontSize="11" Foreground="#667085" Text="Selecione uma marca na listagem acima para cadastrar seus modelos." TextWrapping="Wrap" />
+                                    <TextBox Margin="0,0,0,12" CharacterCasing="Upper" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" MaxLength="100" materialDesign:HintAssist.Hint="Nome do modelo" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding ModeloNome, UpdateSourceTrigger=PropertyChanged}" utils:RequiredFieldHelper.IsRequired="True" />
+                                    <TextBox Height="70" Margin="0,0,0,12" AcceptsReturn="True" CharacterCasing="Upper" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" MaxLength="500" materialDesign:HintAssist.Hint="Observação" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding ModeloObservacao, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                                    <ToggleButton Margin="0,0,0,14" Content="Modelo ativo" IsChecked="{Binding ModeloAtivo}" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" Style="{StaticResource MaterialDesignSwitchToggleButton}" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="10" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-
-                                        <Button
-                                            Grid.Column="0"
-                                            Height="42"
-                                            Background="{StaticResource LeaziGreenBrush}"
-                                            Command="{Binding SalvarModeloCommand}"
-                                            Content="SALVAR"
-                                            Foreground="White"
-                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                            Style="{StaticResource MaterialDesignRaisedButton}" />
-
-                                        <Button
-                                            Grid.Column="2"
-                                            Height="42"
-                                            Command="{Binding LimparModeloCommand}"
-                                            Content="LIMPAR"
-                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                        <Button Grid.Column="0" Height="42" Background="{StaticResource LeaziGreenBrush}" Command="{Binding SalvarModeloCommand}" Content="SALVAR" Foreground="White" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" Style="{StaticResource MaterialDesignRaisedButton}" />
+                                        <Button Grid.Column="2" Height="42" Command="{Binding LimparModeloCommand}" Content="LIMPAR" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
 
-                            <!-- LISTAGEM DOS MODELOS -->
-                            <Border
-                                Grid.Column="2"
-                                MinHeight="330"
-                                Padding="22"
-                                Background="White"
-                                CornerRadius="12"
-                                materialDesign:ElevationAssist.Elevation="Dp2">
-
+                            <Border Grid.Column="2" MinHeight="330" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -922,139 +517,42 @@
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-
                                     <Grid Grid.Row="0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="140" />
                                             <ColumnDefinition Width="110" />
                                         </Grid.ColumnDefinitions>
-
-                                        <TextBox
-                                            Grid.Column="0"
-                                            Margin="0,0,10,0"
-                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                            materialDesign:HintAssist.Hint="Pesquisar modelo"
-                                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                            Text="{Binding PesquisaModelo,
-                                                           UpdateSourceTrigger=PropertyChanged}" />
-
-                                        <ComboBox
-                                            Grid.Column="1"
-                                            Margin="0,0,10,0"
-                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                            ItemsSource="{Binding FiltrosStatus}"
-                                            materialDesign:HintAssist.Hint="Status"
-                                            SelectedItem="{Binding FiltroStatusModelo}"
-                                            Style="{StaticResource MaterialDesignOutlinedComboBox}" />
-
-                                        <Button
-                                            Grid.Column="2"
-                                            Height="42"
-                                            Background="{StaticResource LeaziGreenBrush}"
-                                            Command="{Binding PesquisarModelosCommand}"
-                                            Content="BUSCAR"
-                                            Foreground="White"
-                                            IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}"
-                                            Style="{StaticResource MaterialDesignRaisedButton}" />
+                                        <TextBox Grid.Column="0" Margin="0,0,10,0" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" materialDesign:HintAssist.Hint="Pesquisar modelo" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding PesquisaModelo, UpdateSourceTrigger=PropertyChanged}" />
+                                        <ComboBox Grid.Column="1" Margin="0,0,10,0" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" ItemsSource="{Binding FiltrosStatus}" materialDesign:HintAssist.Hint="Status" SelectedItem="{Binding FiltroStatusModelo}" Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                        <Button Grid.Column="2" Height="42" Background="{StaticResource LeaziGreenBrush}" Command="{Binding PesquisarModelosCommand}" Content="BUSCAR" Foreground="White" IsEnabled="{Binding PossuiMarcaSelecionadaParaModelos}" Style="{StaticResource MaterialDesignRaisedButton}" />
                                     </Grid>
-
-                                    <DataGrid
-                                        Grid.Row="2"
-                                        MinHeight="200"
-                                        AutoGenerateColumns="False"
-                                        CanUserAddRows="False"
-                                        IsReadOnly="True"
-                                        ItemsSource="{Binding Modelos}"
-                                        RowHeaderWidth="0">
-
+                                    <DataGrid Grid.Row="2" MinHeight="200" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" ItemsSource="{Binding Modelos}" RowHeaderWidth="0">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn
-                                                Width="70"
-                                                Binding="{Binding Codigo}"
-                                                Header="CÓD." />
-
-                                            <DataGridTextColumn
-                                                Width="1.2*"
-                                                Binding="{Binding Nome}"
-                                                Header="MODELO" />
-
-                                            <DataGridTextColumn
-                                                Width="1.5*"
-                                                Binding="{Binding Observacao}"
-                                                Header="OBSERVAÇÃO" />
-
-                                            <DataGridTemplateColumn
-                                                Width="100"
-                                                Header="STATUS">
-
+                                            <DataGridTextColumn Width="70" Binding="{Binding Codigo}" Header="CÓD." />
+                                            <DataGridTextColumn Width="1.2*" Binding="{Binding Nome}" Header="MODELO" />
+                                            <DataGridTextColumn Width="1.5*" Binding="{Binding Observacao}" Header="OBSERVAÇÃO" />
+                                            <DataGridTemplateColumn Width="100" Header="STATUS">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock
-                                                            FontWeight="SemiBold"
-                                                            Foreground="{Binding Ativo,
-                                                                                 Converter={StaticResource BooleanToStatusBrushConverter}}"
-                                                            Text="{Binding Status}" />
+                                                        <TextBlock FontWeight="SemiBold" Foreground="{Binding Ativo, Converter={StaticResource BooleanToStatusBrushConverter}}" Text="{Binding Status}" />
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-
-                                            <DataGridTemplateColumn
-                                                Width="250"
-                                                Header="AÇÕES">
-
+                                            <DataGridTemplateColumn Width="250" Header="AÇÕES">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <Button
-                                                                Margin="0,0,6,0"
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.EditarModeloCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="Editar"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                            <Button
-                                                                Margin="0,0,6,0"
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.AlterarStatusModeloCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="{Binding Ativo,
-                                                                                  Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                            <Button
-                                                                Padding="8,4"
-                                                                Command="{Binding DataContext.ExcluirModeloCommand,
-                                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="Excluir"
-                                                                Foreground="#D92D20"
-                                                                IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                                    RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.EditarModeloCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Editar" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.AlterarStatusModeloCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                            <Button Padding="8,4" Command="{Binding DataContext.ExcluirModeloCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Excluir" Foreground="#D92D20" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
-
-                                    <TextBlock
-                                        Grid.Row="3"
-                                        Margin="0,12,0,0"
-                                        Foreground="#667085"
-                                        Text="{Binding Modelos.Count,
-                                                       StringFormat={}Modelos encontrados: {0}}" />
+                                    <TextBlock Grid.Row="3" Margin="0,12,0,0" Foreground="#667085" Text="{Binding Modelos.Count, StringFormat={}Modelos encontrados: {0}}" />
                                 </Grid>
                             </Border>
                         </Grid>
@@ -1062,7 +560,6 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- UNIDADES -->
             <TabItem Header="UNIDADES">
                 <Grid Margin="12">
                     <Grid.ColumnDefinitions>
@@ -1070,92 +567,21 @@
                         <ColumnDefinition Width="18" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-
-                    <!-- FORMULÁRIO DA UNIDADE -->
-                    <Border
-                        Grid.Column="0"
-                        Padding="22"
-                        Background="White"
-                        CornerRadius="12"
-                        materialDesign:ElevationAssist.Elevation="Dp2">
-
+                    <Border Grid.Column="0" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                         <StackPanel>
-                            <TextBlock
-                                FontSize="20"
-                                FontWeight="SemiBold"
-                                Text="{Binding TituloUnidade}" />
-
-                            <TextBlock
-                                Margin="0,4,0,20"
-                                Foreground="#667085"
-                                Text="Cadastro auxiliar de unidades de medida." />
-
-                            <TextBlock
-                                Margin="0,0,0,14"
-                                FontSize="11"
-                                Foreground="#C62828"
-                                Text="Campos marcados com asterisco são obrigatórios." />
-
-                            <TextBox
-                                Margin="0,0,0,12"
-                                CharacterCasing="Upper"
-                                MaxLength="10"
-                                materialDesign:HintAssist.Hint="Sigla"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding UnidadeSigla,
-                                               UpdateSourceTrigger=PropertyChanged}"
-                                utils:RequiredFieldHelper.IsRequired="True" />
-
-                            <TextBox
-                                Margin="0,0,0,12"
-                                CharacterCasing="Upper"
-                                MaxLength="100"
-                                materialDesign:HintAssist.Hint="Descrição"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding UnidadeDescricao,
-                                               UpdateSourceTrigger=PropertyChanged}"
-                                utils:RequiredFieldHelper.IsRequired="True" />
-
-                            <CheckBox
-                                Margin="0,0,0,14"
-                                Content="Permite quantidade decimal"
-                                IsChecked="{Binding UnidadePermiteQuantidadeDecimal}" />
-
-                            <ToggleButton
-                                Margin="0,0,0,14"
-                                Content="Unidade ativa"
-                                IsChecked="{Binding UnidadeAtivo}"
-                                Style="{StaticResource MaterialDesignSwitchToggleButton}" />
-
-                            <Button
-                                Height="42"
-                                Background="{StaticResource LeaziGreenBrush}"
-                                Command="{Binding SalvarUnidadeCommand}"
-                                Content="SALVAR"
-                                Foreground="White"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
-
-                            <Button
-                                Height="42"
-                                Margin="0,10,0,0"
-                                Command="{Binding LimparUnidadeCommand}"
-                                Content="LIMPAR"
-                                IsEnabled="{Binding EstaCarregando,
-                                                    Converter={StaticResource InverseBooleanConverter}}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding TituloUnidade}" />
+                            <TextBlock Margin="0,4,0,20" Foreground="#667085" Text="Cadastro auxiliar de unidades de medida." />
+                            <TextBlock Margin="0,0,0,14" FontSize="11" Foreground="#C62828" Text="Campos marcados com asterisco são obrigatórios." />
+                            <TextBox Margin="0,0,0,12" CharacterCasing="Upper" MaxLength="10" materialDesign:HintAssist.Hint="Sigla" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding UnidadeSigla, UpdateSourceTrigger=PropertyChanged}" utils:RequiredFieldHelper.IsRequired="True" />
+                            <TextBox Margin="0,0,0,12" CharacterCasing="Upper" MaxLength="100" materialDesign:HintAssist.Hint="Descrição" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding UnidadeDescricao, UpdateSourceTrigger=PropertyChanged}" utils:RequiredFieldHelper.IsRequired="True" />
+                            <CheckBox Margin="0,0,0,14" Content="Permite quantidade decimal" IsChecked="{Binding UnidadePermiteQuantidadeDecimal}" />
+                            <ToggleButton Margin="0,0,0,14" Content="Unidade ativa" IsChecked="{Binding UnidadeAtivo}" Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                            <Button Height="42" Background="{StaticResource LeaziGreenBrush}" Command="{Binding SalvarUnidadeCommand}" Content="SALVAR" Foreground="White" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignRaisedButton}" />
+                            <Button Height="42" Margin="0,10,0,0" Command="{Binding LimparUnidadeCommand}" Content="LIMPAR" IsEnabled="{Binding EstaCarregando, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                         </StackPanel>
                     </Border>
 
-                    <!-- LISTAGEM DAS UNIDADES -->
-                    <Border
-                        Grid.Column="2"
-                        Padding="22"
-                        Background="White"
-                        CornerRadius="12"
-                        materialDesign:ElevationAssist.Elevation="Dp2">
-
+                    <Border Grid.Column="2" Padding="22" Background="White" CornerRadius="12" materialDesign:ElevationAssist.Elevation="Dp2">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -1163,116 +589,44 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="140" />
                                 </Grid.ColumnDefinitions>
-
-                                <TextBox
-                                    Grid.Column="0"
-                                    Margin="0,0,10,0"
-                                    materialDesign:HintAssist.Hint="Pesquisar unidade"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Text="{Binding PesquisaUnidade,
-                                                   UpdateSourceTrigger=PropertyChanged}" />
-
-                                <ComboBox
-                                    Grid.Column="1"
-                                    ItemsSource="{Binding FiltrosStatus}"
-                                    materialDesign:HintAssist.Hint="Status"
-                                    SelectedItem="{Binding FiltroStatusUnidade}"
-                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                <TextBox Grid.Column="0" Margin="0,0,10,0" materialDesign:HintAssist.Hint="Pesquisar unidade" Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding PesquisaUnidade, UpdateSourceTrigger=PropertyChanged}" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding FiltrosStatus}" materialDesign:HintAssist.Hint="Status" SelectedItem="{Binding FiltroStatusUnidade}" Style="{StaticResource MaterialDesignOutlinedComboBox}" />
                             </Grid>
-
-                            <DataGrid
-                                Grid.Row="2"
-                                AutoGenerateColumns="False"
-                                CanUserAddRows="False"
-                                IsReadOnly="True"
-                                ItemsSource="{Binding Unidades}"
-                                RowHeaderWidth="0">
-
+                            <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" ItemsSource="{Binding Unidades}" RowHeaderWidth="0">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn
-                                        Width="90"
-                                        Binding="{Binding Sigla}"
-                                        Header="SIGLA" />
-
-                                    <DataGridTextColumn
-                                        Width="*"
-                                        Binding="{Binding Descricao}"
-                                        Header="DESCRIÇÃO" />
-
-                                    <DataGridCheckBoxColumn
-                                        Width="110"
-                                        Binding="{Binding PermiteQuantidadeDecimal}"
-                                        Header="DECIMAL" />
-
-                                    <DataGridTemplateColumn
-                                        Width="100"
-                                        Header="STATUS">
-
+                                    <DataGridTextColumn Width="90" Binding="{Binding Sigla}" Header="SIGLA" />
+                                    <DataGridTextColumn Width="*" Binding="{Binding Descricao}" Header="DESCRIÇÃO" />
+                                    <DataGridCheckBoxColumn Width="110" Binding="{Binding PermiteQuantidadeDecimal}" Header="DECIMAL" />
+                                    <DataGridTemplateColumn Width="100" Header="STATUS">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock
-                                                    FontWeight="SemiBold"
-                                                    Foreground="{Binding Ativo,
-                                                                         Converter={StaticResource BooleanToStatusBrushConverter}}"
-                                                    Text="{Binding Status}" />
+                                                <TextBlock FontWeight="SemiBold" Foreground="{Binding Ativo, Converter={StaticResource BooleanToStatusBrushConverter}}" Text="{Binding Status}" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-
-                                    <DataGridTemplateColumn
-                                        Width="180"
-                                        Header="AÇÕES">
-
+                                    <DataGridTemplateColumn Width="265" Header="AÇÕES">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Button
-                                                        Margin="0,0,6,0"
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.EditarUnidadeCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="Editar"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
-
-                                                    <Button
-                                                        Padding="8,4"
-                                                        Command="{Binding DataContext.AlterarStatusUnidadeCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="{Binding Ativo,
-                                                                          Converter={StaticResource BooleanToStatusActionConverter}}"
-                                                        IsEnabled="{Binding DataContext.EstaCarregando,
-                                                                            RelativeSource={RelativeSource AncestorType=DataGrid},
-                                                                            Converter={StaticResource InverseBooleanConverter}}"
-                                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.EditarUnidadeCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Editar" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Margin="0,0,6,0" Padding="8,4" Command="{Binding DataContext.AlterarStatusUnidadeCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{Binding Ativo, Converter={StaticResource BooleanToStatusActionConverter}}" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                                    <Button Padding="8,4" Command="{Binding DataContext.ExcluirUnidadeCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="Excluir" Foreground="#D92D20" IsEnabled="{Binding DataContext.EstaCarregando, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-
-                            <TextBlock
-                                Grid.Row="3"
-                                Margin="0,12,0,0"
-                                Foreground="#667085"
-                                Text="{Binding Unidades.Count,
-                                               StringFormat={}Unidades encontradas: {0}}" />
+                            <TextBlock Grid.Row="3" Margin="0,12,0,0" Foreground="#667085" Text="{Binding Unidades.Count, StringFormat={}Unidades encontradas: {0}}" />
                         </Grid>
                     </Border>
                 </Grid>
             </TabItem>
-
         </TabControl>
     </Grid>
 </UserControl>

@@ -8,4 +8,7 @@ public interface IDashboardService
         int ano,
         int? mes = null,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default);
 }

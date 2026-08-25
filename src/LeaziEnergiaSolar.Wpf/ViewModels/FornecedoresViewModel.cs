@@ -1,10 +1,11 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
 using LeaziEnergiaSolar.Domain.Enums;
 using LeaziEnergiaSolar.Wpf.Utils;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -307,6 +308,20 @@ public partial class FornecedoresViewModel : ObservableObject
             return;
         }
 
+        var confirmacao =
+            MessageBox.Show(
+                $"Deseja realmente excluir o fornecedor " +
+                $"\"{item.NomeRazaoSocial}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
+        {
+            return;
+        }
+
         await ExecutarAsync(async () =>
         {
             var resultado =
@@ -319,8 +334,20 @@ public partial class FornecedoresViewModel : ObservableObject
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
+
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Fornecedor excluído",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
 
             if (FornecedorId ==
                 item.Id)

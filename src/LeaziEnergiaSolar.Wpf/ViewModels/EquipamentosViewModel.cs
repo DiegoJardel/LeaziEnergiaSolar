@@ -1,8 +1,9 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -470,9 +471,24 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirEquipamentoAsync(EquipamentoDto? item)
+    private async Task ExcluirEquipamentoAsync(
+    EquipamentoDto? item)
     {
         if (item is null)
+        {
+            return;
+        }
+
+        var confirmacao =
+            MessageBox.Show(
+                "Deseja realmente excluir o equipamento " +
+                $"\"{item.Categoria} - {item.Marca} - {item.Modelo}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -480,23 +496,41 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _equipamentoService.ExcluirAsync(item.Id);
+                await _equipamentoService.ExcluirAsync(
+                    item.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
 
-            if (EquipamentoId == item.Id)
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Equipamento excluído",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (EquipamentoId ==
+                item.Id)
             {
                 LimparEquipamento();
             }
 
-            if (EquipamentoSelecionado?.Id == item.Id)
+            if (EquipamentoSelecionado?.Id ==
+                item.Id)
             {
-                EquipamentoSelecionado = null;
+                EquipamentoSelecionado =
+                    null;
             }
 
             await PesquisarInternoAsync();
@@ -591,9 +625,24 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirCategoriaAsync(CategoriaEquipamentoDto? item)
+    private async Task ExcluirCategoriaAsync(
+    CategoriaEquipamentoDto? item)
     {
         if (item is null)
+        {
+            return;
+        }
+
+        var confirmacao =
+            MessageBox.Show(
+                "Deseja realmente excluir a categoria " +
+                $"\"{item.Descricao}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -601,33 +650,55 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _categoriaService.ExcluirAsync(item.Id);
+                await _categoriaService.ExcluirAsync(
+                    item.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
 
-            if (CategoriaId == item.Id)
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Categoria excluída",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (CategoriaId ==
+                item.Id)
             {
                 ResetCategoria();
             }
 
-            if (CategoriaSelecionada?.Id == item.Id)
+            if (CategoriaSelecionada?.Id ==
+                item.Id)
             {
-                CategoriaSelecionada = null;
+                CategoriaSelecionada =
+                    null;
             }
 
-            if (CategoriaSelecionadaAux?.Id == item.Id)
+            if (CategoriaSelecionadaAux?.Id ==
+                item.Id)
             {
-                CategoriaSelecionadaAux = null;
+                CategoriaSelecionadaAux =
+                    null;
             }
 
-            if (FiltroCategoria?.Id == item.Id)
+            if (FiltroCategoria?.Id ==
+                item.Id)
             {
-                FiltroCategoria = null;
+                FiltroCategoria =
+                    null;
             }
 
             await CarregarAuxiliaresAsync();
@@ -730,9 +801,24 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirMarcaAsync(MarcaDto? item)
+    private async Task ExcluirMarcaAsync(
+    MarcaDto? item)
     {
         if (item is null)
+        {
+            return;
+        }
+
+        var confirmacao =
+            MessageBox.Show(
+                "Deseja realmente excluir a marca " +
+                $"\"{item.Nome}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -740,32 +826,60 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _marcaService.ExcluirAsync(item.Id);
+                await _marcaService.ExcluirAsync(
+                    item.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
 
-            if (MarcaSelecionadaParaModelos?.Id == item.Id)
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Marca excluída",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (MarcaSelecionadaParaModelos?.Id ==
+                item.Id)
             {
-                MarcaSelecionadaParaModelos = null;
-                MarcaSelecionadaAux = null;
+                MarcaSelecionadaParaModelos =
+                    null;
+
+                MarcaSelecionadaAux =
+                    null;
+
                 Modelos.Clear();
+
                 ResetModelo();
             }
 
-            if (MarcaSelecionada?.Id == item.Id)
+            if (MarcaSelecionada?.Id ==
+                item.Id)
             {
-                MarcaSelecionada = null;
-                ModeloSelecionado = null;
+                MarcaSelecionada =
+                    null;
+
+                ModeloSelecionado =
+                    null;
+
                 ModelosDisponiveisEquipamento.Clear();
             }
 
             ResetMarca();
+
             await CarregarAuxiliaresAsync();
+            await PesquisarInternoAsync();
         });
     }
 
@@ -904,9 +1018,24 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirModeloAsync(ModeloEquipamentoDto? item)
+    private async Task ExcluirModeloAsync(
+    ModeloEquipamentoDto? item)
     {
         if (item is null)
+        {
+            return;
+        }
+
+        var confirmacao =
+            MessageBox.Show(
+                "Deseja realmente excluir o modelo " +
+                $"\"{item.Nome}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -914,24 +1043,43 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _modeloService.ExcluirAsync(item.Id);
+                await _modeloService.ExcluirAsync(
+                    item.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
 
-            if (ModeloSelecionado?.Id == item.Id)
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Modelo excluído",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (ModeloSelecionado?.Id ==
+                item.Id)
             {
-                ModeloSelecionado = null;
+                ModeloSelecionado =
+                    null;
             }
 
             ResetModelo();
+
             await CarregarModelosAsync();
 
-            if (MarcaSelecionada?.Id == item.MarcaId)
+            if (MarcaSelecionada?.Id ==
+                item.MarcaId)
             {
                 await CarregarModelosDisponiveisEquipamentoAsync(
                     item.MarcaId);
@@ -1075,9 +1223,24 @@ public partial class EquipamentosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExcluirUnidadeAsync(UnidadeMedidaDto? item)
+    private async Task ExcluirUnidadeAsync(
+    UnidadeMedidaDto? item)
     {
         if (item is null)
+        {
+            return;
+        }
+
+        var confirmacao =
+            MessageBox.Show(
+                "Deseja realmente excluir a unidade de medida " +
+                $"\"{item.Sigla} - {item.Descricao}\"?",
+                "Confirmar exclusão",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+        if (confirmacao !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -1085,28 +1248,48 @@ public partial class EquipamentosViewModel : ObservableObject
         await ExecutarAsync(async () =>
         {
             var resultado =
-                await _unidadeService.ExcluirAsync(item.Id);
+                await _unidadeService.ExcluirAsync(
+                    item.Id);
 
-            ExibirMensagem(resultado.Mensagem, !resultado.Sucesso);
+            ExibirMensagem(
+                resultado.Mensagem,
+                !resultado.Sucesso);
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
 
-            if (UnidadeId == item.Id)
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Unidade de medida excluída",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (UnidadeId ==
+                item.Id)
             {
                 ResetUnidade();
             }
 
-            if (UnidadeSelecionada?.Id == item.Id)
+            if (UnidadeSelecionada?.Id ==
+                item.Id)
             {
-                UnidadeSelecionada = null;
+                UnidadeSelecionada =
+                    null;
             }
 
-            if (UnidadeSelecionadaAux?.Id == item.Id)
+            if (UnidadeSelecionadaAux?.Id ==
+                item.Id)
             {
-                UnidadeSelecionadaAux = null;
+                UnidadeSelecionadaAux =
+                    null;
             }
 
             await CarregarAuxiliaresAsync();

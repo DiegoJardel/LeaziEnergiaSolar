@@ -5,6 +5,9 @@ namespace LeaziEnergiaSolar.Domain.Interfaces;
 
 public interface IDashboardRepository
 {
+    Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default);
+
     Task<decimal> ObterTotalVendidoAsync(
         DateTime inicio,
         DateTime fim,

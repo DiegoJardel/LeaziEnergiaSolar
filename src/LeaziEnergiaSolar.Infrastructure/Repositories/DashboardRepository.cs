@@ -10,9 +10,25 @@ public sealed class DashboardRepository : IDashboardRepository
 {
     private readonly LeaziDbContext _dbContext;
 
-    public DashboardRepository(LeaziDbContext dbContext)
+    public DashboardRepository(
+        LeaziDbContext dbContext)
     {
-        _dbContext = dbContext;
+        _dbContext =
+            dbContext;
+    }
+
+    public async Task<IReadOnlyList<int>> ListarAnosDisponiveisAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Lancamentos
+            .AsNoTracking()
+            .Select(lancamento =>
+                lancamento.DataVenda.Year)
+            .Distinct()
+            .OrderByDescending(ano =>
+                ano)
+            .ToListAsync(
+                cancellationToken);
     }
 
     public async Task<decimal> ObterTotalVendidoAsync(
@@ -20,13 +36,16 @@ public sealed class DashboardRepository : IDashboardRepository
         DateTime fim,
         CancellationToken cancellationToken = default)
     {
-        var valores = await _dbContext.Lancamentos
-            .AsNoTracking()
-            .Where(lancamento =>
-                lancamento.DataVenda >= inicio &&
-                lancamento.DataVenda < fim)
-            .Select(lancamento => lancamento.ValorVenda)
-            .ToListAsync(cancellationToken);
+        var valores =
+            await _dbContext.Lancamentos
+                .AsNoTracking()
+                .Where(lancamento =>
+                    lancamento.DataVenda >= inicio &&
+                    lancamento.DataVenda < fim)
+                .Select(lancamento =>
+                    lancamento.ValorVenda)
+                .ToListAsync(
+                    cancellationToken);
 
         return valores.Sum();
     }
@@ -36,13 +55,16 @@ public sealed class DashboardRepository : IDashboardRepository
         DateTime fim,
         CancellationToken cancellationToken = default)
     {
-        var valores = await _dbContext.Lancamentos
-            .AsNoTracking()
-            .Where(lancamento =>
-                lancamento.DataVenda >= inicio &&
-                lancamento.DataVenda < fim)
-            .Select(lancamento => lancamento.ValorComissao)
-            .ToListAsync(cancellationToken);
+        var valores =
+            await _dbContext.Lancamentos
+                .AsNoTracking()
+                .Where(lancamento =>
+                    lancamento.DataVenda >= inicio &&
+                    lancamento.DataVenda < fim)
+                .Select(lancamento =>
+                    lancamento.ValorComissao)
+                .ToListAsync(
+                    cancellationToken);
 
         return valores.Sum();
     }
@@ -53,19 +75,23 @@ public sealed class DashboardRepository : IDashboardRepository
         StatusLancamento? status = null,
         CancellationToken cancellationToken = default)
     {
-        var consulta = _dbContext.Lancamentos
-            .AsNoTracking()
-            .Where(lancamento =>
-                lancamento.DataVenda >= inicio &&
-                lancamento.DataVenda < fim);
+        var consulta =
+            _dbContext.Lancamentos
+                .AsNoTracking()
+                .Where(lancamento =>
+                    lancamento.DataVenda >= inicio &&
+                    lancamento.DataVenda < fim);
 
         if (status.HasValue)
         {
-            consulta = consulta.Where(lancamento =>
-                lancamento.Status == status.Value);
+            consulta =
+                consulta.Where(lancamento =>
+                    lancamento.Status ==
+                    status.Value);
         }
 
-        return consulta.CountAsync(cancellationToken);
+        return consulta.CountAsync(
+            cancellationToken);
     }
 
     public async Task<IReadOnlyList<Lancamento>>
@@ -77,7 +103,8 @@ public sealed class DashboardRepository : IDashboardRepository
     {
         return await _dbContext.Lancamentos
             .AsNoTracking()
-            .Include(lancamento => lancamento.Vendedor)
+            .Include(lancamento =>
+                lancamento.Vendedor)
             .Where(lancamento =>
                 lancamento.DataVenda >= inicio &&
                 lancamento.DataVenda < fim)
@@ -85,8 +112,10 @@ public sealed class DashboardRepository : IDashboardRepository
                 lancamento.DataVenda)
             .ThenByDescending(lancamento =>
                 lancamento.Id)
-            .Take(quantidade)
-            .ToListAsync(cancellationToken);
+            .Take(
+                quantidade)
+            .ToListAsync(
+                cancellationToken);
     }
 
     public async Task<IReadOnlyList<Lancamento>>
@@ -94,18 +123,22 @@ public sealed class DashboardRepository : IDashboardRepository
             int ano,
             CancellationToken cancellationToken = default)
     {
-        var inicio = new DateTime(
-            ano,
-            month: 1,
-            day: 1);
+        var inicio =
+            new DateTime(
+                ano,
+                month: 1,
+                day: 1);
 
-        var fim = inicio.AddYears(1);
+        var fim =
+            inicio.AddYears(
+                1);
 
         return await _dbContext.Lancamentos
             .AsNoTracking()
             .Where(lancamento =>
                 lancamento.DataVenda >= inicio &&
                 lancamento.DataVenda < fim)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(
+                cancellationToken);
     }
 }

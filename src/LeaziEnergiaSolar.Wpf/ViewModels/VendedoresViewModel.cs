@@ -52,8 +52,8 @@ public partial class VendedoresViewModel : ObservableObject
     [ObservableProperty]
     private bool estaCarregando;
 
-    public ObservableCollection<VendedorDto> Vendedores { get; }
-        = new();
+    public ObservableCollection<VendedorDto> Vendedores { get; } =
+        new();
 
     public bool EstaEditando =>
         VendedorId.HasValue;
@@ -66,25 +66,33 @@ public partial class VendedoresViewModel : ObservableObject
     public VendedoresViewModel(
         IVendedorService vendedorService)
     {
-        _vendedorService = vendedorService;
+        _vendedorService =
+            vendedorService
+            ?? throw new ArgumentNullException(
+                nameof(vendedorService));
     }
 
     partial void OnVendedorIdChanged(
         int? value)
     {
-        OnPropertyChanged(nameof(EstaEditando));
-        OnPropertyChanged(nameof(TituloFormulario));
+        OnPropertyChanged(
+            nameof(EstaEditando));
+
+        OnPropertyChanged(
+            nameof(TituloFormulario));
     }
 
     partial void OnCpfCnpjChanged(
         string value)
     {
         var formatado =
-            MaskHelper.FormatCpfCnpj(value);
+            MaskHelper.FormatCpfCnpj(
+                value);
 
         if (value != formatado)
         {
-            CpfCnpj = formatado;
+            CpfCnpj =
+                formatado;
         }
     }
 
@@ -92,30 +100,21 @@ public partial class VendedoresViewModel : ObservableObject
         string value)
     {
         var formatado =
-            MaskHelper.FormatPhone(value);
+            MaskHelper.FormatPhone(
+                value);
 
         if (value != formatado)
         {
-            Telefone = formatado;
+            Telefone =
+                formatado;
         }
     }
 
     [RelayCommand]
     private async Task CarregarAsync()
     {
-        await ExecutarAsync(async () =>
-        {
-            var vendedores =
-                await _vendedorService.ListarAsync(
-                    Pesquisa?.Trim());
-
-            Vendedores.Clear();
-
-            foreach (var vendedor in vendedores)
-            {
-                Vendedores.Add(vendedor);
-            }
-        });
+        await ExecutarAsync(
+            CarregarListaInternaAsync);
     }
 
     [RelayCommand]
@@ -171,13 +170,26 @@ public partial class VendedoresViewModel : ObservableObject
                 await _vendedorService.SalvarAsync(
                     new SalvarVendedorDto
                     {
-                        Id = VendedorId,
-                        Nome = Nome,
-                        CpfCnpj = CpfCnpj,
-                        Telefone = Telefone,
-                        Email = Email,
-                        PercentualComissao = comissao,
-                        Ativo = Ativo
+                        Id =
+                            VendedorId,
+
+                        Nome =
+                            Nome,
+
+                        CpfCnpj =
+                            CpfCnpj,
+
+                        Telefone =
+                            Telefone,
+
+                        Email =
+                            Email,
+
+                        PercentualComissao =
+                            comissao,
+
+                        Ativo =
+                            Ativo
                     });
 
             ExibirMensagem(
@@ -205,26 +217,42 @@ public partial class VendedoresViewModel : ObservableObject
             return;
         }
 
-        VendedorId = vendedor.Id;
-        Nome = NormalizarNome(vendedor.Nome);
+        VendedorId =
+            vendedor.Id;
+
+        Nome =
+            NormalizarNome(
+                vendedor.Nome);
+
         CpfCnpj =
             MaskHelper.FormatCpfCnpj(
                 vendedor.CpfCnpj);
+
         Telefone =
             MaskHelper.FormatPhone(
                 vendedor.Telefone);
+
         Email =
             EmailValidator.Normalize(
                 vendedor.Email);
+
         PercentualComissao =
             vendedor.PercentualComissao
                 .ToString(
                     "N2",
                     CulturaBrasileira);
-        Ativo = vendedor.Ativo;
-        VendedorSelecionado = vendedor;
-        Mensagem = string.Empty;
-        MensagemEhErro = false;
+
+        Ativo =
+            vendedor.Ativo;
+
+        VendedorSelecionado =
+            vendedor;
+
+        Mensagem =
+            string.Empty;
+
+        MensagemEhErro =
+            false;
     }
 
     [RelayCommand]
@@ -268,18 +296,20 @@ public partial class VendedoresViewModel : ObservableObject
             return;
         }
 
-        var resposta = MessageBox.Show(
-            $"Deseja realmente excluir o vendedor " +
-            $"\"{vendedor.Nome}\"?" +
-            Environment.NewLine +
-            Environment.NewLine +
-            "Esta operação não poderá ser desfeita.",
-            "Excluir vendedor",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning,
-            MessageBoxResult.No);
+        var resposta =
+            MessageBox.Show(
+                "Deseja realmente excluir o vendedor " +
+                $"\"{vendedor.Nome}\"?" +
+                Environment.NewLine +
+                Environment.NewLine +
+                "Esta operação não poderá ser desfeita.",
+                "Excluir vendedor",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
 
-        if (resposta != MessageBoxResult.Yes)
+        if (resposta !=
+            MessageBoxResult.Yes)
         {
             return;
         }
@@ -296,8 +326,20 @@ public partial class VendedoresViewModel : ObservableObject
 
             if (!resultado.Sucesso)
             {
+                MessageBox.Show(
+                    resultado.Mensagem,
+                    "Não foi possível excluir",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
+
+            MessageBox.Show(
+                resultado.Mensagem,
+                "Vendedor excluído",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
 
             LimparFormulario(
                 preservarMensagem: true);
@@ -328,7 +370,8 @@ public partial class VendedoresViewModel : ObservableObject
 
         foreach (var vendedor in vendedores)
         {
-            Vendedores.Add(vendedor);
+            Vendedores.Add(
+                vendedor);
         }
     }
 
@@ -342,7 +385,8 @@ public partial class VendedoresViewModel : ObservableObject
 
         try
         {
-            EstaCarregando = true;
+            EstaCarregando =
+                true;
 
             await acao();
         }
@@ -354,19 +398,32 @@ public partial class VendedoresViewModel : ObservableObject
         }
         finally
         {
-            EstaCarregando = false;
+            EstaCarregando =
+                false;
         }
     }
 
     private void NormalizarFormulario()
     {
-        Nome = NormalizarNome(Nome);
+        Nome =
+            NormalizarNome(
+                Nome);
+
         CpfCnpj =
-            MaskHelper.FormatCpfCnpj(CpfCnpj);
+            MaskHelper.FormatCpfCnpj(
+                CpfCnpj);
+
         Telefone =
-            MaskHelper.FormatPhone(Telefone);
+            MaskHelper.FormatPhone(
+                Telefone);
+
         Email =
-            EmailValidator.Normalize(Email);
+            string.IsNullOrWhiteSpace(
+                Email)
+                ? string.Empty
+                : EmailValidator.Normalize(
+                    Email);
+
         PercentualComissao =
             PercentualComissao?.Trim()
             ?? string.Empty;
@@ -374,7 +431,8 @@ public partial class VendedoresViewModel : ObservableObject
 
     private bool ValidarFormulario()
     {
-        if (string.IsNullOrWhiteSpace(Nome))
+        if (string.IsNullOrWhiteSpace(
+                Nome))
         {
             ExibirMensagem(
                 "Informe o nome do vendedor.",
@@ -392,7 +450,8 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(CpfCnpj))
+        if (string.IsNullOrWhiteSpace(
+                CpfCnpj))
         {
             ExibirMensagem(
                 "Informe o CPF ou CNPJ.",
@@ -411,7 +470,8 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(Telefone))
+        if (string.IsNullOrWhiteSpace(
+                Telefone))
         {
             ExibirMensagem(
                 "Informe o telefone.",
@@ -420,7 +480,8 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (!TelefoneValido(Telefone))
+        if (!TelefoneValido(
+                Telefone))
         {
             ExibirMensagem(
                 "Informe um telefone com DDD válido.",
@@ -429,16 +490,10 @@ public partial class VendedoresViewModel : ObservableObject
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(Email))
-        {
-            ExibirMensagem(
-                "Informe o e-mail.",
-                true);
-
-            return false;
-        }
-
-        if (!EmailValidator.IsValid(Email))
+        if (!string.IsNullOrWhiteSpace(
+                Email) &&
+            !EmailValidator.IsValid(
+                Email))
         {
             ExibirMensagem(
                 "Informe um e-mail válido.",
@@ -463,16 +518,18 @@ public partial class VendedoresViewModel : ObservableObject
     private static string NormalizarNome(
         string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(
+                value))
         {
             return string.Empty;
         }
 
-        var partes = value
-            .Trim()
-            .Split(
-                ' ',
-                StringSplitOptions.RemoveEmptyEntries);
+        var partes =
+            value
+                .Trim()
+                .Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries);
 
         return string
             .Join(
@@ -485,7 +542,8 @@ public partial class VendedoresViewModel : ObservableObject
         string? value)
     {
         var numbers =
-            MaskHelper.OnlyNumbers(value);
+            MaskHelper.OnlyNumbers(
+                value);
 
         return numbers.Length is 10 or 11;
     }
@@ -493,19 +551,37 @@ public partial class VendedoresViewModel : ObservableObject
     private void LimparFormulario(
         bool preservarMensagem = false)
     {
-        VendedorId = null;
-        Nome = string.Empty;
-        CpfCnpj = string.Empty;
-        Telefone = string.Empty;
-        Email = string.Empty;
-        PercentualComissao = "5,00";
-        Ativo = true;
-        VendedorSelecionado = null;
+        VendedorId =
+            null;
+
+        Nome =
+            string.Empty;
+
+        CpfCnpj =
+            string.Empty;
+
+        Telefone =
+            string.Empty;
+
+        Email =
+            string.Empty;
+
+        PercentualComissao =
+            "5,00";
+
+        Ativo =
+            true;
+
+        VendedorSelecionado =
+            null;
 
         if (!preservarMensagem)
         {
-            Mensagem = string.Empty;
-            MensagemEhErro = false;
+            Mensagem =
+                string.Empty;
+
+            MensagemEhErro =
+                false;
         }
     }
 
@@ -513,7 +589,10 @@ public partial class VendedoresViewModel : ObservableObject
         string mensagem,
         bool ehErro)
     {
-        Mensagem = mensagem;
-        MensagemEhErro = ehErro;
+        Mensagem =
+            mensagem;
+
+        MensagemEhErro =
+            ehErro;
     }
 }

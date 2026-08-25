@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LeaziEnergiaSolar.Application.DTOs;
 using LeaziEnergiaSolar.Application.Interfaces;
-using LeaziEnergiaSolar.Wpf.Utils;
 
 namespace LeaziEnergiaSolar.Wpf.ViewModels;
 
@@ -13,7 +12,8 @@ public partial class ControleAnualViewModel : ObservableObject
     private readonly IVendedorService _vendedorService;
 
     [ObservableProperty]
-    private int anoSelecionado = DateTime.Today.Year;
+    private int anoSelecionado =
+        DateTime.Today.Year;
 
     [ObservableProperty]
     private VendedorDto? vendedorSelecionado;
@@ -37,35 +37,46 @@ public partial class ControleAnualViewModel : ObservableObject
     private bool estaCarregando;
 
     [ObservableProperty]
-    private string mensagemErro = string.Empty;
+    private string mensagemErro =
+        string.Empty;
 
-    public ObservableCollection<VendedorDto> Vendedores { get; } = new();
+    public ObservableCollection<VendedorDto> Vendedores { get; } =
+        new();
 
-    public ObservableCollection<ResumoAnualMesDto> Meses { get; } = new();
+    public ObservableCollection<ResumoAnualMesDto> Meses { get; } =
+        new();
 
-    public IReadOnlyList<int> AnosDisponiveis { get; } =
-        YearFilterHelper.CriarAnosDisponiveis();
+    public ObservableCollection<int> AnosDisponiveis { get; } =
+        new();
 
-    public string PeriodoDescricao => VendedorSelecionado is null
-        ? $"Resumo geral de {AnoSelecionado}"
-        : $"{VendedorSelecionado.Nome} em {AnoSelecionado}";
+    public string PeriodoDescricao =>
+        VendedorSelecionado is null
+            ? $"Resumo geral de {AnoSelecionado}"
+            : $"{VendedorSelecionado.Nome} em {AnoSelecionado}";
 
     public ControleAnualViewModel(
         IControleAnualService controleAnualService,
         IVendedorService vendedorService)
     {
-        _controleAnualService = controleAnualService;
-        _vendedorService = vendedorService;
+        _controleAnualService =
+            controleAnualService;
+
+        _vendedorService =
+            vendedorService;
     }
 
-    partial void OnAnoSelecionadoChanged(int value)
+    partial void OnAnoSelecionadoChanged(
+        int value)
     {
-        OnPropertyChanged(nameof(PeriodoDescricao));
+        OnPropertyChanged(
+            nameof(PeriodoDescricao));
     }
 
-    partial void OnVendedorSelecionadoChanged(VendedorDto? value)
+    partial void OnVendedorSelecionadoChanged(
+        VendedorDto? value)
     {
-        OnPropertyChanged(nameof(PeriodoDescricao));
+        OnPropertyChanged(
+            nameof(PeriodoDescricao));
     }
 
     [RelayCommand]
@@ -78,20 +89,28 @@ public partial class ControleAnualViewModel : ObservableObject
 
         try
         {
-            EstaCarregando = true;
-            MensagemErro = string.Empty;
+            EstaCarregando =
+                true;
 
+            MensagemErro =
+                string.Empty;
+
+            await CarregarAnosDisponiveisAsync();
             await CarregarVendedoresAsync();
             await CarregarControleAsync();
         }
-        catch (Exception)
+        catch (Exception exception)
         {
             MensagemErro =
-                "Não foi possível carregar o controle anual.";
+                "Não foi possível carregar o controle anual. " +
+                exception
+                    .GetBaseException()
+                    .Message;
         }
         finally
         {
-            EstaCarregando = false;
+            EstaCarregando =
+                false;
         }
     }
 
@@ -103,70 +122,171 @@ public partial class ControleAnualViewModel : ObservableObject
             return;
         }
 
-        try
-        {
-            EstaCarregando = true;
-            MensagemErro = string.Empty;
-            await CarregarControleAsync();
-        }
-        catch (Exception)
+        if (!AnosDisponiveis.Contains(
+                AnoSelecionado))
         {
             MensagemErro =
-                "Não foi possível aplicar os filtros do controle anual.";
+                "Selecione um ano válido.";
+
+            return;
+        }
+
+        try
+        {
+            EstaCarregando =
+                true;
+
+            MensagemErro =
+                string.Empty;
+
+            await CarregarControleAsync();
+        }
+        catch (Exception exception)
+        {
+            MensagemErro =
+                "Não foi possível aplicar os filtros " +
+                "do controle anual. " +
+                exception
+                    .GetBaseException()
+                    .Message;
         }
         finally
         {
-            EstaCarregando = false;
+            EstaCarregando =
+                false;
         }
     }
 
     [RelayCommand]
     private async Task LimparFiltrosAsync()
     {
-        AnoSelecionado = DateTime.Today.Year;
-        VendedorSelecionado = null;
+        if (EstaCarregando)
+        {
+            return;
+        }
+
+        AnoSelecionado =
+            DateTime.Today.Year;
+
+        VendedorSelecionado =
+            null;
+
         await FiltrarAsync();
+    }
+
+    private async Task CarregarAnosDisponiveisAsync()
+    {
+        var anoAtual =
+            DateTime.Today.Year;
+
+        var anoSelecionadoAtual =
+            AnoSelecionado;
+
+        var anos =
+            await _controleAnualService
+                .ListarAnosDisponiveisAsync();
+
+        AnosDisponiveis.Clear();
+
+        foreach (var ano in anos
+                     .Where(
+                         item =>
+                             item is >= 2000 and <= 2100)
+                     .Distinct()
+                     .OrderByDescending(
+                         item =>
+                             item))
+        {
+            AnosDisponiveis.Add(
+                ano);
+        }
+
+        if (!AnosDisponiveis.Contains(
+                anoAtual))
+        {
+            AnosDisponiveis.Insert(
+                0,
+                anoAtual);
+        }
+
+        if (AnosDisponiveis.Contains(
+                anoSelecionadoAtual))
+        {
+            AnoSelecionado =
+                anoSelecionadoAtual;
+
+            return;
+        }
+
+        AnoSelecionado =
+            anoAtual;
     }
 
     private async Task CarregarVendedoresAsync()
     {
-        var vendedorAtualId = VendedorSelecionado?.Id;
-        var vendedores = await _vendedorService.ListarAsync();
+        var vendedorAtualId =
+            VendedorSelecionado?.Id;
+
+        var vendedores =
+            await _vendedorService.ListarAsync();
 
         Vendedores.Clear();
 
         foreach (var vendedor in vendedores)
         {
-            Vendedores.Add(vendedor);
+            Vendedores.Add(
+                vendedor);
         }
 
-        if (vendedorAtualId.HasValue)
+        if (!vendedorAtualId.HasValue)
         {
-            VendedorSelecionado = Vendedores.FirstOrDefault(vendedor =>
-                vendedor.Id == vendedorAtualId.Value);
+            VendedorSelecionado =
+                null;
+
+            return;
         }
+
+        VendedorSelecionado =
+            Vendedores.FirstOrDefault(
+                vendedor =>
+                    vendedor.Id ==
+                    vendedorAtualId.Value);
     }
 
     private async Task CarregarControleAsync()
     {
-        var controle = await _controleAnualService.ObterAsync(
-            new FiltroControleAnualDto
-            {
-                Ano = AnoSelecionado,
-                VendedorId = VendedorSelecionado?.Id
-            });
+        var controle =
+            await _controleAnualService.ObterAsync(
+                new FiltroControleAnualDto
+                {
+                    Ano =
+                        AnoSelecionado,
 
-        TotalVendido = controle.TotalVendido;
-        TotalComissao = controle.TotalComissao;
-        QuantidadeRegistros = controle.QuantidadeRegistros;
-        QuantidadePagos = controle.QuantidadePagos;
-        QuantidadePendentes = controle.QuantidadePendentes;
+                    VendedorId =
+                        VendedorSelecionado?.Id
+                });
+
+        TotalVendido =
+            controle.TotalVendido;
+
+        TotalComissao =
+            controle.TotalComissao;
+
+        QuantidadeRegistros =
+            controle.QuantidadeRegistros;
+
+        QuantidadePagos =
+            controle.QuantidadePagos;
+
+        QuantidadePendentes =
+            controle.QuantidadePendentes;
 
         Meses.Clear();
 
         foreach (var mes in controle.Meses)
         {
-            Meses.Add(mes);
+            Meses.Add(
+                mes);
         }
     }
 }

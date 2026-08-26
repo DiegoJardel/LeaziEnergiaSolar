@@ -174,13 +174,6 @@
                             SelectedItem="{Binding StatusSelecionado, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
 
-                        <TextBox
-                            Margin="0,0,0,18"
-                            MaxLength="150"
-                            materialDesign:HintAssist.Hint="Cliente, vendedor ou documento"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            Text="{Binding Pesquisa, UpdateSourceTrigger=PropertyChanged}" />
-
                         <Border
                             Margin="0,0,0,16"
                             Padding="12"
